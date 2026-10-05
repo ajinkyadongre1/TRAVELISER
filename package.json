@@ -4,6 +4,7 @@
   "description": "TRAVELISER — Mountain Expedition Booking, AI Trip Planner & 24x7 Women Safety Command Platform",
   "main": "index.html",
   "scripts": {
+    "build": "echo 'Static build ready'",
     "start": "python -m http.server 8080",
     "serve": "npx serve ."
   },

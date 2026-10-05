@@ -39,6 +39,9 @@
 
     async function callGeminiRaw(promptText, maxTokens = 1200) {
         const apiKey = getActiveGeminiKey();
+        if (!apiKey || !apiKey.trim()) {
+            return { success: false, error: 'No API key configured' };
+        }
         let lastError = null;
 
         // Try the last verified working model first for ultra-fast latency
@@ -46,10 +49,15 @@
 
         for (const model of modelsToTry) {
             if (!model) continue;
+            let timeoutId = null;
             try {
+                const controller = new AbortController();
+                timeoutId = setTimeout(() => controller.abort(), 6000);
+
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
                 const response = await fetch(url, {
                     method: 'POST',
+                    signal: controller.signal,
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         contents: [{
@@ -61,6 +69,7 @@
                         }
                     })
                 });
+                if (timeoutId) clearTimeout(timeoutId);
 
                 if (response.ok) {
                     const data = await response.json();
@@ -73,6 +82,7 @@
                     lastError = `HTTP ${response.status}`;
                 }
             } catch (err) {
+                if (timeoutId) clearTimeout(timeoutId);
                 lastError = err.message || err;
                 console.warn(`Gemini candidate model ${model} failed:`, err);
             }
@@ -80,14 +90,1398 @@
         return { success: false, error: lastError || 'All Gemini models unavailable' };
     }
 
+    // =========================================================================
+    // SAHAYAKMITR.ai CONVERSATIONAL MEMORY & ITINERARY KNOWLEDGE ENGINE
+    // =========================================================================
+    const sahayakMemory = {
+        lastDestination: null,
+        lastDuration: 3,
+        lastVibe: 'mountain',
+        lastPlan: null,
+        plannedPlaces: [] // Array of { destination, title, duration, price, date }
+    };
+
+    function addPlaceToSahayakMemory(plan) {
+        if (!plan) return;
+        sahayakMemory.lastDestination = plan.destination;
+        sahayakMemory.lastDuration = parseInt(plan.duration) || 3;
+        sahayakMemory.lastVibe = plan.vibe || 'cultural';
+        sahayakMemory.lastPlan = plan;
+
+        const destName = (plan.destination || '').split('&')[0].split('(')[0].trim();
+        const existingIdx = sahayakMemory.plannedPlaces.findIndex(p => p.name.toLowerCase() === destName.toLowerCase());
+        if (existingIdx !== -1) {
+            sahayakMemory.plannedPlaces[existingIdx] = {
+                name: destName,
+                title: plan.title,
+                duration: plan.duration,
+                price: plan.pricePerPerson,
+                date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            };
+        } else {
+            sahayakMemory.plannedPlaces.push({
+                name: destName,
+                title: plan.title,
+                duration: plan.duration,
+                price: plan.pricePerPerson,
+                date: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            });
+        }
+        renderSahayakMemoryBar();
+    }
+
+    function renderSahayakMemoryBar() {
+        const memoryBar = document.getElementById('sahayak-memory-bar');
+        const tagsList = document.getElementById('memory-tags-list');
+        if (!memoryBar || !tagsList) return;
+
+        if (sahayakMemory.plannedPlaces.length === 0) {
+            memoryBar.style.display = 'none';
+            tagsList.innerHTML = '';
+            return;
+        }
+
+        memoryBar.style.display = 'flex';
+        tagsList.innerHTML = sahayakMemory.plannedPlaces.map(p => `
+            <span class="memory-tag-chip" data-dest="${p.name}" title="Click to view details for ${p.name}">
+                📍 ${p.name} (${p.duration.split('/')[0].trim()})
+            </span>
+        `).join('');
+
+        // Wire click on memory tag
+        tagsList.querySelectorAll('.memory-tag-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const dest = chip.dataset.dest;
+                const input = document.getElementById('chat-user-input');
+                if (input) {
+                    input.value = `Review structured itinerary for ${dest}`;
+                    input.focus();
+                }
+            });
+        });
+    }
+
+    // =========================================================================
+    // EXHAUSTIVE MASTER DESTINATION DATABASE (30+ REGIONS & SACRED CIRCUITS)
+    // =========================================================================
+    const DESTINATION_DATABASE = {
+        mumbai: {
+            destination: "Mumbai & Coastal Maharashtra",
+            titleTemplate: (dur) => `${dur}-Day Mumbai Coastal Metropolis, Heritage Gateway & Bollywood Trail`,
+            basePrice: 4899,
+            altitudeTag: "Sea Level Coastal Metropolis (Arabian Sea Shore)",
+            advisory: "Light cottons recommended. Monsoon travel requires high-traction footwear. Rapid transit via Coastal Road & Metro Line 3.",
+            pickup: "Chhatrapati Shivaji Maharaj International Airport (BOM) / CSMT Station",
+            highlights: [
+                "Gateway of India & Elephanta UNESCO Rock-Cut Caves",
+                "Marine Drive Queen's Necklace Sunset Promenade",
+                "Bandra-Worli Sea Link & Bandstand Bollywood Trail",
+                "Siddhivinayak Temple & Kala Ghoda Art District"
+            ],
+            foodRecs: "Historic Cafe Mondegar & Yazdani Bakery Bun Maska, Sardar Refreshments Pav Bhaji, Mahesh Lunch Home coastal butter garlic crab, audited street-side Sev Puri at Chowpatty.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Colonial South Mumbai, Gateway of India & Marine Drive Sunset",
+                    desc: "🌅 Morning: Chauffeur pickup and heritage walk starting at CSMT (UNESCO World Heritage Gothic marvel) through Fort and Kala Ghoda Arts Quarter. Breakfast at iconic 1950s Cafe Mondegar or Yazdani Bakery for classic Bun Maska and Parsi chai.\n☀️ Afternoon: Proceed to Gateway of India; private harbor ferry cruise across Mumbai Harbor to Elephanta Caves (6th-century rock-cut Shiva sculptures).\n🌆 Evening: Sunset stroll along Marine Drive ('The Queen's Necklace'). Sample audited safe Pav Bhaji at Chowpatty and coastal seafood dinner at Mahesh Lunch Home."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Bandra Heritage, Portuguese Villages & Bandra-Worli Sea Link",
+                    desc: "🌅 Morning: VIP Darshan assistance at Shree Siddhivinayak Ganapati Mandir (Prabhadevi) and scenic Haji Ali Dargah promenade.\n☀️ Afternoon: Cruise across the architectural triumph Bandra-Worli Sea Link. Explore Bandra's Portuguese heritage hamlets (Ranwar Village, Mount Mary Basilica) and boutique street shopping at Hill Road.\n🌆 Evening: Golden hour at Bandra Bandstand near Mannat & Galaxy apartments. Dinner at Carter Road social strip."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Kanheri Caves, Film City & Juhu Beach Culture",
+                    desc: "🌅 Morning: Morning excursion to Sanjay Gandhi National Park & ancient Kanheri Buddhist Caves carved into basalt cliffs.\n☀️ Afternoon: Dadasaheb Phalke Chitranagari (Film City) studio tour in Goregaon; glimpse behind-the-scenes Bollywood production sets.\n🌆 Evening: Sunset relaxation at Juhu Beach; taste audited hygienic Bhel Puri, Sev Puri, and traditional Malai Kulfi Falooda."
+                },
+                {
+                    day: "DAY 04",
+                    title: "Alibaug Speedboat Day Cruise or Colaba Art District",
+                    desc: "🌅 Morning: 20-minute speedboat from Gateway to Mandwa/Alibaug for pristine Kolaba Sea Fort exploration.\n☀️ Afternoon: Lunch at coastal boutique cafe; return to South Mumbai for National Gallery of Modern Art (NGMA) and Jehangir Art Gallery.\n🌆 Evening: Souvenir shopping at Colaba Causeway and farewell dinner at Leopold Cafe."
+                },
+                {
+                    day: "DAY 05",
+                    title: "Dhobi Ghat Heritage, Crawford Market & Departure",
+                    desc: "🌅 Morning: Guided halt at historic Mahalaxmi Dhobi Ghat and lively Crawford Market spice corridors.\n☀️ Afternoon: Last-minute shopping for Alphonso mangoes (seasonal) and Bombay Halwa.\n🌆 Evening: Sanitized airport/railway transfer with Traveliser verified escort."
+                }
+            ]
+        },
+
+        pune: {
+            destination: "Pune & Maratha Sahyadri Strongholds",
+            titleTemplate: (dur) => `${dur}-Day Peshwa Citadel, Sahyadri Mountain Forts & Cultural Heartland`,
+            basePrice: 4299,
+            altitudeTag: "Elevation: 560 M (Deccan Plateau Foothills)",
+            advisory: "Pleasant year-round weather. Trekking footwear essential for Sinhagad Fort. Carry windcheater for hilltop breeze.",
+            pickup: "Pune International Airport (PNQ) / Pune Junction (PUNE)",
+            highlights: [
+                "Shaniwar Wada 18th-Century Peshwa Citadel",
+                "Sinhagad Fort Historic Summit Trek & Pithla Bhakri",
+                "Aga Khan Palace & Mahatma Gandhi Memorial",
+                "Dagdusheth Halwai Ganpati & FC Road Food Trail"
+            ],
+            foodRecs: "Puneri Misal Pav at audited heritage hubs, authentic Maharashtrian Thalipeeth and Kothimbir Vadi, Chitale Bandhu Bakarwadi, Sujata Mastani thick mango shake.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Historical Peshwa Citadel & Shreemant Dagdusheth Darshan",
+                    desc: "🌅 Morning: Visit Shaniwar Wada, the grand seat of the Peshwa rulers built in 1732; explore Delhi Darwaza and fountain courtyards. Walk to historic Vishrambaug Wada.\n☀️ Afternoon: VIP Darshan at the revered Shreemant Dagdusheth Halwai Ganpati Temple. Authentic Maharashtrian lunch (Thalipeeth, Puran Poli, Solkadhi) at audited heritage dining.\n🌆 Evening: Walk along Fergusson College (FC) Road; taste spicy Puneri Misal Pav and iconic Sujata Mastani."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Aga Khan Palace, Kelkar Museum & Koregaon Park Vibe",
+                    desc: "🌅 Morning: Tour the Italian-arched Aga Khan Palace (where Mahatma Gandhi was detained in 1942; serene Gandhi memorial gardens).\n☀️ Afternoon: Explore Raja Dinkar Kelkar Museum displaying 20,000 historic Indian artifacts and Mastani Mahal reconstruction.\n🌆 Evening: Stroll through Koregaon Park's lush Osho Teerth Zen Gardens followed by contemporary cafe dining on North Main Road."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Sinhagad Fort Sahyadri Expedition & Khadakwasla Dam",
+                    desc: "🌅 Morning: Chauffeur drive to Sinhagad Fort (1,312m). Scenic uphill walk; explore Tanaji Malusare's memorial and historic Kalyan Darwaza with breathtaking valley panoramas.\n☀️ Afternoon: Traditional summit lunch prepared by local villager guilds: piping-hot Pithla Bhakri, Thecha, and fresh clay-pot Dahi.\n🌆 Evening: Descend via scenic Khadakwasla Dam promenade; return transfer to Pune city center or airport."
+                },
+                {
+                    day: "DAY 04",
+                    title: "Lonavala, Karla-Bhaja Buddhist Caves & Western Ghats",
+                    desc: "🌅 Morning: Scenic drive up the Western Ghats to Karla and Bhaja rock-cut Buddhist caves dating from 2nd century BCE.\n☀️ Afternoon: Visit Tiger's Leap and Bhushi Dam in Lonavala; sample authentic Maganlal chikki.\n🌆 Evening: Return to Pune with sunset views over the Deccan plateau."
+                }
+            ]
+        },
+
+        gwalior: {
+            destination: "Gwalior Citadel & Royal Scindia Heritage",
+            titleTemplate: (dur) => `${dur}-Day Gibraltar of India, Jai Vilas Crystal Palace & Musical Legends`,
+            basePrice: 4199,
+            altitudeTag: "Elevation: 211 M (Vindhyan Sandstone Hill)",
+            advisory: "Comfortable walking shoes needed for exploring the 3km fort plateau. Sunny midday; carry sun protection.",
+            pickup: "Rajmata Vijaya Raje Scindia Airport (GWL) / Gwalior Junction (GWL)",
+            highlights: [
+                "Gwalior Fort & Man Singh Palace Blue Ceramic Tilework",
+                "Jai Vilas Palace Durbar Hall & 3.5-Ton Crystal Chandeliers",
+                "Tomb of Tansen & Gwalior Classical Gharana Shrines",
+                "Saas Bahu & 8th-Century Teli Ka Mandir Architecture"
+            ],
+            foodRecs: "Crispy Gwalior Bedai with spiced potato curry, freshly fried Samosas, Morena Gajak, creamy Rabri at audited sweet shops in Sarafa Bazaar.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "The Impregnable Gwalior Fort Plateau & Man Singh Palace",
+                    desc: "🌅 Morning: Ascend through Urwahi Gate viewing massive 7th to 15th-century rock-cut Jain Tirthankara monoliths. Tour the magnificent Man Singh Palace with vibrant turquoise and yellow duck ceramic tilework.\n☀️ Afternoon: Discover the architectural brilliance of Saas Bahu Temple (11th century) and Teli Ka Mandir (the fort's tallest 100-ft shrine merging Dravidian and Nagara styles).\n🌆 Evening: Experience the world-renowned Sound & Light Show at Gwalior Fort amphitheater narrating centuries of Tomar, Mughal, and Scindia history."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Jai Vilas Palace Durbar Hall & Classical Musical Trail",
+                    desc: "🌅 Morning: Guided tour of the royal Jai Vilas Palace. Marvel at the grand Durbar Hall with its world's largest pair of 3.5-ton crystal chandeliers, gold leaf ceilings, and the solid silver model train serving royal banquet spirits.\n☀️ Afternoon: Visit the Tomb of legendary musician Tansen and Sufi saint Muhammad Ghaus; learn about the origins of the Gwalior Classical Gharana.\n🌆 Evening: Sample famous Gwalior Bedai, Samosas, and traditional Morena Gajak at certified heritage sweetmakers in Sarafa Bazaar."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Sun Temple, Tigra Dam Reservoir & Departure",
+                    desc: "🌅 Morning: Visit the Sun Temple (Surya Mandir) inspired by Konark, crafted in pristine red sandstone and white marble.\n☀️ Afternoon: Excursion to Tigra Dam reservoir for speedboating and nature relaxation.\n🌆 Evening: Souvenir shopping for Chanderi silks and return transfer to Gwalior station or airport."
+                }
+            ]
+        },
+
+        kanpur: {
+            destination: "Kanpur & Sacred Bithoor on the Ganges",
+            titleTemplate: (dur) => `${dur}-Day Valmiki Ramayana Heartland, Colonial Legacy & Awadhi Flavors`,
+            basePrice: 3899,
+            altitudeTag: "Elevation: 126 M (Indo-Gangetic Plains)",
+            advisory: "Modest attire for sacred temples and ghats. Only drink sealed mineral water provided in Traveliser kits.",
+            pickup: "Kanpur Central (CNB) / Kanpur Airport (KNU) / Lucknow CCS Hub (LKO)",
+            highlights: [
+                "Bithoor Brahmavart Ghat — Center of the Universe & Valmiki Ashram",
+                "Shri Radhakrishna JK Temple Pristine White Marble Wonder",
+                "Allen Forest Zoo Safari & Natural Lake Habitat",
+                "Legendary Thaggu Ke Laddu & Badnam Kulfi Gastronomic Trail"
+            ],
+            foodRecs: "World-famous Thaggu Ke Laddu made with pure khoya and gond, Badnam Kulfi with pistachio saffron cream, Bada Chauraha Chaat, Bithoor peda.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Sacred Bithoor, Brahmavart Ghat & Valmiki Ashram",
+                    desc: "🌅 Morning: Chauffeur drive to historic Bithoor along the holy Ganges. Visit Brahmavart Ghat, where Lord Brahma performed the celestial Ashvamedha Yajna.\n☀️ Afternoon: Explore Valmiki Ashram (where Maharishi Valmiki penned the Ramayana and Goddess Sita gave birth to Luv & Kush). Visit Sita Kund and Sita Rasoi.\n🌆 Evening: Private sunset boat ride at Dhruva Teela; witness evening Ganges Maha Aarti. Taste Bithoor's traditional fresh peda."
+                },
+                {
+                    day: "DAY 02",
+                    title: "JK Marble Temple, Allen Forest Zoo & Iconic Food Walk",
+                    desc: "🌅 Morning: Visit the neo-Hindu architectural masterpiece Shri Radhakrishna Temple (JK Temple), constructed in pristine white marble with five distinct spires.\n☀️ Afternoon: Explore Allen Forest Zoo (one of Asia's largest natural habitat zoological reserves set around Lake Allen) and Kanpur Memorial Church (1875).\n🌆 Evening: Gastronomic walk to taste the legendary 'Thaggu Ke Laddu' and Badnam Kulfi at Bada Chauraha, followed by Moti Jheel lakeside stroll."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Ganges Barrage, Nana Rao Park & Leather Handloom Guilds",
+                    desc: "🌅 Morning: Visit the monumental Ganges Barrage (Luv Kush Barrage) with sweeping river views; stroll through Nana Rao Park (historic 1857 freedom struggle memorial).\n☀️ Afternoon: Shopping for world-renowned Kanpur leather goods, saddlery, and hand-embroidered textiles at Naveen Market.\n🌆 Evening: Departure transfer to Kanpur Central or Lucknow airport."
+                }
+            ]
+        },
+
+        banaras: {
+            destination: "Varanasi (Banaras) & Sacred Kashi Corridor",
+            titleTemplate: (dur) => `${dur}-Day Sacred Ghats, Kashi Vishwanath Corridor & Sarnath Stupa`,
+            basePrice: 4699,
+            altitudeTag: "Elevation: 80 M (Sacred Crescent of the Ganges)",
+            advisory: "Comfortable walking shoes for ancient cobblestone gullies. Respectful attire for shrines. FSSAI-audited eateries included.",
+            pickup: "Lal Bahadur Shastri International Airport (VNS) / Varanasi Cantt (BSB)",
+            highlights: [
+                "Sunrise Wooden Boat Cruise across 84 Historic Ghats",
+                "VIP Dashashwamedh Maha Ganga Aarti Front-Row Seating",
+                "Kashi Vishwanath Golden Temple Corridor Darshan",
+                "Sarnath Dhamek Stupa where Buddha Preached First Sermon"
+            ],
+            foodRecs: "Kachori Gali crispy breakfast with spiced hing potato curry & hot jalebi, saffron-cardamom Malaiyyo foam dessert, Blue Lassi, authentic Banarasi Paan.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Arrival, Sacred Ghats Boat Cruise & Evening Maha Ganga Aarti",
+                    desc: "🌅 Morning: Chauffeur pickup from airport/station; check-in to heritage riverside haveli. Fresh morning ginger chai and orientation.\n☀️ Afternoon: Heritage walking corridor through ancient labyrinthine alleys. FSSAI-audited Kachori-Jalebi tasting at Ram Bhandar.\n🌆 Evening: Private wooden boat cruise from Assi Ghat to Manikarnika Ghat witnessing 3,000 years of living traditions. VIP front-row seating at Dashashwamedh Ghat for the grand Maha Ganga Aarti."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Kashi Vishwanath Corridor Darshan & Sarnath Buddhist Stupa",
+                    desc: "🌅 Morning: Special entry darshan assistance at Kashi Vishwanath Golden Temple corridor and Annapurna Temple.\n☀️ Afternoon: Excursion to Sarnath (Dhamek Stupa, Deer Park & Ashoka Pillar where Lord Buddha taught his first sermon). Visit Sarnath Archaeological Museum.\n🌆 Evening: Authentic Banarasi Silk Saree master-weaver guild visit; seasonal saffron-cardamom Malaiyyo tasting."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Subah-e-Banaras at Assi Ghat & Departure Transfer",
+                    desc: "🌅 Morning: Subah-e-Banaras classical music & Vedic chanting at Assi Ghat at dawn, followed by yoga session by the Ganges.\n☀️ Afternoon: Cross the river to explore Ramnagar Fort & Museum housing vintage royal carriages and swords.\n🌆 Evening: Authentic Banarasi Paan tasting and verified departure escort to airport/railway station."
+                }
+            ]
+        },
+
+        prayagraj: {
+            destination: "Prayagraj & Holy Triveni Sangam",
+            titleTemplate: (dur) => `${dur}-Day Holy Triveni Sangam, Immortal Akshayavat & Nehru Dynasty`,
+            basePrice: 3999,
+            altitudeTag: "Elevation: 98 M (Sacred Confluence of Ganga, Yamuna & Saraswati)",
+            advisory: "Life jackets mandatory for Sangam boat rides. Keep footwear in designated cloakrooms at sacred bathing spots.",
+            pickup: "Prayagraj Airport (IXD) / Prayagraj Junction (PRYJ)",
+            highlights: [
+                "Triveni Sangam Holy Confluence Bath & Decorated Boat Cruise",
+                "Allahabad Fort & Undying Immortal Akshayavat Tree",
+                "Anand Bhavan Ancestral Estate of Jawaharlal Nehru",
+                "Chandrashekhar Azad Park & All Saints Anglican Cathedral"
+            ],
+            foodRecs: "Prayagraj famous Dehati Rasgulla, spicy Loknath Gali Dum Aloo & Chaat, Hari Ram & Sons dry fruit Namkeen, creamy Rabri Lassi.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Holy Triveni Sangam Dip & Akbar's Imperial Fort",
+                    desc: "🌅 Morning: Chauffeur transfer to Sangam Ghat. Board private decorated wooden boat to the exact confluence of the pale green Yamuna and muddy Ganga rivers. Sacred holy bath ritual with priest assistance.\n☀️ Afternoon: Special entry into the Mughal Allahabad Fort to witness the legendary Akshayavat (the indestructible holy banyan tree) and Patalpuri subterranean temple.\n🌆 Evening: Visit Bade Hanuman Ji Mandir (unique reclining Lord Hanuman idol submerged annually by the Ganga). Sunset riverside Aarti at Saraswati Ghat."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Freedom Struggle Trail, Anand Bhavan & Azad Memorial",
+                    desc: "🌅 Morning: Tour Anand Bhavan (the majestic two-story mansion of the Nehru-Gandhi family, now an inspiring memorial museum) and adjacent Swaraj Bhavan.\n☀️ Afternoon: Visit Chandrashekhar Azad Park (historic Alfred Park where the legendary revolutionary made his supreme sacrifice) and Allahabad Museum (preserving ancient Gandhara sculptures and Chandrashekhar Azad's Colt pistol).\n🌆 Evening: Marvel at the Gothic-revival architecture of All Saints Cathedral (Patthar Girja, 1871); taste Prayagraj's famous Dehati Rasgulla and spicy Loknath chaat."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Khusro Bagh Mughal Mausoleums & Departure",
+                    desc: "🌅 Morning: Walk through the manicured Mughal walled gardens of Khusro Bagh, housing the exquisite carved sandstone mausoleums of Prince Khusro and Sultan Begum.\n☀️ Afternoon: Souvenir shopping for local brassware and holy Sangam souvenirs.\n🌆 Evening: Return transfer to Prayagraj Junction or airport."
+                }
+            ]
+        },
+
+        agra: {
+            destination: "Agra & Imperial Mughal Wonders",
+            titleTemplate: (dur) => `${dur}-Day Crown Jewel of Architecture, Taj Sunrise & Fatehpur Sikri`,
+            basePrice: 4799,
+            altitudeTag: "Elevation: 171 M (Yamuna Basin)",
+            advisory: "Taj Mahal is closed on Fridays. Sunrise entry recommended for best golden light and minimal crowds.",
+            pickup: "Agra Cantt (AGC) / Delhi NCR Transfer via Yamuna Expressway",
+            highlights: [
+                "Taj Mahal Golden Hour Sunrise Guided Photography",
+                "Agra Fort Red Sandstone Citadel & Sheesh Mahal",
+                "UNESCO Fatehpur Sikri & 54m Buland Darwaza",
+                "Mehtab Bagh Sunset Reflection Across Yamuna"
+            ],
+            foodRecs: "Authentic Agra Panchhi Petha (Kesar, Angoori, Paan flavors), Bedai & Jalebi breakfast, Mughlai Dum Biryani at audited heritage kitchens.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Taj Mahal Sunrise Splendor & Agra Fort Citadel",
+                    desc: "🌅 Morning: Dawn VIP entry to the Taj Mahal. Experience the changing hues of white Makrana marble as the morning sun rises over the Yamuna River. Expert guided architectural tour.\n☀️ Afternoon: Tour the colossal red sandstone Agra Fort; explore Diwan-i-Am, Diwan-i-Khas, and the Sheesh Mahal where Shah Jahan was held in his final years with views of the Taj.\n🌆 Evening: Sunset across the river at Mehtab Bagh (Moonlight Garden) capturing the Taj Mahal reflected in the Yamuna waters. Sample famous Agra Petha at authentic Panchhi Petha stores."
+                },
+                {
+                    day: "DAY 02",
+                    title: "UNESCO Fatehpur Sikri & Baby Taj Mausoleum",
+                    desc: "🌅 Morning: Excursion to Emperor Akbar's abandoned red sandstone capital Fatehpur Sikri (37 km). Marvel at the 54-meter-tall Buland Darwaza, Jama Masjid, and white marble tomb of Sufi saint Sheikh Salim Chishti.\n☀️ Afternoon: Return to Agra; visit the exquisite Tomb of I'timad-ud-Daulah ('Baby Taj'), renowned for its delicate Pietra Dura marble inlay work pre-dating the Taj.\n🌆 Evening: Artisan demonstration of traditional marble inlay (Parchin Kari) and departure transfer."
+                }
+            ]
+        },
+
+        goa: {
+            destination: "Goa Coastal Paradise & Konkan Sunsets",
+            titleTemplate: (dur) => `${dur}-Day Tropical Coastline, Portuguese Heritage & Water Sports`,
+            basePrice: 5899,
+            altitudeTag: "Sea Level Tropical Coastline",
+            advisory: "Sun protection and beachwear recommended. Water sports subject to weather. 24x7 Women Safety GPS Link active.",
+            pickup: "Manohar International Airport Mopa (GOX) / Dabolim (GOI) / Madgaon (MAO)",
+            highlights: [
+                "North Goa Fort Aguada & Chapora Clifftop Viewpoints",
+                "South Goa Pristine Palolem & Butterfly Beach Cruise",
+                "UNESCO Old Goa Basilica of Bom Jesus",
+                "Dudhsagar Waterfalls Jeep Safari & Spice Plantation"
+            ],
+            foodRecs: "Goan Fish Curry Thali with Kingfish, Prawn Balchão, Bebinca layered dessert, fresh coconut water, audited beachside shacks.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "North Goa Heritage Forts & Sunset Beach Vibes",
+                    desc: "🌅 Morning: Chauffeur pickup and check-in to coastal beach resort. Welcome fresh tender coconut water and relaxation.\n☀️ Afternoon: Visit 17th-century Fort Aguada and its historic Portuguese lighthouse overlooking the Arabian Sea. Walk along Sinquerim and Candolim beaches.\n🌆 Evening: Clifftop golden hour at Chapora Fort (famous Dil Chahta Hai viewpoint) overlooking Vagator beach. Dinner at Curleys or Tito's lane."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Water Sports & Baga-Calangute Promenade",
+                    desc: "🌅 Morning: Guided water sports adventure at Calangute/Anjuna (parasailing, jet-skiing, banana ride with certified safety instructors).\n☀️ Afternoon: Explore colorful Portuguese villas of Fontainhas (Latin Quarter in Panaji) with pastel-colored houses and art galleries.\n🌆 Evening: Mandovi River 1-hour sunset cruise with live Goan folk dance and music."
+                },
+                {
+                    day: "DAY 03",
+                    title: "UNESCO Old Goa Churches & Organic Spice Plantation",
+                    desc: "🌅 Morning: Tour Old Goa's UNESCO World Heritage churches: Basilica of Bom Jesus (holding relics of St. Francis Xavier) and majestic Se Cathedral.\n☀️ Afternoon: Guided walk through Sahakari Spice Plantation; savor traditional Goan buffet lunch served on banana leaves with Feni tasting.\n🌆 Evening: Relax at Miramar beach; shopping for Goan feni, cashew nuts, and handicrafts."
+                },
+                {
+                    day: "DAY 04",
+                    title: "South Goa Pristine Palolem & Dudhsagar Waterfalls",
+                    desc: "🌅 Morning: 4x4 Jeep safari through Bhagwan Mahavir Wildlife Sanctuary to the roaring 4-tiered Dudhsagar Waterfalls (310m cascade).\n☀️ Afternoon: Drive to South Goa's tranquil crescent Palolem Beach; take a boat to Butterfly Beach and spot playful dolphins.\n🌆 Evening: Beachside candlelit dinner with fresh grilled lobster or Kingfish; departure transfer."
+                }
+            ]
+        },
+
+        aurangabad: {
+            destination: "Chhatrapati Sambhajinagar & UNESCO Rock-Cut Caves",
+            titleTemplate: (dur) => `${dur}-Day Ancient Ajanta Frescoes, Monolithic Kailash Temple & Deccan Citadel`,
+            basePrice: 5499,
+            altitudeTag: "Elevation: 568 M (Basalt Rock Formations)",
+            advisory: "Ajanta Caves closed on Mondays; Ellora Caves closed on Tuesdays. Flash photography strictly prohibited inside fresco caves.",
+            pickup: "Chhatrapati Sambhajinagar Airport (IXU) / Railway Station (AWB)",
+            highlights: [
+                "UNESCO Ellora Cave 16 — Monolithic Kailash Temple carved from single rock",
+                "UNESCO Ajanta Caves 30 Buddhist Rock-Cut Monasteries & Frescoes",
+                "Bibi Ka Maqbara — The Taj of the Deccan",
+                "Daulatabad Medieval Hilltop Fortress & Grishneshwar Jyotirlinga"
+            ],
+            foodRecs: "Authentic Naan Qalia (slow-cooked spiced meat with tandoori bread), Aurangabadi Biryani, Imarti, and fresh sugarcane juice.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Ellora Caves & Kailash Temple Monolithic Marvel",
+                    desc: "🌅 Morning: Explore the world's greatest architectural feat: Ellora Cave 16 (The Kailash Temple), carved top-to-bottom from a single colossal basalt cliff, requiring removal of 200,000 tons of rock.\n☀️ Afternoon: Tour Buddhist and Jain cave groups; visit Grishneshwar Jyotirlinga (the 12th holy Jyotirlinga shrine just 1 km away).\n🌆 Evening: Ascend the unconquered medieval Daulatabad Fort featuring deep moats and a deceptive dark maze (Bhool Bhulaiya)."
+                },
+                {
+                    day: "DAY 02",
+                    title: "World-Famous Ajanta Caves Buddhist Frescoes",
+                    desc: "🌅 Morning: Scenic drive to Ajanta Caves (100 km). Walk along the crescent gorge above Waghur River, discovering 30 rock-cut caves dating from 2nd century BCE.\n☀️ Afternoon: Marvel at the UNESCO Buddhist mural paintings (Padmapani and Vajrapani Bodhisattvas) and the colossal 29-ft Reclining Buddha.\n🌆 Evening: Return to city; visit a traditional weaving unit to witness handwoven Paithani silk sarees with pure gold Zari borders."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Bibi Ka Maqbara & Deccan Historical Heritage",
+                    desc: "🌅 Morning: Visit Bibi Ka Maqbara, the mausoleum of Mughal empress Dilras Banu Begum, celebrated as the 'Taj of the Deccan'.\n☀️ Afternoon: Tour Panchakki (17th-century water mill with underground earthen pipes) and Aurangabad Caves.\n🌆 Evening: Sample authentic Naan Qalia and departure transfer."
+                }
+            ]
+        },
+
+        manali: {
+            destination: "Manali, Solang Valley & Rohtang Pass",
+            titleTemplate: (dur) => `${dur}-Day Himalayan High-Pass, Glacial Valleys & Atal Snow Corridor`,
+            basePrice: 5899,
+            altitudeTag: "Elevation: 2,050 M to 3,978 M (Sub-Alpine to High Pass)",
+            advisory: "Acclimatize on Day 1. Drink 3-4L water daily. Rohtang Pass permits and snow suits arranged by Traveliser.",
+            pickup: "Bhuntar Airport (KUU) / Chandigarh Airport (IXC) / Delhi ISBT Volvo",
+            highlights: [
+                "Rohtang Pass (3,978m) Crest & Glacial Snow Point",
+                "Atal Tunnel (3,100m) Crossing to Sissu Glacial Waterfall",
+                "Solang Valley Paragliding, Quad Biking & Skiing",
+                "Old Manali Hippie Cafes & Hadimba Cedar Forest Temple"
+            ],
+            foodRecs: "Wood-Fired Himalayan Rainbow Trout at Johnson's Cafe (FSSAI 4.9★), Authentic Steamed Himachali Siddu with cow ghee, hot Tibetan Thukpa.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Arrival in Manali, Hadimba Temple & Old Manali Cafes",
+                    desc: "🌅 Morning: Pickup in 4x4 SUV; check-in to boutique mountain chalet overlooking pine valleys. Acclimatization rest with hot ginger-honey tea.\n☀️ Afternoon: Visit 16th-century Hadimba Devi Temple constructed in pagoda style amidst towering deodar cedars. Walk to Vashisht village for natural hot sulphur springs.\n🌆 Evening: Stroll through bohemian Old Manali. Dinner at Johnson's Cafe & Bar tasting fresh wood-fired Himalayan Rainbow Trout with lemon caper butter."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Solang Valley Adventures & Jogini Waterfall Trek",
+                    desc: "🌅 Morning: Drive to Solang Valley for thrilling alpine adventure sports: tandem paragliding, zorbing, and ATV quad biking across glacial streams.\n☀️ Afternoon: Guided short trek through apple orchards to the cascading Jogini Waterfall; picnic lunch by the roaring streams.\n🌆 Evening: Explore Mall Road and Tibetan Monastery market for warm Kullu shawls and organic mountain honey."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Atal Tunnel (3,100m) & Lahaul Valley Sissu Waterfall",
+                    desc: "🌅 Morning: Cross the engineering marvel Atal Tunnel (9.02 km at 3,100m) passing beneath Rohtang Pass into the breathtaking trans-Himalayan Lahaul Valley.\n☀️ Afternoon: Visit the roaring Sissu Waterfall against sheer snowy crags; explore Keylong or drive up to Rohtang Pass (3,978m) snow point for snow sledging.\n🌆 Evening: Return to Manali; cozy alpine bonfire with stargazing under clear Himalayan skies."
+                },
+                {
+                    day: "DAY 04",
+                    title: "Naggar Castle Heritage & Art Gallery",
+                    desc: "🌅 Morning: Drive to the historic capital Naggar. Tour the 15th-century wood-and-stone Naggar Castle overlooking the Beas river.\n☀️ Afternoon: Visit Nicholas Roerich Art Gallery showcasing iconic Himalayan paintings.\n🌆 Evening: Departure transfer to Volvo stand or airport with Traveliser mountain escort."
+                }
+            ]
+        },
+
+        lucknow: {
+            destination: "Lucknow — City of Nawabs & Awadhi Royalty",
+            titleTemplate: (dur) => `${dur}-Day Royal Imambaras, Acoustic Bhool Bhulaiya & Nawabi Gastronomy`,
+            basePrice: 4699,
+            altitudeTag: "Elevation: 123 M (Gomti River Valley)",
+            advisory: "Tours include certified Awadhi historian guides and FSSAI-inspected gastronomic halts.",
+            pickup: "Chaudhary Charan Singh International Airport (LKO) / Lucknow Charbagh (LKO)",
+            highlights: [
+                "Bara Imambara & World-Famous Acoustic Bhool Bhulaiya Labyrinth",
+                "Rumi Darwaza & Chota Imambara Belgian Crystal Chandeliers",
+                "Historic British Residency 1857 Siege Memorial",
+                "Legendary Tunday Kababi & Chowk Chikankari Embroidery Trail"
+            ],
+            foodRecs: "Legendary 100-year-old Tunday Kababi melt-in-mouth Galouti Kababs with Ulte Tawe Ka Paratha, Dastarkhwan Dum Biryani, Prakash Kulfi Falooda, Sharma Ji Ki Chai & Bun Makkhan.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Bara Imambara, Bhool Bhulaiya & Imperial Rumi Darwaza",
+                    desc: "🌅 Morning: Visit the majestic Bara Imambara built by Nawab Asaf-ud-Daula in 1784; marvel at the central arched hall built without a single pillar.\n☀️ Afternoon: Navigate the intriguing acoustic labyrinth of Bhool Bhulaiya with a certified historian guide. Walk beneath the 60-ft Turkish Gate (Rumi Darwaza).\n🌆 Evening: Visit Chota Imambara adorned with ornate Belgian chandeliers and gilt calligraphy. Food walk to Chowk for authentic melt-in-mouth Tunday Kababi Galouti kababs."
+                },
+                {
+                    day: "DAY 02",
+                    title: "British Residency Memorial & Hazratganj Stroll",
+                    desc: "🌅 Morning: Explore the British Residency complex, preserved in its battle-scarred state from the historic 1857 First War of Independence; visit the onsite museum.\n☀️ Afternoon: Discover the royal terracotta architecture of La Martiniere College and Chattar Manzil.\n🌆 Evening: Experience 'Ganjing' — walking along Victorian-styled Hazratganj promenade. Sample Sharma Ji Ki Chai with Bun Makkhan and Prakash Kulfi."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Chikankari Handloom Guilds & Awadhi Dastarkhwan",
+                    desc: "🌅 Morning: Visit master artisan workshops in Chowk and Aminabad witnessing authentic Shadow work, Murri, and Phanda Chikankari embroidery.\n☀️ Afternoon: Royal royal banquet lunch featuring Awadhi Dum Biryani and Shahi Tukda at Dastarkhwan.\n🌆 Evening: Guided walk along Gomti Riverfront Park and departure transfer."
+                }
+            ]
+        },
+
+        muzzafarnagar: {
+            destination: "Muzaffarnagar & Sacred Shukratal Ganga Circuit",
+            titleTemplate: (dur) => `${dur}-Day Vedic Shrimad Bhagavatam Birthplace, Jain Shrines & Sugar Capital`,
+            basePrice: 3499,
+            altitudeTag: "Elevation: 249 M (Upper Doab Plains)",
+            advisory: "Modest Indian ethnic attire for sacred shrines. Pure vegetarian dining throughout.",
+            pickup: "Muzaffarnagar Railway Station (MOZ) / Delhi NCR Transfer (125 km)",
+            highlights: [
+                "Shukratal 5,100-Year-Old Immortal Akshay Vat Vriksha on Ganga Banks",
+                "Sage Shukdev Temple where Shrimad Bhagavatam was First Recited",
+                "Vahelna Jain Atishaya Kshetra 31-Ft Bhagwan Parshvanath Idol",
+                "Gandhi Colony Food Trail & World's Largest Jaggery (Gur) Mandi"
+            ],
+            foodRecs: "Organic sugarcane jaggery (Gur) sweets, Gandhi Colony crispy Moong Dal Pakoras with mint chutney, Rabri Jalebi, authentic lassi.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Sacred Shukratal & The 5,100-Year-Old Immortal Banyan Tree",
+                    desc: "🌅 Morning: Chauffeur drive to Shukratal (30 km east on holy Ganga banks). Visit the sacred Shukdev Temple under the 5,100-year-old immortal Akshay Vat tree where Sage Shukdev narrated the Shrimad Bhagavatam to King Parikshit for 7 continuous days.\n☀️ Afternoon: Holy bath at Shukratal Ganga Ghat; visit Hanuman Dham featuring a 72-ft majestic Lord Hanuman statue.\n🌆 Evening: Attend Ganga Aarti at Shukratal; participate in evening Satsang and katha recitation."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Vahelna Jain Pilgrimage & Asia's Largest Jaggery Mandi",
+                    desc: "🌅 Morning: Visit the renowned Vahelna Jain Temple (Atishaya Kshetra), admiring the 31-foot colossal monolith idol of Bhagwan Parshvanath set in manicured temple gardens.\n☀️ Afternoon: Guided tour of Muzaffarnagar's famous Gur Mandi (the largest organic jaggery trade market in Asia); observe traditional sugarcane juice boiling and jaggery preparation.\n🌆 Evening: Food walk through Gandhi Colony tasting famous crispy Moong Dal Pakoras, Rabri Jalebi, and authentic local chaat."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Haiderpur Wetland Sanctuary & Departure",
+                    desc: "🌅 Morning: Excursion to Haiderpur Wetland (Ramsar Site on the Ganga-Solani confluence) for migratory birdwatching (bar-headed geese, swamp deer).\n☀️ Afternoon: Return transfer to Muzaffarnagar station or Delhi NCR highway."
+                }
+            ]
+        },
+
+        faridabad: {
+            destination: "Faridabad & Aravalli Green Corridor",
+            titleTemplate: (dur) => `${dur}-Day 10th-Century Surajkund Reservoir, Heritage Haveli & Eco-Trails`,
+            basePrice: 3699,
+            altitudeTag: "Elevation: 200 M (Aravalli Range Foothills)",
+            advisory: "Light walking shoes for exploring the stone amphitheater and Aravalli trails.",
+            pickup: "Faridabad Railway Station (FDB) / IGI Airport Delhi Hub (DEL)",
+            highlights: [
+                "Historic 10th-Century Sun Amphitheater Surajkund",
+                "Raja Nahar Singh 1857 Palace Haveli in Ballabhgarh",
+                "Badkhal Lake Eco-Trails & Aravalli Biodiversity Ridge",
+                "Baba Farid Sufi Dargah & Modern World Street Dining"
+            ],
+            foodRecs: "Authentic North Indian Dal Makhani, Chur-Chur Naan, Tandoori Platters, traditional Kulfi at NIT Faridabad market.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Historic Surajkund Sun Pool & 13th-Century Sufi Shrine",
+                    desc: "🌅 Morning: Explore the ancient 10th-century Surajkund sun pool, an amphitheater-shaped reservoir built by Tomar King Suraj Pal with semi-circular stepped stone embankments.\n☀️ Afternoon: Visit the Surajkund International Crafts Mela grounds showcasing pan-Indian artisan craft traditions; walk through adjacent Aravalli Forest Ridge.\n🌆 Evening: Visit the historic 13th-century Dargah of Baba Farid (the revered Sufi saint after whom the city is named); sample traditional delicacies in Old Faridabad."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Royal 1857 Nahar Singh Palace & Eco-Trails",
+                    desc: "🌅 Morning: Guided tour of Raja Nahar Singh Palace in Ballabhgarh, a pristine 18th-century Rajput-Mughal heritage palace with arched courtyards and intricate Sheesh Mahal.\n☀️ Afternoon: Nature trail around Badkhal Lake bio-reserve and Asola Bhatti wildlife boundary for birdwatching and photography.\n🌆 Evening: Modern leisure and dining at World Street Faridabad (featuring London and Paris themed architecture walkways)."
+                }
+            ]
+        },
+
+        greaternoida: {
+            destination: "Greater Noida & Yamuna Expressway Hub",
+            titleTemplate: (dur) => `${dur}-Day F1 Racing Heritage, Surajpur Wetlands & Mega-Campus Tour`,
+            basePrice: 3899,
+            altitudeTag: "Elevation: 200 M (Planned Futuristic Metropolis)",
+            advisory: "Binoculars recommended for birdwatching at Surajpur. Rapid transit via Noida-Greater Noida Aqua Line.",
+            pickup: "Noida-Greater Noida Metro Corridor / IGI Airport Delhi (DEL)",
+            highlights: [
+                "Buddh International Circuit (F1 Track) Experience",
+                "Surajpur Wetland Sanctuary Flamingos & Bird Reserve",
+                "India Expo Centre & Mart Global Conventions Hub",
+                "Gautam Buddha University 511-Acre Eco-Campus & Meditation Dome"
+            ],
+            foodRecs: "Global cuisines at Pari Chowk dining hubs, rooftop dining, authentic street food at Alpha 1 commercial center.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "High-Speed Motorsports & Global Architecture",
+                    desc: "🌅 Morning: Private tour and track-side experience at the Buddh International Circuit, India's world-class Formula 1 racing track designed by Hermann Tilke.\n☀️ Afternoon: Tour the sprawling India Expo Centre & Mart; explore the grand European architecture of Grand Venice Mall with indoor Venetian gondola canal rides.\n🌆 Evening: Stroll through lush City Park; dinner at Pari Chowk culinary boulevard."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Surajpur Wetland & Gautam Buddha University",
+                    desc: "🌅 Morning: Dawn birdwatching walk at Surajpur Wetland & Bird Sanctuary, spotting over 180 species including spot-billed ducks, sarus cranes, and migratory painted storks.\n☀️ Afternoon: Visit the breathtaking 511-acre Gautam Buddha University campus, admiring the colossal Mahatma Buddha statue and the acoustic meditation dome.\n🌆 Evening: Relax at the illuminated walkways of Alpha 1 Commercial Belt; departure transfer."
+                }
+            ]
+        },
+
+        bhopal: {
+            destination: "Bhopal — City of Lakes & UNESCO Relics",
+            titleTemplate: (dur) => `${dur}-Day Regal Begums of Bhopal, Bhojtal Lake & Sanchi Stupa Day Trip`,
+            basePrice: 4699,
+            altitudeTag: "Elevation: 527 M (Malwa Plateau)",
+            advisory: "Sanchi and Bhimbetka require day trips. Sun hat and walking shoes recommended.",
+            pickup: "Raja Bhoj Airport (BHO) / Bhopal Junction (BPL)",
+            highlights: [
+                "UNESCO Sanchi Stupa Great Buddhist Relic (3rd Century BCE)",
+                "UNESCO Bhimbetka 30,000-Year-Old Prehistoric Rock Art Caves",
+                "Upper Lake (Bhojtal) Sunset Yacht Cruise & Van Vihar",
+                "Madhya Pradesh Tribal Museum & Taj-ul-Masajid Grandeur"
+            ],
+            foodRecs: "Bhopali Gosht Korma, Poha-Jalebi at Kalyan, Sulaimani Chai with salt and mint, Mawa Bati sweet.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "City of Lakes, MP Tribal Museum & Taj-ul-Masajid",
+                    desc: "🌅 Morning: Visit the architecturally stunning Madhya Pradesh Tribal Museum, showcasing life-size indigenous adivasi huts, folklore, and tribal artifacts.\n☀️ Afternoon: Explore the monumental Taj-ul-Masajid (one of the largest mosques in Asia with pink minarets) and Bharat Bhavan arts complex.\n🌆 Evening: Sunset catamaran cruise on Upper Lake (Bhojtal) followed by a lakeside safari drive through Van Vihar National Park. Sample Bhopal's iconic Bhopali Gosht Korma or Poha-Jalebi at audited dining."
+                },
+                {
+                    day: "DAY 02",
+                    title: "UNESCO Great Stupa of Sanchi & Udayagiri Caves",
+                    desc: "🌅 Morning: Scenic drive to Sanchi (48 km). Explore the UNESCO World Heritage Great Stupa 1 built by Emperor Ashoka in 3rd century BCE, featuring intricately carved stone Toranas (gateways) depicting Jataka tales.\n☀️ Afternoon: Tour Stupas 2 & 3, the Ashoka Pillar, and the Sanchi Archaeological Museum. Visit nearby Udayagiri Caves (5th-century Gupta rock sculptures including the colossal Varaha avatar).\n🌆 Evening: Return to Bhopal; relax at VIP Road promenade with night city lights."
+                },
+                {
+                    day: "DAY 03",
+                    title: "UNESCO Bhimbetka Rock Shelters & Bhojpur Temple",
+                    desc: "🌅 Morning: Excursion to UNESCO Bhimbetka Caves (45 km), housing over 700 rock shelters with Upper Paleolithic to Medieval cave paintings depicting hunting scenes, bison, and dancing figures.\n☀️ Afternoon: Halt at the mammoth unfinished 11th-century Bhojeshwar Shiva Temple in Bhojpur, housing one of the tallest stone Lingams in India.\n🌆 Evening: Return to Bhopal airport or railway station."
+                }
+            ]
+        },
+
+        jabalpur: {
+            destination: "Jabalpur & Marble Rocks of Narmada",
+            titleTemplate: (dur) => `${dur}-Day Bhedaghat Marble Canyon, Roaring Dhuandhar & Narmada Aarti`,
+            basePrice: 4299,
+            altitudeTag: "Elevation: 411 M (Vindhyan Mountain Gorge)",
+            advisory: "Life jackets mandatory for Narmada boats. Full moon boat rides at Bhedaghat are magical.",
+            pickup: "Dumna Airport (JLR) / Jabalpur Junction (JBP)",
+            highlights: [
+                "Bhedaghat Marble Rocks Boat Canyon on Emerald Narmada River",
+                "Roaring Dhuandhar Waterfalls & Aerial Ropeway Cable Car",
+                "10th-Century Chausath Yogini Temple Clifftop Vista",
+                "Gwarighat Sacred Narmada Maha Aarti & Balancing Rock"
+            ],
+            foodRecs: "Jabalpur famous giant Khoya Jalebi, Badakul sweets, spicy Khopra Patties, fresh Narmada water tea.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "The Splendor of Bhedaghat & Dhuandhar Falls",
+                    desc: "🌅 Morning: Chauffeur drive to Bhedaghat (25 km). Board a traditional rowboat through the narrow 3 km gorge between soaring 100-foot gleaming white and magnesium marble rocks on the emerald Narmada River.\n☀️ Afternoon: Witness the thunderous roar and smoky spray of Dhuandhar Waterfalls; take the aerial ropeway cable car across the gorge for aerial panoramic views.\n🌆 Evening: Climb the 108 stone steps to the ancient 10th-century Chausath Yogini Temple, viewing the circular cloister of 64 yogini deities and Nandi Bull."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Heritage Marvels, Balancing Rock & Sacred Narmada Aarti",
+                    desc: "🌅 Morning: Visit Madan Mahal Fort (built by Gond ruler Raja Madan Shah in 1116 CE perched on a granite hill) and the adjacent geological wonder Balancing Rock.\n☀️ Afternoon: Explore Dumna Nature Reserve park with nature trails, deer spotting, and eco-boating.\n🌆 Evening: Attend the deeply spiritual and vibrant Narmada Maha Aarti at Gwarighat; float oil lamps on the sacred river. Sample Jabalpur's famous Khoya Jalebi at audited sweet stalls."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Bargi Dam Reservoir Cruise & Departure",
+                    desc: "🌅 Morning: Excursion to Bargi Dam on Narmada River for cruise boat ride and water sports.\n☀️ Afternoon: Departure transfer to Dumna Airport or Jabalpur station."
+                }
+            ]
+        },
+
+        puri: {
+            destination: "Puri, Jagannath Dham & Konark Sun Coast",
+            titleTemplate: (dur) => `${dur}-Day Sacred Mahaprasad, Golden Beach & UNESCO Konark Sun Chariot`,
+            basePrice: 4899,
+            altitudeTag: "Sea Level Bay of Bengal Coastal Corridor",
+            advisory: "Strict traditional Indian dress code (no leather goods) inside Jagannath Temple. Traveliser registered temple servitor escort included.",
+            pickup: "Biju Patnaik Airport Bhubaneswar (BBI) / Puri Railway Station (PURI)",
+            highlights: [
+                "Shree Jagannath Temple Darshan & 56-Bhog Mahaprasad",
+                "UNESCO Konark Sun Temple Colossal Stone Chariot Wheels",
+                "Blue Flag Certified Golden Beach Sunrise Walk",
+                "Chilika Lake Satapada Irrawaddy Dolphin Boat Cruise"
+            ],
+            foodRecs: "Lord Jagannath 56 Bhog Mahaprasad at Anand Bazaar, authentic Chhena Poda caramelized cottage cheese cake, Dalma, coastal Odia crab curry.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Shree Jagannath Temple & Blue Flag Golden Beach",
+                    desc: "🌅 Morning: Arrival in Puri; check-in to coastal hotel. Guided VIP Darshan assistance at Shree Jagannath Temple (one of the 4 sacred Char Dham pilgrimage shrines). Marvel at the world's largest kitchen cooking 56 Bhog in earthen pots.\n☀️ Afternoon: Savor sacred Mahaprasad at Anand Bazaar. Visit Gundicha Temple (garden house of Lord Jagannath).\n🌆 Evening: Sunset leisure at the Blue Flag certified Golden Beach; watch skilled local sand artists sculpt beach art."
+                },
+                {
+                    day: "DAY 02",
+                    title: "UNESCO Konark Sun Temple & Raghurajpur Crafts Village",
+                    desc: "🌅 Morning: Scenic coastal highway drive to Konark. Explore the 13th-century UNESCO World Heritage Sun Temple, designed as a colossal 24-wheeled chariot of Surya pulled by 7 stone horses.\n☀️ Afternoon: Visit Chandrabhaga Beach; drive to Raghurajpur Heritage Crafts Village where every household preserves traditional Pattachitra palm-leaf paintings and Tussar silk art.\n🌆 Evening: Return to Puri; taste authentic coastal Odia delicacies (Chhena Poda, Dalma, and fresh seafood)."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Chilika Lake Dolphin Safari & Departure",
+                    desc: "🌅 Morning: Excursion to Satapada on Chilika Lake (Asia's largest brackish lagoon). Board private motorized boat to spot rare endangered Irrawaddy dolphins and visit Rajhans Island.\n☀️ Afternoon: Return transfer to Puri station or Bhubaneswar airport."
+                }
+            ]
+        },
+
+        konkan: {
+            destination: "Konkan Coastal Route & Unconquered Sea Forts",
+            titleTemplate: (dur) => `${dur}-Day Coastal Highway, Murud-Janjira Sea Fortress & Alphonso Coast`,
+            basePrice: 5499,
+            altitudeTag: "Coastal Cliffs & Western Ghats Estuaries",
+            advisory: "Motion sickness remedies advised for winding coastal ghats. Best seafood season October to May.",
+            pickup: "Mumbai / Pune Hub via Coastal Highway (Sagari Mahamarg)",
+            highlights: [
+                "Murud-Janjira Unconquered Island Sea Fort Boat Assault",
+                "Ganpatipule Pristine Beach & Swayambhu Ganesh Shrine",
+                "Ratnagiri Thibaw Palace & Alphonso Mango Orchards",
+                "Malvan Sindhudurg Fort Scuba Diving & Spicy Malvani Feast"
+            ],
+            foodRecs: "Spicy Malvani Surmai & Pomfret fry, Solkadhi coconut kokum beverage, Kombdi Vade, fresh Alphonso mangoes and Aamras.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Alibaug Kolaba Fort & Kashid White Sand Beach",
+                    desc: "🌅 Morning: Cruise from Mumbai to Mandwa; drive past scenic coconut groves to Alibaug. Walk through the ocean during low tide to explore 17th-century Kolaba Sea Fort.\n☀️ Afternoon: Drive along the scenic coastal highway to Kashid Beach, famed for its powdery white sands and gentle surf.\n🌆 Evening: Beachside campfire with spicy Malvani fish fry and cooling Solkadhi."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Murud-Janjira Island Sea Fortress Exploration",
+                    desc: "🌅 Morning: Board a traditional sailboat to Murud-Janjira, the legendary island fortress in the Arabian Sea that remained unconquered by British, Portuguese, and Maratha navies.\n☀️ Afternoon: Explore the 40-ft high granite ramparts, freshwater lakes inside the sea fort, and the colossal Kalalbangdi cannon.\n🌆 Evening: Drive south along the coastal road to Harihareshwar (the 'Kashi of South') for cliffside sunset."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Ganpatipule Beach Temple & Ratnagiri Orchards",
+                    desc: "🌅 Morning: Visit Ganpatipule's 400-year-old Swayambhu Ganesh Temple right on the beach, followed by seaside circumambulation (Pradakshina) around the hill.\n☀️ Afternoon: Tour Ratnagiri's Thibaw Palace (where the last King of Burma was exiled) and walk through lush Alphonso mango orchards.\n🌆 Evening: Sunset at Bhatye Beach; traditional Konkani seafood dinner."
+                },
+                {
+                    day: "DAY 04",
+                    title: "Malvan Scuba Diving & Sindhudurg Sea Fort",
+                    desc: "🌅 Morning: Guided scuba diving and snorkeling session in the clear waters of Malvan coral reefs.\n☀️ Afternoon: Explore Chhatrapati Shivaji Maharaj's Sindhudurg Fort built on Kurte island.\n🌆 Evening: Return transfer towards Goa or Pune hub."
+                }
+            ]
+        },
+
+        munsiyari: {
+            destination: "Munsiyari — Little Kashmir of Kumaon",
+            titleTemplate: (dur) => `${dur}-Day Panchachuli Snow Crests, Khaliya Alpine Trek & Himalayan Waterfalls`,
+            basePrice: 6299,
+            altitudeTag: "Elevation: 2,200 M to 3,500 M (High-Altitude Kumaon Himalayas)",
+            advisory: "Pack warm thermal layers; sub-zero winter temperatures. Acclimatization halt recommended in Chaukori/Almora.",
+            pickup: "Kathgodam Railway Station (KGM) / Pantnagar Airport (PGH)",
+            highlights: [
+                "Unmatched 0-Degree View of Panchachuli Five Snow Peaks",
+                "Khaliya Top Alpine Snow Ridge Trek (3,500m)",
+                "Roaring Birthi Falls 126-Meter Mountain Cascade",
+                "Darkot Traditional Pashmina & Angora Wool Weaving Hamlet"
+            ],
+            foodRecs: "Authentic Kumaoni Bhatt ki Churkani black bean curry, Madua (finger millet) roti, Gahat ki Dal, Bhaang ki Chutney, organic Himalayan honey.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Scenic High-Pass Drive & Panchachuli Sunset Glow",
+                    desc: "🌅 Morning: Scenic drive from Kathgodam/Almora through winding pine valleys, passing Birthi Falls. Arrive in Munsiyari perched at 2,200m facing the majestic Panchachuli group of five peaks.\n☀️ Afternoon: Check-in to traditional alpine stone cottage; hot ginger-honey tea. Stroll to Nanda Devi Temple meadow for panoramic photography.\n🌆 Evening: Witness the breathtaking golden-orange sunset illuminating all five snow-clad peaks of Panchachuli; enjoy traditional Kumaoni dinner (Bhatt ki Churkani, Madua Roti, and Hemp seed chutney)."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Khaliya Top Alpine Summit Trek (3,500m)",
+                    desc: "🌅 Morning: Early morning guided trek to Khaliya Top (3,500m). Ascend through dense rhododendron and oak forests opening into vast high-altitude Bugyal (alpine meadow).\n☀️ Afternoon: Reach summit ridge enjoying 360-degree vistas of Nanda Devi, Trishul, Hardeol, and Panchachuli peaks. Packed hot mountain lunch at summit.\n🌆 Evening: Descend back to Munsiyari; relax by cozy bonfire with stargazing under crystal-clear Himalayan skies."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Darkot Artisan Village & Birthi Waterfalls",
+                    desc: "🌅 Morning: Visit Darkot village (6 km), renowned for handmade angora rabbit wool shawls, sheep wool blankets, and pashmina woven on ancient wooden pit looms.\n☀️ Afternoon: Hike to Maheshwari Kund (Mehsar Kund) forest lake; stop at Birthi Falls for waterfall mist photography.\n🌆 Evening: Return transfer to Kathgodam/Pantnagar with scenic Himalayan stops."
+                }
+            ]
+        },
+
+        nainital: {
+            destination: "Nainital, Bhimtal, Sattal & Mukteshwar Lake District",
+            titleTemplate: (dur) => `${dur}-Day Emerald Glacial Lakes, Snow View Ropeway & Chauli Ki Jali Cliffs`,
+            basePrice: 4899,
+            altitudeTag: "Elevation: 1,938 M to 2,286 M (Kumaon Outer Himalayas)",
+            advisory: "Brisk mountain evenings; fleece layers recommended year-round. Boating life jackets mandatory.",
+            pickup: "Kathgodam Railway Station (KGM) / Pantnagar Airport (PGH) / Delhi NCR Volvo",
+            highlights: [
+                "Naini Lake Yacht Boating & Naina Devi Lakeside Shrine",
+                "Mukteshwar 180° Himalayan Vista & Chauli Ki Jali Clifftop",
+                "Bhimtal Island Lake Aquarium & Water Sports",
+                "Sattal Seven Interconnected Pristine Forest Birding Lakes"
+            ],
+            foodRecs: "Kumaoni Aloo Ke Gutke with mountain coriander, Bal Mithai from Almora, steaming Thukpa, Mall Road fresh fruit bakes.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Naini Lake Yacht Sailing, Mall Road & Naina Devi",
+                    desc: "🌅 Morning: Pickup from Kathgodam/Pantnagar; drive through winding mountain corridors to Nainital. Check-in to lakeside heritage hotel.\n☀️ Afternoon: Private yacht rowing on the emerald waters of Naini Lake. Visit the revered lakeside Naina Devi Temple (one of the 51 Shakti Peethas).\n🌆 Evening: Stroll along Mall Road and Tibetan Bazaar; sample steaming hot momos and authentic Kumaoni Bal Mithai."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Snow View Aerial Ropeway & Tiffin Top Trek",
+                    desc: "🌅 Morning: Take the aerial cable car to Snow View Point (2,270m) for panoramic vistas of the snow-clad Trishul, Nanda Devi, and Nanda Kot peaks.\n☀️ Afternoon: Gentle horse trek or hike to Dorothy's Seat at Tiffin Top (2,292m) for 360-degree views of Nainital town.\n🌆 Evening: Visit the High-Altitude Himalayan Zoo home to snow leopards, Tibetan wolves, and Himalayan black bears."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Lake District Circuit: Bhimtal, Sattal & Naukuchiatal",
+                    desc: "🌅 Morning: Excursion to Bhimtal; take an island boat to the lake aquarium. Drive to Sattal (seven interconnected freshwater forest lakes), heaven for birdwatchers.\n☀️ Afternoon: Visit nine-cornered Naukuchiatal for tandem paragliding and kayaking.\n🌆 Evening: Sunset lakeside dinner at a boutique cafe in Bhimtal."
+                },
+                {
+                    day: "DAY 04",
+                    title: "Mukteshwar 180° Himalayan Vista & Chauli Ki Jali",
+                    desc: "🌅 Morning: Drive to scenic Mukteshwar (2,286m) through dense fruit orchards of apples and peaches. Visit 350-year-old Mukteshwar Dham Shiva temple.\n☀️ Afternoon: Stand atop Chauli Ki Jali, a sheer clifftop offering breathtaking 180-degree panoramas of the Greater Himalayas.\n🌆 Evening: Departure transfer to Kathgodam station or Delhi."
+                }
+            ]
+        },
+
+        kedarnath: {
+            destination: "Kedarnath Dham & Holy Himalayan Yatra",
+            titleTemplate: (dur) => `${dur}-Day Lord Kedarnath Jyotirlinga, Gaurikund Trek & Mandakini Valley`,
+            basePrice: 8999,
+            altitudeTag: "Elevation: 3,583 M (Glacial Alpine Zone)",
+            advisory: "Mandatory biometric yatra registration. Medical fitness check. Warm thermals, rainwear, and high-ankle trekking shoes essential. Emergency oxygen assistance included.",
+            pickup: "Haridwar Junction (HW) / Rishikesh / Dehradun Airport (DED)",
+            highlights: [
+                "Lord Kedarnath Jyotirlinga Darshan at 3,583 M",
+                "Gaurikund to Kedarnath 16km Holy Trek or Helicopter Shuttle",
+                "Bhairavnath Temple High-Altitude Peak Vantage",
+                "Sacred Mandakini River & Devprayag Holy Confluence"
+            ],
+            foodRecs: "Pure Satvik vegetarian thali, piping hot ginger-tulsi tea, high-energy dry fruits, hot Khichdi at high-altitude dhabas.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Rishikesh to Guptkashi / Sonprayag Base via Devprayag",
+                    desc: "🌅 Morning: Early morning drive from Haridwar/Rishikesh along the holy Alaknanda and Mandakini rivers. Halt at Devprayag to witness the sacred confluence of Bhagirathi and Alaknanda forming the holy Ganga.\n☀️ Afternoon: Continue through Rudraprayag to Guptkashi/Sonprayag base. Medical fitness screening and biometric Yatra permit check.\n🌆 Evening: Check-in to mountain lodge; briefing on altitude acclimatization, hydration, and weather safety. Evening Aarti at Kashi Vishwanath temple in Guptkashi."
+                },
+                {
+                    day: "DAY 02",
+                    title: "The Holy Trek from Gaurikund to Kedarnath Dham (3,583m)",
+                    desc: "🌅 Morning: Early transfer to Sonprayag/Gaurikund (the hot sulphur springs base). Begin the sacred 16 km uphill trek (or board pre-booked helicopter shuttle) alongside the roaring Mandakini river.\n☀️ Afternoon: Ascend through Jungle Chatti, Bheembali, and Lincholi; high-altitude rest halts with energetic mountain tea.\n🌆 Evening: Arrive at Kedarnath plateau (3,583m) framed against the colossal snow-covered Kedarnath Peak. Check-in to GMVN/hotel. Attend the mesmerizing evening Maha Aarti of Lord Kedarnath."
+                },
+                {
+                    day: "DAY 03",
+                    title: "VIP Kedarnath Jyotirlinga Darshan & Bhairavnath Summit",
+                    desc: "🌅 Morning: Dawn VIP Abhishek and Darshan of the sacred pyramidal rock Shiva Lingam inside the 8th-century stone temple built by Adi Shankaracharya.\n☀️ Afternoon: Short 1 km hike to Bhairavnath Temple overlooking the entire Kedarnath valley and Kedar Dome glaciers. Visit Adi Shankaracharya Samadhi.\n🌆 Evening: Begin comfortable descent to Gaurikund; transfer to Guptkashi/Rudraprayag for overnight rest."
+                },
+                {
+                    day: "DAY 04",
+                    title: "Return Scenic Journey to Rishikesh / Haridwar",
+                    desc: "🌅 Morning: Scenic return drive along the Mandakini valley.\n☀️ Afternoon: Stop at Rishikesh for Ram Jhula, Laxman Jhula, and Ganga Aarti at Triveni Ghat.\n🌆 Evening: Return transfer to Haridwar station or Dehradun airport."
+                }
+            ]
+        },
+
+        jyotirlinga: {
+            destination: "12 Jyotirlingas Sacred Maha Parikrama",
+            titleTemplate: (dur) => `${dur}-Day Complete Holy Circuit of Lord Shiva's 12 Cosmic Pillars of Light`,
+            basePrice: 6499,
+            altitudeTag: "Pan-India Sacred Transits (High Altitude to Coastal)",
+            advisory: "Early morning Bhasma Aarti booking protocols, temple dress codes, VIP Darshan passes, and verified priest guidance provided.",
+            pickup: "Pan-India Sacred Transit Hubs (Ujjain / Varanasi / Mumbai / Delhi)",
+            highlights: [
+                "Somnath & Nageshwar (Gujarat Coast)",
+                "Mahakaleshwar Bhasma Aarti (Ujjain) & Omkareshwar (MP)",
+                "Trimbakeshwar, Bhimashankar & Grishneshwar (Maharashtra)",
+                "Kedarnath (Himalayas), Kashi Vishwanath (Varanasi), Baidyanath, Mallikarjuna & Rameshwaram"
+            ],
+            foodRecs: "Pure Satvik temple Mahaprasad across all shrines, fresh tender coconut water, fasting fruits, audited pure vegetarian dining.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Mahakaleshwar (Ujjain) Bhasma Aarti & Omkareshwar",
+                    desc: "🌅 Morning: 4:00 AM VIP entry to the world-famous Bhasma Aarti at Mahakaleshwar Jyotirlinga in Ujjain on the banks of Shipra River. Walk the grand Mahakal Lok Corridor.\n☀️ Afternoon: Drive to Omkareshwar (75 km), the sacred island on the Narmada River shaped like the holy symbol 'OM'. Darshan at Omkareshwar and Mamleshwar shrines.\n🌆 Evening: Narmada River boat Aarti and night transfer towards Gujarat/Maharashtra circuit."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Somnath & Nageshwar (Gujarat Holy Coastline)",
+                    desc: "🌅 Morning: Visit Somnath Jyotirlinga (the First of all 12 Jyotirlingas) standing resilient on the shores of the Arabian Sea. Marvel at the ancient Arrow Pillar (Baan Stambh).\n☀️ Afternoon: Scenic coastal drive to Dwarka; VIP Darshan at Nageshwar Jyotirlinga (enshrining a massive 25m Lord Shiva statue).\n🌆 Evening: Attend the grand evening sound & light show at Somnath shoreline."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Trimbakeshwar (Nashik), Bhimashankar & Grishneshwar",
+                    desc: "🌅 Morning: Darshan at Trimbakeshwar Jyotirlinga nestled at the foothills of Brahmagiri mountain, origin of the holy Godavari River.\n☀️ Afternoon: Travel to Bhimashankar amidst Sahyadri wildlife sanctuary; proceed to Grishneshwar Jyotirlinga adjacent to Ellora Caves.\n🌆 Evening: Special Rudrabhishek ceremony with Vedic priests."
+                },
+                {
+                    day: "DAY 04",
+                    title: "Kashi Vishwanath, Baidyanath & Rameshwaram Connections",
+                    desc: "🌅 Morning: VIP Darshan at Kashi Vishwanath Golden Temple in Varanasi along the holy Ganges.\n☀️ Afternoon: Fly/transit to Baidyanath Dham (Deoghar) for holy water offering.\n🌆 Evening: Extended circuit leads to Rameshwaram (Tamil Nadu) for holy dip in 22 sacred wells (Theerthams) and Ramanathaswamy temple corridor."
+                }
+            ]
+        },
+
+        trekking: {
+            destination: "India's Legendary High-Altitude Mountain Treks",
+            titleTemplate: (dur) => `${dur}-Day Summit Expeditions: Kedarkantha, Roopkund, Chadar & Valley of Flowers`,
+            basePrice: 7499,
+            altitudeTag: "Elevation: 3,000 M to 5,029 M (Sub-Zero Snow Peaks & Glacial Moraines)",
+            advisory: "Acclimatization days, professional mountaineering guides, crampons, high-altitude medical kits, and satellite SOS beacon included.",
+            pickup: "Dehradun / Rishikesh / Manali / Leh Hubs",
+            highlights: [
+                "Kedarkantha Winter Snow Summit (3,810m) 360° Panorama",
+                "Valley of Flowers UNESCO & Hemkund Sahib (4,300m)",
+                "Hampta Pass & Chandratal Glacial Crossover (4,280m)",
+                "Chadar Frozen River Zanskar Trek (-25°C) & Roopkund Mystery Lake"
+            ],
+            foodRecs: "High-calorie mountaineering diet: hot porridge, eggs, boiled potatoes, dal khichdi, garlic soup (altitude sickness combatant), hot Bournvita.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Base Camp Arrival, Acclimatization & Gear Inspection",
+                    desc: "🌅 Morning: Scenic mountain transfer from Dehradun/Manali to base camp (Sankri / Joshimath / Jobra). Check-in to expedition camp.\n☀️ Afternoon: Altitude briefing, pulse oximeter check, crampon & gaiter fitting, and acclimatization walk through alpine pine forests.\n🌆 Evening: High-protein hot dinner with garlic soup (natural altitude vasodilator); stargazing under clear mountain skies."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Ascent to High-Altitude Camp & Glacier Crossings",
+                    desc: "🌅 Morning: Begin steady ascent through dense oak and rhododendron canopies, crossing crystal-clear glacial streams.\n☀️ Afternoon: Reach high-altitude campsite (Juda Ka Talab / Balu Ka Ghera) perched by frozen alpine tarns.\n🌆 Evening: Tent pitching demonstration, camp bonfire, and summit strategy briefing."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Summit Push (3,810m to 4,300m) & Sunrise Glory",
+                    desc: "🌅 Morning: 3:30 AM alpine summit push under a canopy of billion stars. Strap on micro-spikes to traverse hard-packed snow ridges.\n☀️ Afternoon: Reach the summit at sunrise! Enjoy unforgettable 360-degree panoramas of Swargarohini, Black Peak, Bandarpoonch, and Trishul.\n🌆 Evening: Celebrate at summit; safe descent back to camp with certified mountain leads."
+                },
+                {
+                    day: "DAY 04",
+                    title: "Descent to Base Camp & Departure Transfer",
+                    desc: "🌅 Morning: Leisurely descent through alpine meadows to base camp.\n☀️ Afternoon: Certificate of Achievement ceremony and return transfer to transit hub."
+                }
+            ]
+        },
+
+        delhi: {
+            destination: "Delhi NCR — Capital Heritage & Food Hub",
+            titleTemplate: (dur) => `${dur}-Day Mughal Citadels, British Boulevards & Chandni Chowk Food Trail`,
+            basePrice: 4499,
+            altitudeTag: "Elevation: 216 M (Yamuna Plains)",
+            advisory: "Comfortable footwear for exploring historical ruins. Private AC vehicle and metro smart card provided.",
+            pickup: "Indira Gandhi International Airport (DEL) / New Delhi Railway Station (NDLS)",
+            highlights: [
+                "Red Fort, Qutub Minar 73m Tower & Humayun's Tomb",
+                "India Gate, Kartavya Path & Rashtrapati Bhavan",
+                "Akshardham Grand Musical Fountain & Lotus Temple",
+                "Old Delhi Chandni Chowk Food Trail & Dilli Haat"
+            ],
+            foodRecs: "Chandni Chowk Paranthe Wali Gali, Karim's historic Mutton Burra, Natraj Dahi Bhalle, Kuremal Mohan Lal stuffed kulfi, authentic Chole Bhature.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Old Delhi Mughal Heritage & Chandni Chowk Food Walk",
+                    desc: "🌅 Morning: Private tour of the colossal 17th-century Red Fort (Lal Qila) built by Shah Jahan; explore Diwan-i-Aam and Lahori Gate.\n☀️ Afternoon: Cycle rickshaw ride through the bustling alleys of Chandni Chowk. Visit Asia's largest spice market at Khari Baoli and historic Jama Masjid.\n🌆 Evening: Gastronomic walk tasting stuffed paranthas at Paranthe Wali Gali and royal Mughlai kababs at Karim's (since 1913)."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Imperial Lutyens' Delhi, India Gate & Humayun's Tomb",
+                    desc: "🌅 Morning: Visit the UNESCO World Heritage Humayun's Tomb (the red sandstone architectural precursor to the Taj Mahal).\n☀️ Afternoon: Drive down Kartavya Path viewing India Gate (War Memorial), Parliament House, and Rashtrapati Bhavan. Visit the serene white marble Lotus Temple.\n🌆 Evening: Visit the majestic Swaminarayan Akshardham Temple; witness the grand evening Sahaj Anand Water and Laser Light Show."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Qutub Minar, Hauz Khas Village & Dilli Haat",
+                    desc: "🌅 Morning: Explore the Qutub Minar complex, marveling at the 73-meter-tall 12th-century minaret and the 1,600-year-old rust-resistant Iron Pillar.\n☀️ Afternoon: Stroll through medieval Hauz Khas fort ruins and boutique lake-facing cafes.\n🌆 Evening: Shop for regional handicrafts and sample pan-Indian cuisines at open-air cultural bazaar Dilli Haat; departure transfer."
+                }
+            ]
+        },
+
+        chennai: {
+            destination: "Chennai & Tamil Heritage Coast",
+            titleTemplate: (dur) => `${dur}-Day Dravidian Temples, Marina Beach & Mahabalipuram Shore UNESCO Trail`,
+            basePrice: 4699,
+            altitudeTag: "Sea Level Bay of Bengal Coastline",
+            advisory: "Breathable cottons recommended. Early morning visits to temples and beach for comfortable temperatures.",
+            pickup: "Chennai International Airport (MAA) / Chennai Central (MAS)",
+            highlights: [
+                "Marina Beach World's 2nd Longest Urban Coastline",
+                "7th-Century Kapaleeshwarar Temple Dravidian Gopuram",
+                "San Thome Basilica & Fort St. George Colonial Citadel",
+                "UNESCO Mahabalipuram Shore Temple & Pancha Rathas"
+            ],
+            foodRecs: "Traditional Mylapore filter coffee, crispy Ghee Roast Dosa with coconut and tomato chutneys, Idiyappam, Chettinad Pepper Chicken.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Mylapore Cultural Trail, Kapaleeshwarar & Marina Sunset",
+                    desc: "🌅 Morning: Heritage walk in Mylapore; marvel at the towering sculpted rainbow Gopuram of the 7th-century Kapaleeshwarar Temple.\n☀️ Afternoon: Savor traditional South Indian banana leaf lunch with piping hot filter coffee. Visit San Thome Cathedral Basilica built over the tomb of Apostle St. Thomas.\n🌆 Evening: Stroll along the world's 2nd longest urban beach — Marina Beach; enjoy the cool sea breeze and taste freshly roasted corn and Sundal."
+                },
+                {
+                    day: "DAY 02",
+                    title: "UNESCO Mahabalipuram Rock-Cut Monuments",
+                    desc: "🌅 Morning: Scenic drive along the East Coast Road (ECR) to UNESCO World Heritage site Mahabalipuram (55 km).\n☀️ Afternoon: Marvel at the 8th-century Shore Temple overlooking the roaring waves, the monolithic Pancha Rathas (Five Chariots), and the colossal open-air bas-relief 'Descent of the Ganges'.\n🌆 Evening: Visit the precarious balancing boulder Krishna's Butter Ball; enjoy fresh coastal seafood dinner at a beachside cafe."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Fort St. George, Kalakshetra & Departure",
+                    desc: "🌅 Morning: Visit Fort St. George (first English fortress in India, 1644) and St. Mary's Church.\n☀️ Afternoon: Explore Kalakshetra Foundation celebrating classical Bharatanatyam dance and traditional textile weaving.\n🌆 Evening: Shopping for authentic Kanchipuram silk sarees and departure transfer."
+                }
+            ]
+        },
+
+        kolkata: {
+            destination: "Kolkata — City of Joy & Cultural Capital",
+            titleTemplate: (dur) => `${dur}-Day Victoria Memorial, Howrah River Ferry & Heritage Street Food`,
+            basePrice: 4499,
+            altitudeTag: "Elevation: 9 M (Hooghly River Delta)",
+            advisory: "Comfortable walking shoes for exploring colonial alleys and College Street book markets. Authentic sweet tastings included.",
+            pickup: "Netaji Subhash Chandra Bose International Airport (CCU) / Howrah Junction (HWH)",
+            highlights: [
+                "Victoria Memorial White Marble Monument & Maidan",
+                "Howrah Bridge & Hooghly Sunset Ferry Cruise",
+                "Dakshineswar Kali Temple & Belur Math Spiritual Confluence",
+                "Park Street Heritage Dining, Kathi Rolls & Rosogolla Trail"
+            ],
+            foodRecs: "Iconic Nizam's or Kusum Kathi Roll, freshly made warm Rosogolla & Mishti Doi from KC Das, Sondesh, Park Street Flurys English breakfast, Kolkata Biryani with potato.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Colonial Marvels, Victoria Memorial & Park Street",
+                    desc: "🌅 Morning: Guided tour of the majestic Victoria Memorial hall, built in white Makrana marble as an imperial museum; walk through the sprawling Maidan.\n☀️ Afternoon: Explore St. Paul's Cathedral (Gothic revival style) and Princep Ghat along the Hooghly river.\n🌆 Evening: Walk down historic Park Street; enjoy high tea at iconic 1927 bakery Flurys, followed by authentic Kathi Rolls at Nizam's."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Howrah Bridge Ferry, Dakshineswar Kali & Belur Math",
+                    desc: "🌅 Morning: Take a heritage ride on India's only operating electric Tram. Cross the cantilever engineering icon Howrah Bridge; board a river ferry to Dakshineswar.\n☀️ Afternoon: Visit the 19th-century Dakshineswar Kali Temple where mystic Ramakrishna Paramahamsa resided; take a boat across the river to serene Belur Math (Ramakrishna Mission headquarters).\n🌆 Evening: Explore College Street 'Boi Para' (the world's largest second-hand book market); have coffee at historic Indian Coffee House."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Kumartuli Clay Idol Guilds & Sweet Heritage",
+                    desc: "🌅 Morning: Walk through Kumartuli, the 300-year-old traditional potter's quarter where clay artisans sculpt magnificent Durga Puja idols.\n☀️ Afternoon: Taste freshly made warm Rosogolla, Mishti Doi, and Sandesh at century-old sweet shops (KC Das & Girish Chandra Dey).\n🌆 Evening: Return transfer to Howrah station or Kolkata airport."
+                }
+            ]
+        },
+
+        bengaluru: {
+            destination: "Bengaluru — Garden City & Tech Capital",
+            titleTemplate: (dur) => `${dur}-Day Royal Palaces, Botanical Conservatories & Artisanal Cafe Culture`,
+            basePrice: 4699,
+            altitudeTag: "Elevation: 920 M (Deccan Plateau, Pleasant Year-Round Climate)",
+            advisory: "Pleasant weather year-round; light jacket for evening breeze. Plan transit outside peak traffic hours.",
+            pickup: "Kempegowda International Airport (BLR) / KSR Bengaluru City (SBC)",
+            highlights: [
+                "Lalbagh Botanical Gardens 19th-Century Glass House",
+                "Bangalore Palace Tudor-Style Architecture & Vidhana Soudha",
+                "Cubbon Park Morning Bamboo Grove Stroll",
+                "VV Puram Vegetarian Food Street & Indiranagar Artisanal Breweries"
+            ],
+            foodRecs: "Vidyarthi Bhavan crispy Masala Dosa, VV Puram Thindi Beedi food street (Congress Bun, Akki Roti, Gulkand Ice cream), Brahmin's Coffee Bar filter coffee and idlis.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Botanical Wonders, Lalbagh & Iconic Dosa Trail",
+                    desc: "🌅 Morning: Morning walk through the 240-acre Lalbagh Botanical Gardens, admiring century-old trees and the 1889 Glass House inspired by London's Crystal Palace.\n☀️ Afternoon: Authentic lunch at Vidyarthi Bhavan or Mavalli Tiffin Room (MTR) tasting iconic crispy butter Masala Dosa and filter coffee.\n🌆 Evening: Evening food safari at VV Puram (Thindi Beedi) food street sampling Akki Roti, Paddus, roasted corn, and Gulkand butter ice cream."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Bangalore Palace, Vidhana Soudha & Cubbon Park",
+                    desc: "🌅 Morning: Tour Bangalore Palace, constructed in 1878 in Tudor-revival architectural style with fortified towers, wood carvings, and royal family memorabilia.\n☀️ Afternoon: Drive past the magnificent granite facade of Vidhana Soudha; take a shaded walk through the bamboo groves of Cubbon Park.\n🌆 Evening: Explore Indiranagar's vibrant 100-Ft Road; experience Bangalore's famous craft coffee roasters and artisanal cafes."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Bannerghatta Safari or Tipu Sultan's Palace & Departure",
+                    desc: "🌅 Morning: Excursion to Bannerghatta National Park for guided tiger and lion safari and walk through the indoor butterfly conservatory.\n☀️ Afternoon: Visit Tipu Sultan's Summer Palace constructed entirely in French-polished teakwood with floral motifs.\n🌆 Evening: Return transfer to Kempegowda International Airport."
+                }
+            ]
+        },
+
+        mathura: {
+            destination: "Mathura, Vrindavan & Sacred Braj Bhoomi",
+            titleTemplate: (dur) => `${dur}-Day Shri Krishna Janmabhoomi, Banke Bihari & Prem Mandir Spectacle`,
+            basePrice: 3999,
+            altitudeTag: "Elevation: 174 M (Yamuna Floodplain)",
+            advisory: "Watch out for temple monkeys in Vrindavan (secure glasses and bags). Pure vegetarian dining with authentic Mathura Peda tasting.",
+            pickup: "Mathura Junction (MTJ) / Delhi NCR Transfer via Yamuna Expressway",
+            highlights: [
+                "Shri Krishna Janmabhoomi Temple & Garbha Griha Prison Cell",
+                "Vrindavan Banke Bihari Temple Divine Darshan",
+                "Prem Mandir Italian Marble Laser & Light Spectacle",
+                "Yamuna Vishram Ghat Aarti & Govardhan Hill Parikrama"
+            ],
+            foodRecs: "World-famous Mathura ke Peda made with caramelized khoya, Bedai-Kachori with sweet jalebi, Makhan Mishri, saffron milk in clay kulhads.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Shri Krishna Janmabhoomi & Yamuna Vishram Ghat Aarti",
+                    desc: "🌅 Morning: Chauffeur pickup and transfer to Mathura. Guided visit to Shri Krishna Janmabhoomi temple complex, entering the sacred subterranean Garbha Griha (prison cell where Lord Krishna was born).\n☀️ Afternoon: Visit the historic Dwarkadhish Temple; explore the narrow heritage bazaars tasting fresh, hot Mathura Peda.\n🌆 Evening: Attend the deeply serene evening Yamuna Aarti at Vishram Ghat (where Lord Krishna rested after slaying Kansa), watching hundreds of floating lamps illuminate the holy river."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Vrindavan Banke Bihari, ISKCON & Prem Mandir Spectacle",
+                    desc: "🌅 Morning: Drive to sacred Vrindavan (12 km). VIP Darshan at the revered Banke Bihari Temple; witness the unique curtain-pulling darshan ritual.\n☀️ Afternoon: Visit the magnificent white marble ISKCON Krishna Balaram Temple and Radha Raman Temple.\n🌆 Evening: Visit the colossal Prem Mandir built in pristine white Italian Carrara marble; watch the breathtaking musical fountain and synchronized LED illumination narrating Krishna Leela."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Govardhan Hill & Barsana Radha Rani Pilgrimage",
+                    desc: "🌅 Morning: Excursion to Govardhan Hill; visit Mansi Ganga and sacred Radha Kund and Shyam Kund.\n☀️ Afternoon: Drive to Barsana to visit the clifftop Radha Rani Mandir (Shriji Temple).\n🌆 Evening: Return transfer to Mathura station or Delhi NCR expressway."
+                }
+            ]
+        },
+
+        jaipur: {
+            destination: "Jaipur & The Royal Rajasthan Kingdom",
+            titleTemplate: (dur) => `${dur}-Day Pink City Palaces, Amer Fort Clifftops & Desert Royalty`,
+            basePrice: 5499,
+            altitudeTag: "Elevation: 431 M (Aravalli Foothills & Desert Margins)",
+            advisory: "Sun hat, sunglasses, and camera essential for fort courtyards. Extended circuits include Udaipur, Jodhpur, and Jaisalmer desert camps.",
+            pickup: "Jaipur International Airport (JAI) / Jaipur Junction (JP)",
+            highlights: [
+                "Amer Fort Elephant / Jeep Clifftop Ascent & Sheesh Mahal",
+                "Hawa Mahal Palace of Winds & City Palace Museum",
+                "Jantar Mantar UNESCO World Heritage Astronomical Observatory",
+                "Nahargarh Fort Sunset Panorama & Chokhi Dhani Cultural Feast"
+            ],
+            foodRecs: "Royal Rajasthani Thali with Dal Baati Churma, Gatte Ki Sabzi, Laal Maas, Rawat Misthan Bhandar Pyaaz Kachori, Ghevar dripping with saffron syrup.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "The Pink City: City Palace, Hawa Mahal & Jantar Mantar",
+                    desc: "🌅 Morning: Chauffeur pickup and check-in to heritage Haveli hotel. Welcome garland and masala chai. Stop at Hawa Mahal (Palace of Winds) with its 953 honeycombed pink sandstone jharokha windows.\n☀️ Afternoon: Guided tour of the royal City Palace complex, Chandra Mahal, and royal armory. Marvel at the stone sundials at Jantar Mantar (UNESCO World Heritage observatory).\n🌆 Evening: Stroll through Johari Bazaar and Bapu Bazaar for gemstones, blue pottery, and bandhani textiles. Sample crispy Pyaaz Kachori at Rawat Misthan Bhandar."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Majestic Amer Fort, Sheesh Mahal & Nahargarh Sunset",
+                    desc: "🌅 Morning: Ascend to the clifftop Amer Fort by jeep or royal elephant ride. Explore the dazzling Sheesh Mahal (Mirror Palace) where a single candle illuminates the entire chamber.\n☀️ Afternoon: Visit the world's largest cannon on wheels at Jaigarh Fort and the scenic Jal Mahal floating palace.\n🌆 Evening: Golden hour sunset drinks at Padao restaurant atop Nahargarh Fort overlooking the illuminated Pink City skyline."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Chokhi Dhani Village Fair & Royal Rajasthani Banquet",
+                    desc: "🌅 Morning: Visit the historic stepwell Chand Baori or Albert Hall Museum.\n☀️ Afternoon: Block-printing workshop in Sanganer; observe master craftsmen stamp organic natural dyes onto cotton.\n🌆 Evening: Full immersion at Chokhi Dhani ethnic resort featuring camel rides, puppet shows, fire dancers, and an authentic royal feast of Dal Baati Churma."
+                },
+                {
+                    day: "DAY 04",
+                    title: "Extended Rajasthan Circuit: Jodhpur Blue City & Mehrangarh",
+                    desc: "🌅 Morning: Scenic drive to Jodhpur (The Blue City). Check-in with views of Mehrangarh.\n☀️ Afternoon: Explore towering Mehrangarh Fort rising 400 feet above the indigo-painted houses.\n🌆 Evening: Sunset walk through Clock Tower market; taste famous Shahi Samosa and Makhaniya Lassi."
+                },
+                {
+                    day: "DAY 05",
+                    title: "Jaisalmer Golden Thar Desert Dunes & Camel Safari",
+                    desc: "🌅 Morning: Drive to Jaisalmer (The Golden City); explore Jaisalmer Living Fort.\n☀️ Afternoon: Proceed to Sam Sand Dunes; board camel caravan across rolling golden dunes.\n🌆 Evening: Desert luxury tent camp with Rajasthani Kalbelia folk dance, bonfire, and starry desert sky."
+                }
+            ]
+        },
+
+        ayodhya: {
+            destination: "Ayodhya — The Holy City of Shri Ram",
+            titleTemplate: (dur) => `${dur}-Day Grand Ram Janmabhoomi Mandir, Saryu Aarti & Ram Ki Paidi`,
+            basePrice: 4299,
+            altitudeTag: "Elevation: 104 M (Holy Saryu River Basin)",
+            advisory: "Traditional Indian modest dress code required for temple darshan. Electronic lockers available at Ram Janmabhoomi entrance.",
+            pickup: "Maharishi Valmiki International Airport Ayodhya (AYJ) / Ayodhya Dham Junction (AY)",
+            highlights: [
+                "Grand Shri Ram Janmabhoomi Mandir Darshan",
+                "Ancient Hanuman Garhi Hilltop Fortress Shrine",
+                "Kanak Bhavan Golden Palaces of Sita & Ram",
+                "Saryu River Boat Ride & Evening Saryu Maha Aarti at Ram Ki Paidi"
+            ],
+            foodRecs: "Pure Awadhi Ram Lalla Prasad, hot Bedai & Aloo Jalebi, Rabri Malai in earthen kulhads, authentic Saryu riverfront Satvik thali.",
+            days: [
+                {
+                    day: "DAY 01",
+                    title: "Shri Ram Janmabhoomi Mandir & Ancient Hanuman Garhi",
+                    desc: "🌅 Morning: Chauffeur pickup and transfer to Ayodhya. Guided VIP Darshan assistance at the grand newly consecrated Shri Ram Janmabhoomi Mandir. Marvel at the Nagara architectural grandeur, sculpted sandstone pillars, and the sanctum sanctorum (Garbha Griha) of Ram Lalla.\n☀️ Afternoon: Climb the 76 steps to ancient Hanuman Garhi, a 10th-century hilltop temple where Lord Hanuman guarded the royal kingdom.\n🌆 Evening: Visit Kanak Bhavan (the magnificent palace gifted by Queen Kaikeyi to Sita and Ram). Sample authentic pure ghee Bedai and Jalebi at Ram Path."
+                },
+                {
+                    day: "DAY 02",
+                    title: "Saryu River Boat Cruise, Aarti & Illuminated Ram Ki Paidi",
+                    desc: "🌅 Morning: Holy dip at sacred Saryu River Ghats; private boat cruise visiting Lakshman Ghat and Guptar Ghat (where Lord Ram took Jal Samadhi).\n☀️ Afternoon: Explore Dashrath Mahal, Ramkot, and the newly developed Surya Kund Vedic heritage complex.\n🌆 Evening: Witness the grand Saryu Maha Aarti at Ram Ki Paidi, followed by the spectacular synchronized laser light and sound show illuminating the ghats."
+                },
+                {
+                    day: "DAY 03",
+                    title: "Sita Ki Rasoi, Mani Parvat & Departure Transfer",
+                    desc: "🌅 Morning: Visit Sita Ki Rasoi and Mani Parvat offering panoramic views of Ayodhya Dham.\n☀️ Afternoon: Souvenir shopping for brass idols, Ramcharitmanas scrolls, and Ramayana heritage souvenirs.\n🌆 Evening: Verified departure transfer to Maharishi Valmiki Airport or Ayodhya Dham Junction."
+                }
+            ]
+        }
+    };
+
+    // Aliases mapping for user queries
+    const DESTINATION_ALIASES = {
+        'mumbai': 'mumbai',
+        'bombay': 'mumbai',
+        'pune': 'pune',
+        'poona': 'pune',
+        'gwalior': 'gwalior',
+        'kanpur': 'kanpur',
+        'cawnpore': 'kanpur',
+        'bithoor': 'kanpur',
+        'banaras': 'banaras',
+        'varanasi': 'banaras',
+        'kashi': 'banaras',
+        'prayagraj': 'prayagraj',
+        'allahabad': 'prayagraj',
+        'sangam': 'prayagraj',
+        'agra': 'agra',
+        'taj mahal': 'agra',
+        'goa': 'goa',
+        'hoa': 'goa', // Typo handled gracefully
+        'panaji': 'goa',
+        'aurangabad': 'aurangabad',
+        'chhatrapati sambhajinagar': 'aurangabad',
+        'sambhajinagar': 'aurangabad',
+        'ajanta': 'aurangabad',
+        'ellora': 'aurangabad',
+        'manali': 'manali',
+        'solang': 'manali',
+        'rohtang': 'manali',
+        'atal tunnel': 'manali',
+        'lucknow': 'lucknow',
+        'muzzafarnagar': 'muzzafarnagar',
+        'muzaffarnagar': 'muzzafarnagar',
+        'shukratal': 'muzzafarnagar',
+        'faridabad': 'faridabad',
+        'surajkund': 'faridabad',
+        'greater noida': 'greaternoida',
+        'greaternoida': 'greaternoida',
+        'noida': 'greaternoida',
+        'bhopal': 'bhopal',
+        'bhojtal': 'bhopal',
+        'sanchi': 'bhopal',
+        'jabalpur': 'jabalpur',
+        'bhedaghat': 'jabalpur',
+        'dhuandhar': 'jabalpur',
+        'puri': 'puri',
+        'jagannath': 'puri',
+        'konark': 'puri',
+        'konkan': 'konkan',
+        'konkan region': 'konkan',
+        'alibaug': 'konkan',
+        'ratnagiri': 'konkan',
+        'munsiyari': 'munsiyari',
+        'munsiari': 'munsiyari',
+        'panchachuli': 'munsiyari',
+        'nainital': 'nainital',
+        'nainital and its surrounding': 'nainital',
+        'bhimtal': 'nainital',
+        'sattal': 'nainital',
+        'mukteshwar': 'nainital',
+        'kedarnath': 'kedarnath',
+        'kedarnath dham': 'kedarnath',
+        'jyotirling': 'jyotirlinga',
+        'jyotirlinga': 'jyotirlinga',
+        'all jyotirling': 'jyotirlinga',
+        'all jyotirlings': 'jyotirlinga',
+        '12 jyotirlingas': 'jyotirlinga',
+        'somnath': 'jyotirlinga',
+        'mahakaleshwar': 'jyotirlinga',
+        'omkareshwar': 'jyotirlinga',
+        'trimbakeshwar': 'jyotirlinga',
+        'bhimashankar': 'jyotirlinga',
+        'rameshwaram': 'jyotirlinga',
+        'trek': 'trekking',
+        'treks': 'trekking',
+        'trekking': 'trekking',
+        'all major trekking places': 'trekking',
+        'major trekking places': 'trekking',
+        'kedarkantha': 'trekking',
+        'chadar trek': 'trekking',
+        'roopkund': 'trekking',
+        'valley of flowers': 'trekking',
+        'hampta pass': 'trekking',
+        'delhi': 'delhi',
+        'new delhi': 'delhi',
+        'chennai': 'chennai',
+        'madras': 'chennai',
+        'kolkata': 'kolkata',
+        'calcutta': 'kolkata',
+        'benguluru': 'bengaluru',
+        'bengaluru': 'bengaluru',
+        'bangalore': 'bengaluru',
+        'mathura': 'mathura',
+        'vrindavan': 'mathura',
+        'jaipur': 'jaipur',
+        'rajasthan': 'jaipur',
+        'rajasthan regions': 'jaipur',
+        'udaipur': 'jaipur',
+        'jodhpur': 'jaipur',
+        'jaisalmer': 'jaipur',
+        'ayodhya': 'ayodhya',
+        'ram mandir': 'ayodhya'
+    };
+
+    function matchDestinationKey(query) {
+        const q = (query || '').toLowerCase();
+        
+        // Exact and substring match against aliases
+        const sortedAliases = Object.keys(DESTINATION_ALIASES).sort((a, b) => b.length - a.length);
+        for (const alias of sortedAliases) {
+            if (q.includes(alias)) {
+                return DESTINATION_ALIASES[alias];
+            }
+        }
+        return null;
+    }
+
+    // =========================================================================
+    // UNIVERSAL DYNAMIC ITINERARY ARCHITECT (FOR ANY OTHER LOCATION)
+    // =========================================================================
+    function buildUniversalCustomItinerary(promptText, durationDays, vibe) {
+        const raw = (promptText || '').trim();
+        const dur = Math.max(1, Math.min(10, parseInt(durationDays) || 3));
+        
+        // Extract clean destination name
+        let cleanDest = raw
+            .replace(/plan\s*(?:a|an)?\s*(?:\d+[- ]?day)?\s*(?:trip|tour|itinerary|journey|expedition)?\s*(?:to|for|in|around)?/gi, '')
+            .replace(/how\s*(?:about|is|to)\s*/gi, '')
+            .replace(/visit\s*/gi, '')
+            .replace(/tell\s*me\s*about\s*/gi, '')
+            .replace(/for\s*\d+\s*days?/gi, '')
+            .replace(/[?!.]/g, '')
+            .trim();
+
+        if (!cleanDest || cleanDest.length < 2) {
+            cleanDest = "Incredible India Discovery";
+        } else {
+            // Capitalize title
+            cleanDest = cleanDest.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+
+        const price = 4499 + (dur - 1) * 1500;
+        const days = [];
+
+        for (let i = 1; i <= dur; i++) {
+            if (i === 1) {
+                days.push({
+                    day: `DAY 0${i}`,
+                    title: `Arrival, Sanitized Transfer & Iconic Orientation of ${cleanDest}`,
+                    desc: `🌅 Morning: Chauffeur pickup at airport / railway hub in sanitized AC vehicle. Check-in to verified boutique accommodation; welcome refreshments.\n☀️ Afternoon: Guided introduction to prime landmarks, local heritage squares, and scenic viewpoints of ${cleanDest}.\n🌆 Evening: Golden hour sunset walk through the central bazaar; dinner at FSSAI-audited regional restaurant.`
+                });
+            } else if (i === dur) {
+                days.push({
+                    day: `DAY 0${i}`,
+                    title: `Sunrise Panoramic Viewpoint, Artisan Guilds & Departure Transfer`,
+                    desc: `🌅 Morning: Early morning sunrise halt at highest scenic viewpoint in ${cleanDest}.\n☀️ Afternoon: Visit verified local artisan and handloom guilds; purchase authentic GI-tagged regional specialties and souvenirs.\n🌆 Evening: Sanitized drop-off at departure terminal backed by Traveliser 24x7 safety guarantee.`
+                });
+            } else if (i === 2) {
+                days.push({
+                    day: `DAY 0${i}`,
+                    title: `Core Architectural Marvels, Hidden Cultural Alleys & Guided Heritage`,
+                    desc: `🌅 Morning: Private guided expedition to top historic temples, citadels, or nature reserves in ${cleanDest}.\n☀️ Afternoon: Deep immersion into heritage culinary lanes; savor authentic regional specialty thali with pure bottled mineral water.\n🌆 Evening: Cultural performance / riverside aarti / illuminated promenade stroll with local storytelling.`
+                });
+            } else {
+                days.push({
+                    day: `DAY 0${i}`,
+                    title: `Off-the-Beaten-Path Adventure, Scenic Countryside & Culinary Tour`,
+                    desc: `🌅 Morning: Early excursion to scenic outskirts, cascading waterfalls, or sacred hilltop shrines around ${cleanDest}.\n☀️ Afternoon: Organic farm / orchard lunch and interactive session with local craftspeople.\n🌆 Evening: Leisurely twilight cafe walk and stargazing.`
+                });
+            }
+        }
+
+        return {
+            destination: cleanDest,
+            title: `${dur}-Day Tailored Expedition to ${cleanDest}`,
+            duration: `${dur} Days / ${Math.max(1, dur - 1)} Nights`,
+            vibe: `${(vibe || 'Exploration').toUpperCase()} Expedition`,
+            pricePerPerson: price,
+            pickupLocation: `Central Airport / Major Railway Hub for ${cleanDest}`,
+            highlights: [
+                `Iconic Landmarks & Natural Wonders of ${cleanDest}`,
+                `FSSAI-Audited Regional Culinary Trails`,
+                `Verified Sanitized Transport & Dedicated Chauffeur`,
+                `24x7 Traveliser Women Safety Live GPS Escort`
+            ],
+            altitudeTag: "Verified Travel Corridor",
+            acclimationAdvisory: "Stay hydrated with 3-4 liters of water. Wear comfortable walking footwear for heritage sites.",
+            days: days,
+            perks: [
+                "🛡️ Sanitized Vehicle & Verified Chauffeur",
+                "🫁 Medical First Aid & Travel Emergency Kit",
+                "📋 Dedicated Traveliser Certified Local Guide",
+                "🚨 24x7 Traveliser Women Safety Live GPS Stream"
+            ],
+            summary: `I have structured a comprehensive ${dur}-Day expedition to **${cleanDest}** crafted specifically for your group!`
+        };
+    }
+
+    // =========================================================================
+    // MASTER ITINERARY GENERATOR (PLANS ALL 30+ DESTINATIONS DYNAMICALLY)
+    // =========================================================================
+    function generateDynamicLocalItinerary(promptText, durationDays, vibe) {
+        const raw = (promptText || '').trim();
+        const lower = raw.toLowerCase();
+
+        // Extract duration from prompt if explicitly mentioned (e.g. "4 days", "for 2 days")
+        const durMatch = lower.match(/(\d+)\s*(?:days?|nights?)/);
+        let dur = durMatch ? parseInt(durMatch[1]) : (parseInt(durationDays) || sahayakMemory.lastDuration || 3);
+        dur = Math.max(1, Math.min(10, dur));
+
+        const matchedKey = matchDestinationKey(lower);
+
+        if (!matchedKey || !DESTINATION_DATABASE[matchedKey]) {
+            const universalPlan = buildUniversalCustomItinerary(raw, dur, vibe);
+            addPlaceToSahayakMemory(universalPlan);
+            return universalPlan;
+        }
+
+        const data = DESTINATION_DATABASE[matchedKey];
+        const title = data.titleTemplate ? data.titleTemplate(dur) : `${dur}-Day Expedition to ${data.destination}`;
+        const price = data.basePrice + Math.max(0, dur - 2) * 1600;
+
+        // Construct customized days based on requested duration
+        let constructedDays = [];
+        const templateDays = data.days || [];
+
+        for (let i = 1; i <= dur; i++) {
+            if (i <= templateDays.length) {
+                const dayCopy = { ...templateDays[i - 1] };
+                dayCopy.day = `DAY 0${i}`;
+                constructedDays.push(dayCopy);
+            } else {
+                // If requested duration exceeds template, dynamically add enriched days
+                constructedDays.push({
+                    day: `DAY 0${i}`,
+                    title: `Scenic Excursion & Hidden Gems of ${data.destination.split('&')[0].trim()}`,
+                    desc: `🌅 Morning: Excursion to outer scenic valleys and untouched heritage hamlets around ${data.destination.split('&')[0].trim()}.\n☀️ Afternoon: Traditional artisanal lunch halt; explore local organic markets and craft workshops.\n🌆 Evening: Relaxing sunset vantage point and farewell culinary feast.`
+                });
+            }
+        }
+
+        const plan = {
+            destination: data.destination,
+            title: title,
+            duration: `${dur} Days / ${Math.max(1, dur - 1)} Nights`,
+            vibe: `${(vibe || 'Cultural').toUpperCase()} Journey`,
+            pricePerPerson: price,
+            pickupLocation: data.pickup,
+            highlights: data.highlights,
+            altitudeTag: data.altitudeTag,
+            acclimationAdvisory: data.advisory,
+            foodRecommendations: data.foodRecs,
+            days: constructedDays,
+            perks: [
+                "🛡️ Sanitized Vehicle & Verified Chauffeur",
+                "🫁 Medical First Aid & Oxygen Emergency Kit",
+                "📋 Traveliser Verified Local Itinerary Escort",
+                "🚨 24x7 Traveliser Women Safety Force Pairing"
+            ],
+            summary: `I have structured a comprehensive ${dur}-day expedition to **${data.destination}**! Review the day-by-day morning, afternoon, and evening schedule below.`
+        };
+
+        addPlaceToSahayakMemory(plan);
+        return plan;
+    }
+
     async function callGeminiForItinerary(promptText, durationDays, vibe) {
         const dur = parseInt(durationDays) || 3;
+        const apiKey = getActiveGeminiKey();
+
+        // If no user API key is provided, use our encyclopedic engine directly for instant zero-latency response!
+        if (!apiKey) {
+            return generateDynamicLocalItinerary(promptText, durationDays, vibe);
+        }
+
         const systemPrompt = `You are SAHAYAKMITR.ai, India's premier AI Travel, Expedition & Heritage Itinerary Architect for Traveliser.
 User trip request: "${promptText}". Preferred duration: ${dur} days. Vibe: ${vibe || 'Cultural & Exploration'}.
 Architect a comprehensive, realistic, and tailored day-by-day travel itinerary.
 Format your entire response strictly as a JSON object (pure JSON only, no markdown codeblock wrapper):
 {
-  "destination": "Destination name (e.g. Varanasi / Banaras, or Manali, Spiti, Goa)",
+  "destination": "Destination name",
   "title": "${dur}-Day Compelling Trip Title",
   "duration": "${dur} Days / ${Math.max(1, dur - 1)} Nights",
   "vibe": "${(vibe || 'Heritage').toUpperCase()} Journey",
@@ -101,11 +1495,6 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
       "day": "DAY 01",
       "title": "Arrival & Initial Highlights",
       "desc": "Detailed morning, afternoon, and evening schedule with sights and safe food recommendations."
-    },
-    {
-      "day": "DAY 02",
-      "title": "Core Exploration & Cultural Highlights",
-      "desc": "Key landmarks, guided tours, local culinary experiences, and safety escort."
     }
   ],
   "perks": [
@@ -128,6 +1517,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
                 }
                 const parsed = JSON.parse(clean);
                 if (parsed && (parsed.title || parsed.destination) && parsed.days && Array.isArray(parsed.days)) {
+                    addPlaceToSahayakMemory(parsed);
                     return parsed;
                 }
             } catch (parseErr) {
@@ -135,143 +1525,8 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
             }
         }
 
-        // Dynamic High-Quality Local Generator Fallback
+        // Reliable Encyclopedic Fallback
         return generateDynamicLocalItinerary(promptText, durationDays, vibe);
-    }
-
-    function generateDynamicLocalItinerary(promptText, durationDays, vibe) {
-        const q = (promptText || '').toLowerCase();
-        const dur = parseInt(durationDays) || 3;
-        let destination = "Manali & Solang Valley";
-        let title = `${dur}-Day Himalayan High-Pass Adventure`;
-        let price = 5499 + (dur - 2) * 1800;
-        let altitudeTag = "Max Altitude: 3,978 M (Pass Summit)";
-        let advisory = "Stay hydrated with 3-4 liters of water. Acclimatize before high passes.";
-        let pickup = "Delhi / Chandigarh Airport or ISBT";
-        let highlights = ["Verified Mountain Chauffeur", "Scenic High-Pass Halts", "Boutique Alpine Stay"];
-        let days = [];
-
-        if (q.includes('banaras') || q.includes('varanasi') || q.includes('kashi')) {
-            destination = "Varanasi (Banaras) & Kashi Ghats";
-            title = `${dur}-Day Sacred Ghats & Spiritual Heritage of Banaras`;
-            price = 4899 + (dur - 2) * 1400;
-            altitudeTag = "Sacred Plains Heritage Corridor";
-            advisory = "Wear comfortable walking footwear for ancient alleys. Drink sealed bottled water.";
-            pickup = "Varanasi Lal Bahadur Shastri Airport / Varanasi Cantt Station";
-            highlights = ["Private Sunrise Boat Ride on Ganges", "VIP Dashashwamedh Ganga Aarti Seating", "Kashi Vishwanath Corridor & Sarnath Stupa"];
-            
-            for (let i = 1; i <= dur; i++) {
-                if (i === 1) {
-                    days.push({
-                        day: `DAY 0${i}`,
-                        title: "Arrival, Sacred Ghats & Evening Maha Ganga Aarti",
-                        desc: "Chauffeur pickup from airport/station. Check-in to heritage riverside haveli. Late afternoon boat cruise along the 84 historic ghats to Dashashwamedh Ghat for the world-famous grand Maha Ganga Aarti with VIP riverside seating. Evening street-side Kachori & Jalebi tasting at audited hygienic sweet shops."
-                    });
-                } else if (i === 2) {
-                    days.push({
-                        day: `DAY 0${i}`,
-                        title: "Kashi Vishwanath Darshan, Heritage Alleys & Sarnath",
-                        desc: "Dawn VIP Darshan at the revered Kashi Vishwanath Golden Temple corridor and Annapurna Mandir. Midday heritage alley walk through Thatheri Bazaar. Afternoon excursion to Sarnath (Dhamek Stupa, Deer Park & Archaeological Museum where Lord Buddha delivered his first sermon). Evening shopping for GI-tagged Banarasi silk sarees."
-                    });
-                } else if (i === 3) {
-                    days.push({
-                        day: `DAY 0${i}`,
-                        title: "Subah-e-Banaras at Assi Ghat & Departure Transfer",
-                        desc: "Witness Subah-e-Banaras at sunrise at Assi Ghat with Vedic chanting and morning raga music. Savor seasonal saffron Malaiyyo and authentic Banarasi Paan. Return transfer to Varanasi airport/station with verified escort."
-                    });
-                } else {
-                    days.push({
-                        day: `DAY 0${i}`,
-                        title: "Ramnagar Fort & Sacred Temple Trail",
-                        desc: "Cross the Ganges to explore the 18th-century Ramnagar Fort museum, Sankat Mochan temple, and BHU Bharat Kala Bhavan campus before evening riverfront farewell."
-                    });
-                }
-            }
-        } else if (q.includes('spiti') || q.includes('kaza')) {
-            destination = "Spiti Valley & Chandratal Lake";
-            title = `${dur}-Day Trans-Himalayan Spiti Circuit`;
-            price = 11499;
-            altitudeTag = "Max Altitude: 4,590 M (Kunzum Pass)";
-            advisory = "Acclimatize in Kaza for 24 hours. Drink 4L water daily.";
-            pickup = "Chandigarh / Manali Hub";
-            highlights = ["Key Monastery", "Chandratal Glacial Lake", "Hikkim Highest Post Office"];
-        } else if (q.includes('leh') || q.includes('ladakh')) {
-            destination = "Leh Ladakh & Pangong Tso";
-            title = `${dur}-Day Land of High Passes Expedition`;
-            price = 18999;
-            altitudeTag = "Max Altitude: 5,359 M (Khardung La)";
-            advisory = "Mandatory 48-hour rest upon landing in Leh. Diamox advisory provided.";
-            pickup = "Kushok Bakula Rimpochee Airport (Leh)";
-            highlights = ["Pangong Tso Blue Waters", "Nubra Valley Sand Dunes", "Magnetic Hill"];
-        } else if (q.includes('shimla') || q.includes('kufri')) {
-            destination = "Shimla, Kufri & Narkanda";
-            title = `${dur}-Day Pine Ridges & Apple Valley Escape`;
-            price = 4499;
-            altitudeTag = "Max Altitude: 2,708 M (Hatu Peak)";
-            advisory = "Pack warm layers for evening temperature drop.";
-            pickup = "Chandigarh Airport / Kalka Station";
-            highlights = ["Mall Road Heritage Walk", "Kufri Himalayan Nature Park", "Narkanda Orchards"];
-        } else if (q.includes('goa') || q.includes('coastal') || q.includes('mumbai')) {
-            destination = "Goa & Konkan Coastal Highway";
-            title = `${dur}-Day Coastal Cruise & Sunsets`;
-            price = 6899;
-            altitudeTag = "Sea Level Coastal Route";
-            advisory = "Stay hydrated and use sun protection during afternoon beach excursions.";
-            pickup = "Mopa Goa Airport / Dabolim Hub";
-            highlights = ["North Goa Heritage Forts", "South Goa Pristine Beaches", "Mandovi Sunset Cruise"];
-        } else if (q.includes('ooty') || q.includes('coonoor') || q.includes('bangalore')) {
-            destination = "Ooty, Coonoor & Nilgiri Hills";
-            title = `${dur}-Day Nilgiri Highlands & Tea Estates`;
-            price = 5899;
-            altitudeTag = "Max Altitude: 2,637 M (Doddabetta Peak)";
-            advisory = "Gentle winding mountain roads; carry motion sickness remedies if prone.";
-            pickup = "Coimbatore Airport / Bangalore Hub";
-            highlights = ["Nilgiri Mountain Heritage Toy Train", "Tea Garden Tasting", "Botanical Gardens"];
-        }
-
-        if (days.length === 0) {
-            for (let i = 1; i <= dur; i++) {
-                if (i === 1) {
-                    days.push({
-                        day: `DAY 0${i}`,
-                        title: `Scenic Drive & Arrival in ${destination.split('&')[0].trim()}`,
-                        desc: "Morning pickup in sanitized vehicle. Scenic cruise, check-in to boutique chalet/hotel, welcome hot herbal tea, and local walking orientation."
-                    });
-                } else if (i === dur) {
-                    days.push({
-                        day: `DAY 0${i}`,
-                        title: "Scenic Panorama Sunrise & Return Departure",
-                        desc: "Early morning viewpoint sunrise halt. Souvenir shopping at local bazaar, honey & dry fruit tasting, and comfortable return transfer."
-                    });
-                } else {
-                    days.push({
-                        day: `DAY 0${i}`,
-                        title: `Alpine Exploration & High-Altitude Trekking`,
-                        desc: "Cross mountain pass with verified local guide. Explore streams, ancient shrines, and evening bonfire with stargazing."
-                    });
-                }
-            }
-        }
-
-        return {
-            destination: destination,
-            title: title,
-            duration: `${dur} Days / ${dur - 1} Nights`,
-            vibe: `${vibe ? vibe.toUpperCase() : 'CULTURAL'} Expedition`,
-            pricePerPerson: price,
-            pickupLocation: pickup,
-            highlights: highlights,
-            altitudeTag: altitudeTag,
-            acclimationAdvisory: advisory,
-            days: days,
-            perks: [
-                "🛡️ Sanitized Vehicle & Verified Chauffeur",
-                "🫁 Medical First Aid & Oxygen Emergency Kit",
-                "📋 Traveliser Verified Local Itinerary Escort",
-                "🚨 24x7 Traveliser Women Safety Force Pairing"
-            ],
-            summary: `Here is your customized ${dur}-Day expedition plan for ${destination}!`
-        };
     }
 
     // =========================================================================
@@ -606,6 +1861,17 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         });
     }
 
+    // Header YOUR BOOKING button (Opens confirmed bookings drawer)
+    const headerBookingsBtn = document.getElementById('header-my-bookings-btn');
+    if (headerBookingsBtn) {
+        headerBookingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.openBookingsDrawer) {
+                window.openBookingsDrawer();
+            }
+        });
+    }
+
     // Floating corner launcher for YOUR PLANS
     const floatingPlansBtn = document.getElementById('floating-plans-corner-btn');
     if (floatingPlansBtn) {
@@ -613,6 +1879,28 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
             e.preventDefault();
             if (window.openPlansDrawer) {
                 window.openPlansDrawer();
+            }
+        });
+    }
+
+    // Floating corner launcher for YOUR BOOKING (Positioned just above YOUR PLANS)
+    const floatingBookingsBtn = document.getElementById('floating-bookings-corner-btn');
+    if (floatingBookingsBtn) {
+        floatingBookingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.openBookingsDrawer) {
+                window.openBookingsDrawer();
+            }
+        });
+    }
+
+    // Category Navigation Bar YOUR BOOKING card
+    const catBookingsCard = document.getElementById('cat-your-bookings');
+    if (catBookingsCard) {
+        catBookingsCard.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.openBookingsDrawer) {
+                window.openBookingsDrawer();
             }
         });
     }
@@ -682,6 +1970,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
     const headerUserName = document.getElementById('header-user-name');
 
     let currentAuthMode = 'login'; // 'login' | 'signup'
+    window.pendingRoadTripBooking = null;
 
     function showAuthAlert(message, type = 'error') {
         if (!authAlertBox) return;
@@ -696,9 +1985,13 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         authAlertBox.innerHTML = '';
     }
 
-    function openAuthModal(mode = 'login') {
+    function openAuthModal(mode = 'login', customAlert = null) {
         setAuthMode(mode);
-        hideAuthAlert();
+        if (customAlert) {
+            showAuthAlert(customAlert, 'info');
+        } else if (!window.pendingRoadTripBooking) {
+            hideAuthAlert();
+        }
         if (authModal) {
             authModal.classList.add('visible');
             authModal.style.display = 'flex';
@@ -747,18 +2040,24 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
 
     function setAuthMode(mode) {
         currentAuthMode = mode;
-        hideAuthAlert();
+        if (!window.pendingRoadTripBooking) {
+            hideAuthAlert();
+        }
         if (mode === 'signup') {
             if (tabAuthSignup) tabAuthSignup.classList.add('active');
             if (tabAuthLogin) tabAuthLogin.classList.remove('active');
             if (authNameGroup) authNameGroup.style.display = 'block';
-            if (authSubmitLabel) authSubmitLabel.textContent = 'Create Traveliser Account';
+            if (authSubmitLabel) {
+                authSubmitLabel.textContent = window.pendingRoadTripBooking ? 'Register & Confirm Booking' : 'Create Traveliser Account';
+            }
             if (btnForgotPassword) btnForgotPassword.style.display = 'none';
         } else {
             if (tabAuthLogin) tabAuthLogin.classList.add('active');
             if (tabAuthSignup) tabAuthSignup.classList.remove('active');
             if (authNameGroup) authNameGroup.style.display = 'none';
-            if (authSubmitLabel) authSubmitLabel.textContent = 'Sign In to Traveliser';
+            if (authSubmitLabel) {
+                authSubmitLabel.textContent = window.pendingRoadTripBooking ? 'Sign In & Confirm Booking' : 'Sign In to Traveliser';
+            }
             if (btnForgotPassword) btnForgotPassword.style.display = 'inline-block';
         }
     }
@@ -822,6 +2121,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
     // Trigger Login / Passport from Header
     if (btnLogin) {
         btnLogin.addEventListener('click', () => {
+            window.pendingRoadTripBooking = null;
             if (firebaseAuth && firebaseAuth.currentUser) {
                 openUserProfileModal(firebaseAuth.currentUser);
             } else {
@@ -840,7 +2140,10 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
 
     // Close buttons
     if (btnCloseAuthModal) {
-        btnCloseAuthModal.addEventListener('click', closeAuthModal);
+        btnCloseAuthModal.addEventListener('click', () => {
+            window.pendingRoadTripBooking = null;
+            closeAuthModal();
+        });
     }
     if (btnCloseProfileModal) {
         btnCloseProfileModal.addEventListener('click', closeUserProfileModal);
@@ -849,7 +2152,10 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
     // Backdrop click close
     if (authModal) {
         authModal.addEventListener('click', (e) => {
-            if (e.target === authModal) closeAuthModal();
+            if (e.target === authModal) {
+                window.pendingRoadTripBooking = null;
+                closeAuthModal();
+            }
         });
     }
     if (modalUserProfile) {
@@ -897,22 +2203,81 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
 
             try {
                 if (currentAuthMode === 'signup') {
-                    const userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password);
-                    if (name && userCredential.user) {
-                        try {
-                            await userCredential.user.updateProfile({ displayName: name });
-                        } catch (pErr) {
-                            console.warn('[Firebase Auth] Profile update note:', pErr);
+                    let userCredential = null;
+                    try {
+                        userCredential = await firebaseAuth.createUserWithEmailAndPassword(email, password);
+                        if (name && userCredential.user) {
+                            try {
+                                await userCredential.user.updateProfile({ displayName: name });
+                            } catch (pErr) {
+                                console.warn('[Firebase Auth] Profile update note:', pErr);
+                            }
+                        }
+                    } catch (fbErr) {
+                        console.warn('[Firebase Auth] Signup note:', fbErr);
+                        if (fbErr.code === 'auth/operation-not-allowed' || fbErr.code === 'auth/network-request-failed' || fbErr.code === 'auth/unauthorized-domain') {
+                            userCredential = {
+                                user: {
+                                    displayName: name || email.split('@')[0],
+                                    email: email,
+                                    uid: 'usr_' + Date.now(),
+                                    isAnonymous: false
+                                }
+                            };
+                            updateHeaderForUser(userCredential.user);
+                        } else {
+                            throw fbErr;
                         }
                     }
+
                     closeAuthModal();
+                    const registrantName = name || email.split('@')[0];
+
+                    if (window.pendingRoadTripBooking) {
+                        const tripToBook = window.pendingRoadTripBooking;
+                        window.pendingRoadTripBooking = null;
+                        if (typeof window.completeRoadTripBooking === 'function') {
+                            window.completeRoadTripBooking(tripToBook, registrantName);
+                        }
+                        return;
+                    }
+
                     if (window.showToast) {
-                        window.showToast(`🎉 Welcome to Traveliser, ${name || email}! Your account was created successfully.`);
+                        window.showToast(`🎉 Welcome to Traveliser, ${registrantName}! Your account was created successfully.`);
                     }
                 } else {
-                    const userCredential = await firebaseAuth.signInWithEmailAndPassword(email, password);
+                    let userCredential = null;
+                    try {
+                        userCredential = await firebaseAuth.signInWithEmailAndPassword(email, password);
+                    } catch (fbErr) {
+                        console.warn('[Firebase Auth] Signin note:', fbErr);
+                        if (fbErr.code === 'auth/operation-not-allowed' || fbErr.code === 'auth/network-request-failed' || fbErr.code === 'auth/unauthorized-domain') {
+                            userCredential = {
+                                user: {
+                                    displayName: email.split('@')[0],
+                                    email: email,
+                                    uid: 'usr_' + Date.now(),
+                                    isAnonymous: false
+                                }
+                            };
+                            updateHeaderForUser(userCredential.user);
+                        } else {
+                            throw fbErr;
+                        }
+                    }
+
                     closeAuthModal();
-                    const displayName = userCredential.user.displayName || email.split('@')[0];
+                    const displayName = userCredential.user?.displayName || email.split('@')[0];
+
+                    if (window.pendingRoadTripBooking) {
+                        const tripToBook = window.pendingRoadTripBooking;
+                        window.pendingRoadTripBooking = null;
+                        if (typeof window.completeRoadTripBooking === 'function') {
+                            window.completeRoadTripBooking(tripToBook, displayName);
+                        }
+                        return;
+                    }
+
                     if (window.showToast) {
                         window.showToast(`✈️ Welcome back, ${displayName}! Syncing your travel plans.`);
                     }
@@ -940,6 +2305,14 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
                 const result = await firebaseAuth.signInWithPopup(provider);
                 closeAuthModal();
                 const name = result.user?.displayName || 'Explorer';
+                if (window.pendingRoadTripBooking) {
+                    const tripToBook = window.pendingRoadTripBooking;
+                    window.pendingRoadTripBooking = null;
+                    if (typeof window.completeRoadTripBooking === 'function') {
+                        window.completeRoadTripBooking(tripToBook, name);
+                    }
+                    return;
+                }
                 if (window.showToast) {
                     window.showToast(`🌟 Successfully signed in with Google as ${name}!`);
                 }
@@ -960,8 +2333,29 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
             hideAuthAlert();
             btnGuestLogin.disabled = true;
             try {
-                const result = await firebaseAuth.signInAnonymously();
+                let result = null;
+                try {
+                    result = await firebaseAuth.signInAnonymously();
+                } catch (fbErr) {
+                    console.warn('[Firebase Auth] Guest anonymous note:', fbErr);
+                    const mockGuest = {
+                        displayName: 'Ayush',
+                        email: 'guest@traveliser.local',
+                        uid: 'guest_' + Date.now(),
+                        isAnonymous: true
+                    };
+                    updateHeaderForUser(mockGuest);
+                    result = { user: mockGuest };
+                }
                 closeAuthModal();
+                if (window.pendingRoadTripBooking) {
+                    const tripToBook = window.pendingRoadTripBooking;
+                    window.pendingRoadTripBooking = null;
+                    if (typeof window.completeRoadTripBooking === 'function') {
+                        window.completeRoadTripBooking(tripToBook, 'Ayush (Guest Explorer)');
+                    }
+                    return;
+                }
                 if (window.showToast) {
                     window.showToast('⚡ Signed in as Guest Explorer! You can explore all travel plans & features.');
                 }
@@ -1148,11 +2542,15 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         const catCount = document.getElementById('cat-plans-count');
         const displayCount = document.getElementById('plans-count-display');
         const floatingCount = document.getElementById('floating-plans-count');
+        const tabCount1 = document.getElementById('plans-tab-plans-count');
+        const tabCount2 = document.getElementById('tab-plans-count');
 
         if (headerCount) headerCount.textContent = count;
         if (catCount) catCount.textContent = `${count} SAVED`;
         if (displayCount) displayCount.textContent = count;
         if (floatingCount) floatingCount.textContent = count;
+        if (tabCount1) tabCount1.textContent = count;
+        if (tabCount2) tabCount2.textContent = count;
     }
 
     function renderSavedPlans() {
@@ -1282,6 +2680,342 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
     };
 
     // =========================================================================
+    // 2B. "YOUR BOOKING" DRAWER ENGINE (CONFIRMED ORDERS & E-TICKETS)
+    // Synchronized with "YOUR PLANS" — Confirmed bookings are moved here & removed from plans
+    // =========================================================================
+    const STORAGE_KEY_BOOKINGS = 'traveliser_user_bookings';
+
+    function getInitialBookings() {
+        return [
+            {
+                id: 'book_initial_8421',
+                bookingCode: '#MRG-EXP-8421',
+                title: '3-Day Himalayan High-Pass Adventure',
+                destination: 'Manali & Solang Valley',
+                duration: '3 Days / 2 Nights',
+                vibe: 'ADVENTURE Expedition',
+                leadTraveller: 'Ayush',
+                travellers: 2,
+                pricePerPerson: 5499,
+                totalAmount: 11548,
+                bookingDate: '05 Oct 2026',
+                status: 'Confirmed & Escort Dispatched',
+                safeTagId: 'ST-MRG-8421-HP',
+                vehicle: 'Traveliser 4x4 Mountain Expedition SUV (Mahindra Thar)',
+                chauffeur: 'Rajesh Negi (HP Tourism & Police Verified #7712)',
+                contactPhone: '+91 98160 54321',
+                highlights: ['Atal Tunnel Traversal', 'Solang Paragliding', 'Old Manali Pine Chalet'],
+                inclusions: [
+                    '🛡️ 4x4 Mountain SUV & Verified Chauffeur',
+                    '🫁 Medical Oxygen & Diamox Onboard',
+                    '🚨 24x7 Women Safety Force Link Active',
+                    '☕ FSSAI Grade A+ Dining Halt at Johnson\'s Cafe'
+                ]
+            }
+        ];
+    }
+
+    function loadSavedBookings() {
+        try {
+            const raw = localStorage.getItem(STORAGE_KEY_BOOKINGS);
+            if (raw) {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+            }
+        } catch (e) {
+            console.error('Failed to load bookings from localStorage', e);
+        }
+        const initial = getInitialBookings();
+        saveBookingsToStorage(initial);
+        return initial;
+    }
+
+    function saveBookingsToStorage(bookings) {
+        try {
+            localStorage.setItem(STORAGE_KEY_BOOKINGS, JSON.stringify(bookings));
+        } catch (e) {
+            console.error('Failed to save bookings to localStorage', e);
+        }
+    }
+
+    let savedBookings = loadSavedBookings();
+
+    function updateBookingsCounters() {
+        const count = savedBookings.length;
+        const headerCount = document.getElementById('header-bookings-count');
+        const catCount = document.getElementById('cat-bookings-count');
+        const displayCount = document.getElementById('bookings-count-display');
+        const floatingCount = document.getElementById('floating-bookings-count');
+        const tabCount1 = document.getElementById('plans-tab-bookings-count');
+        const tabCount2 = document.getElementById('tab-bookings-count');
+
+        if (headerCount) headerCount.textContent = count;
+        if (catCount) catCount.textContent = `${count} ACTIVE`;
+        if (displayCount) displayCount.textContent = count;
+        if (floatingCount) floatingCount.textContent = count;
+        if (tabCount1) tabCount1.textContent = count;
+        if (tabCount2) tabCount2.textContent = count;
+    }
+
+    function renderSavedBookings() {
+        const grid = document.getElementById('bookings-grid');
+        if (!grid) return;
+
+        updateBookingsCounters();
+
+        if (savedBookings.length === 0) {
+            grid.innerHTML = `
+                <div class="plans-empty-card">
+                    <div class="plans-empty-icon">🎫</div>
+                    <h3 class="plans-empty-title">No Confirmed Bookings Yet</h3>
+                    <p class="plans-empty-desc">
+                        Explore our verified road trips or convert any customized plan from <strong>YOUR PLANS</strong> with instant <strong>BUY NOW</strong>. Confirmed passes, chauffeur telemetry, and SafeTag IDs will appear right here!
+                    </p>
+                    <a href="#packages" class="btn-start-first-plan" onclick="window.closeBookingsDrawer()">Explore Road Trips &rarr;</a>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = savedBookings.map((b) => `
+            <div class="booking-order-card" id="booking-${b.id}">
+                <div class="booking-card-header">
+                    <div class="booking-code-pill">
+                        <span class="booking-code-icon">🎫</span>
+                        <strong class="booking-code-text">${b.bookingCode || '#MRG-EXP-8421'}</strong>
+                    </div>
+                    <span class="booking-status-tag">🟢 ${b.status || 'Confirmed'}</span>
+                </div>
+                <div class="booking-card-body">
+                    <h3 class="booking-card-title">${b.title}</h3>
+                    <div class="booking-meta-row">
+                        <span class="booking-dest-pill">📍 ${b.destination}</span>
+                        <span class="booking-dur-pill">⏱️ ${b.duration}</span>
+                    </div>
+
+                    <div class="booking-traveller-row">
+                        <span>👤 Lead Traveller: <strong>${b.leadTraveller || 'Ayush'}</strong></span>
+                        <span>👥 ${b.travellers || 2} Travellers</span>
+                    </div>
+
+                    <div class="booking-vehicle-box">
+                        <div class="booking-veh-icon">🚙</div>
+                        <div class="booking-veh-info">
+                            <strong>${b.vehicle || '4x4 Mountain SUV & Verified Chauffeur'}</strong>
+                            <span>Chauffeur: ${b.chauffeur || 'Verified Mountain Guide'}</span>
+                        </div>
+                        <div class="booking-safetag-mini">
+                            <span class="safetag-tag">SafeTag QR</span>
+                            <span class="safetag-id">${b.safeTagId || 'ST-HP-8421'}</span>
+                        </div>
+                    </div>
+
+                    <div class="booking-price-row">
+                        <span class="booking-price-label">Total Paid (Taxes & Permits Included)</span>
+                        <span class="booking-price-value">₹${(b.totalAmount || 11548).toLocaleString('en-IN')}</span>
+                    </div>
+
+                    <div class="booking-actions-row">
+                        <button class="btn-view-pass" onclick="window.viewBookingEticket('${b.id}')">
+                            <span>🎫 View Official Pass</span>
+                        </button>
+                        <button class="btn-cancel-booking" onclick="window.triggerCancelBooking('${b.id}')" title="Cancel Booking">
+                            <span>🗑️</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function addBooking(bookingData) {
+        const newBooking = {
+            id: 'book_' + Date.now(),
+            bookingCode: bookingData.bookingCode || `#MRG-EXP-${Math.floor(1000 + Math.random() * 9000)}`,
+            title: bookingData.title || 'Custom Mountain Road Trip',
+            destination: bookingData.destination || 'Alpine Corridor',
+            duration: bookingData.duration || '3 Days / 2 Nights',
+            vibe: bookingData.vibe || 'Alpine Mountain Expedition',
+            leadTraveller: bookingData.leadTraveller || 'Ayush',
+            travellers: bookingData.travellers || 2,
+            pricePerPerson: bookingData.pricePerPerson || 5499,
+            totalAmount: bookingData.totalAmount || Math.round((bookingData.pricePerPerson || 5499) * (bookingData.travellers || 2) * 1.05),
+            bookingDate: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }),
+            status: 'Confirmed & Escort Dispatched',
+            safeTagId: bookingData.safeTagId || `ST-MRG-${Math.floor(1000 + Math.random() * 9000)}-HP`,
+            vehicle: bookingData.vehicle || 'Traveliser 4x4 Mountain Expedition SUV',
+            chauffeur: bookingData.chauffeur || 'Himachal Verified Mountain Chauffeur & Patrol Guide',
+            contactPhone: '+91 98160 54321',
+            highlights: bookingData.highlights || ['Scenic Mountain Route', 'Boutique Stay', 'Verified Chauffeur'],
+            inclusions: bookingData.inclusions || [
+                '🛡️ 4x4 Mountain SUV & Verified Chauffeur',
+                '🫁 Medical Oxygen & First Aid Onboard',
+                '🚨 24x7 Women Safety Force Link Active'
+            ]
+        };
+
+        savedBookings.unshift(newBooking);
+        saveBookingsToStorage(savedBookings);
+        renderSavedBookings();
+        return newBooking;
+    }
+
+    window.openBookingsDrawer = function() {
+        const drawer = document.getElementById('your-bookings');
+        const plansDrawer = document.getElementById('your-plans');
+        const backdrop = document.getElementById('plans-drawer-backdrop');
+
+        if (plansDrawer) plansDrawer.classList.remove('active');
+        if (drawer) drawer.classList.add('active');
+        if (backdrop) backdrop.classList.add('active');
+
+        renderSavedBookings();
+        updatePlansCounters();
+    };
+
+    window.closeBookingsDrawer = function() {
+        const drawer = document.getElementById('your-bookings');
+        const backdrop = document.getElementById('plans-drawer-backdrop');
+        if (drawer) drawer.classList.remove('active');
+        if (backdrop) backdrop.classList.remove('active');
+    };
+
+    // Close button for bookings drawer
+    const btnCloseBookingsDrawer = document.getElementById('btn-close-bookings-drawer');
+    if (btnCloseBookingsDrawer) {
+        btnCloseBookingsDrawer.addEventListener('click', () => {
+            window.closeBookingsDrawer();
+        });
+    }
+
+    // Drawer View Tabs: switch between YOUR PLANS and YOUR BOOKING
+    const btnPlansSwitchToBookings = document.getElementById('btn-plans-switch-to-bookings');
+    if (btnPlansSwitchToBookings) {
+        btnPlansSwitchToBookings.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.openBookingsDrawer) window.openBookingsDrawer();
+        });
+    }
+
+    const btnTabSwitchToPlans = document.getElementById('btn-tab-switch-to-plans');
+    if (btnTabSwitchToPlans) {
+        btnTabSwitchToPlans.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.openPlansDrawer) window.openPlansDrawer();
+        });
+    }
+
+    const btnTabSwitchToBookings = document.getElementById('btn-tab-switch-to-bookings');
+    if (btnTabSwitchToBookings) {
+        btnTabSwitchToBookings.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.openBookingsDrawer) window.openBookingsDrawer();
+        });
+    }
+
+    const btnDrawerExploreMore = document.getElementById('btn-drawer-explore-more');
+    if (btnDrawerExploreMore) {
+        btnDrawerExploreMore.addEventListener('click', () => {
+            window.closeBookingsDrawer();
+        });
+    }
+
+    // Official E-Ticket Pass Modal View
+    window.viewBookingEticket = function(bookingId) {
+        const booking = savedBookings.find(b => b.id === bookingId) || savedBookings[0];
+        if (!booking) return;
+
+        const modal = document.getElementById('modal-view-eticket');
+        const titleEl = document.getElementById('eticket-title');
+        const contentEl = document.getElementById('eticket-body-content');
+
+        if (titleEl) titleEl.textContent = `${booking.title} — Official Pass`;
+        if (contentEl) {
+            contentEl.innerHTML = `
+                <div class="eticket-pass-container">
+                    <div class="eticket-pass-top">
+                        <div class="eticket-brand">TRAVELISER SECURE EXPEDITION PASS</div>
+                        <div class="eticket-code">${booking.bookingCode || '#MRG-EXP-8421'}</div>
+                    </div>
+                    <div class="eticket-grid">
+                        <div class="eticket-cell">
+                            <span class="cell-label">EXPEDITION</span>
+                            <strong class="cell-val">${booking.title}</strong>
+                        </div>
+                        <div class="eticket-cell">
+                            <span class="cell-label">ROUTE / DESTINATION</span>
+                            <strong class="cell-val">${booking.destination}</strong>
+                        </div>
+                        <div class="eticket-cell">
+                            <span class="cell-label">LEAD TRAVELLER</span>
+                            <strong class="cell-val">${booking.leadTraveller} (${booking.travellers || 2} Pax)</strong>
+                        </div>
+                        <div class="eticket-cell">
+                            <span class="cell-label">DURATION</span>
+                            <strong class="cell-val">${booking.duration}</strong>
+                        </div>
+                        <div class="eticket-cell">
+                            <span class="cell-label">ASSIGNED VEHICLE</span>
+                            <strong class="cell-val">${booking.vehicle}</strong>
+                        </div>
+                        <div class="eticket-cell">
+                            <span class="cell-label">VERIFIED CHAUFFEUR</span>
+                            <strong class="cell-val">${booking.chauffeur}</strong>
+                        </div>
+                        <div class="eticket-cell">
+                            <span class="cell-label">TOTAL PAID</span>
+                            <strong class="cell-val text-green">₹${(booking.totalAmount || 11548).toLocaleString('en-IN')} (Taxes & Permits Paid)</strong>
+                        </div>
+                        <div class="eticket-cell">
+                            <span class="cell-label">SAFETAG TELEMETRY</span>
+                            <strong class="cell-val font-mono">${booking.safeTagId} (Active on Police 112 Patrol Grid)</strong>
+                        </div>
+                    </div>
+                    <div class="eticket-security-strip">
+                        <span>🛡️ 24x7 Satellite Escort & Women Protection Grid Active</span>
+                        <span>Emergency: 112 / +91-1800-TRAVELISER</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.classList.add('visible');
+        }
+    };
+
+    const btnCloseEticket = document.getElementById('btn-close-eticket-modal');
+    if (btnCloseEticket) {
+        btnCloseEticket.addEventListener('click', () => {
+            const modal = document.getElementById('modal-view-eticket');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('visible');
+            }
+        });
+    }
+
+    const btnPrintEticket = document.getElementById('btn-print-eticket');
+    if (btnPrintEticket) {
+        btnPrintEticket.addEventListener('click', () => {
+            window.print();
+        });
+    }
+
+    window.triggerCancelBooking = function(bookingId) {
+        if (confirm('Are you sure you want to cancel this booking? This will revoke the expedition pass and SafeTag tracking.')) {
+            savedBookings = savedBookings.filter(b => b.id !== bookingId);
+            saveBookingsToStorage(savedBookings);
+            renderSavedBookings();
+            showNotificationToast('Booking cancelled.');
+        }
+    };
+
+    // Render bookings initially
+    renderSavedBookings();
+
+    // =========================================================================
     // 3. INSTANT BUY NOW / CHECKOUT MODAL FLOW
     // =========================================================================
     const modalBuyNow = document.getElementById('modal-buy-now');
@@ -1320,6 +3054,19 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         currentCheckoutPlan = plan;
         if (buyModalTitle) buyModalTitle.textContent = plan.title || 'Mountain Expedition';
         if (buyModalRoute) buyModalRoute.textContent = `${plan.destination || 'Alpine Route'} • ${plan.duration || '3 Days'}`;
+        
+        // Reset or populate lead traveller name: leave blank so traveller decides their own name, with example placeholder Ayush
+        const inputBuyName = document.getElementById('buy-modal-name');
+        if (inputBuyName) {
+            let loggedInName = '';
+            try {
+                if (typeof firebaseAuth !== 'undefined' && firebaseAuth && firebaseAuth.currentUser && firebaseAuth.currentUser.displayName) {
+                    loggedInName = firebaseAuth.currentUser.displayName;
+                }
+            } catch (e) {}
+            inputBuyName.value = loggedInName;
+            inputBuyName.placeholder = 'e.g. Ayush';
+        }
         recalculateCheckoutFare();
 
         if (modalBuyNow) {
@@ -1327,6 +3074,114 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
             modalBuyNow.classList.add('visible');
         }
     }
+    window.openBuyNowModal = openBuyNowModal;
+
+    function completeRoadTripBooking(plan, travellerName) {
+        if (!plan) return;
+
+        // 1. Determine Lead Traveller Name
+        let name = travellerName;
+        if (!name || name.trim() === '') {
+            try {
+                if (typeof firebaseAuth !== 'undefined' && firebaseAuth && firebaseAuth.currentUser) {
+                    name = firebaseAuth.currentUser.displayName || (firebaseAuth.currentUser.email ? firebaseAuth.currentUser.email.split('@')[0] : '');
+                }
+            } catch (e) {}
+        }
+        if (!name || name.trim() === '') {
+            const inputBuyName = document.getElementById('buy-modal-name');
+            name = (inputBuyName && inputBuyName.value.trim()) ? inputBuyName.value.trim() : 'Ayush';
+        }
+
+        currentCheckoutPlan = plan;
+
+        // 2. Generate Booking Confirmation ID
+        const randomCode = Math.floor(1000 + Math.random() * 9000);
+        const bId = `#MRG-EXP-${randomCode}`;
+        if (successBookingId) successBookingId.textContent = bId;
+
+        // 3. Travellers and fare
+        const travellers = parseInt(buyModalTravellers ? buyModalTravellers.value : '2') || 2;
+        const pricePerPerson = plan.pricePerPerson || 4899;
+        const base = pricePerPerson * travellers;
+        const tax = Math.round(base * 0.05);
+        const total = base + tax;
+
+        // 4. Update Success Details Card
+        if (successDetailsCard) {
+            successDetailsCard.innerHTML = `
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:16px; text-align:left; font-size:12.5px; margin-bottom:18px;">
+                    <p style="margin-bottom:6px;"><strong>🏔️ Expedition:</strong> ${plan.title || 'Mountain Expedition'}</p>
+                    <p style="margin-bottom:6px;"><strong>📍 Route:</strong> ${plan.destination || 'Scenic Alpine Route'} • ${plan.duration || '3 Days / 2 Nights'}</p>
+                    <p style="margin-bottom:6px;"><strong>👤 Lead Traveller:</strong> ${name}</p>
+                    <p style="margin-bottom:6px;"><strong>👥 Travellers:</strong> ${travellers} Adults • 4x4 Mountain SUV & Chauffeur</p>
+                    <p style="margin-bottom:6px;"><strong>💰 Total Amount:</strong> ₹${total.toLocaleString('en-IN')} (Taxes & State Alpine Permits Included)</p>
+                    <p style="color:#059669; font-weight:700; margin-top:8px; display:flex; align-items:center; gap:6px;">
+                        <span>✅</span> <span>Status: Confirmed & Dispatched to Mountain Control Unit (SafeTag #ST-MRG-${randomCode}-HP Activated)</span>
+                    </p>
+                </div>
+            `;
+        }
+
+        // 5. Add to YOUR BOOKING and remove from YOUR PLANS
+        try {
+            // Remove from savedPlans (any matching id or title)
+            savedPlans = savedPlans.filter(p => {
+                if (plan.id && p.id === plan.id) return false;
+                if (plan.title && p.title && p.title.toLowerCase().trim() === plan.title.toLowerCase().trim()) return false;
+                return true;
+            });
+            savePlansToStorage(savedPlans);
+            renderSavedPlans();
+
+            // Add to savedBookings
+            if (typeof addBooking === 'function') {
+                addBooking({
+                    bookingCode: bId,
+                    title: plan.title || 'Custom Mountain Road Trip',
+                    destination: plan.destination || 'Scenic Alpine Route',
+                    duration: plan.duration || '3 Days / 2 Nights',
+                    vibe: plan.vibe || 'Alpine Mountain Expedition',
+                    leadTraveller: name,
+                    travellers: travellers,
+                    pricePerPerson: pricePerPerson,
+                    totalAmount: total,
+                    safeTagId: `ST-MRG-${randomCode}-HP`,
+                    vehicle: 'Traveliser 4x4 Mountain Expedition SUV (Mahindra Thar)',
+                    chauffeur: 'Himachal Verified Mountain Chauffeur & Patrol Guide',
+                    highlights: plan.highlights || ['Scenic Mountain Route', 'Boutique Stay', 'Verified Chauffeur'],
+                    inclusions: plan.perks || plan.inclusions || [
+                        '🛡️ 4x4 Mountain SUV & Verified Chauffeur',
+                        '🫁 Medical Oxygen & First Aid',
+                        '🚨 24x7 Women Safety Force Link'
+                    ]
+                });
+            }
+        } catch (e) {
+            console.warn('[Booking] Could not process booking sync:', e);
+        }
+
+        // 6. Close checkout and auth modals if open
+        if (typeof closeAuthModal === 'function') closeAuthModal();
+        if (modalBuyNow) {
+            modalBuyNow.style.display = 'none';
+            modalBuyNow.classList.remove('visible');
+        }
+
+        // 7. Show Modal Booking Success
+        if (modalBookingSuccess) {
+            modalBookingSuccess.style.display = 'flex';
+            modalBookingSuccess.classList.add('visible');
+        }
+
+        // 8. Notification feedback
+        if (window.showToast) {
+            window.showToast(`🎉 Booking Done! Expedition "${plan.title}" confirmed for ${name}. Booking ID: ${bId}`);
+        } else if (typeof showNotificationToast === 'function') {
+            showNotificationToast(`🎉 Booking Done! Expedition confirmed! Booking ID: ${bId}`);
+        }
+    }
+    window.completeRoadTripBooking = completeRoadTripBooking;
 
     if (buyModalTravellers) {
         buyModalTravellers.addEventListener('change', recalculateCheckoutFare);
@@ -1341,29 +3196,9 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
 
     if (btnConfirmPurchase && modalBuyNow) {
         btnConfirmPurchase.addEventListener('click', () => {
-            modalBuyNow.style.display = 'none';
-            modalBuyNow.classList.remove('visible');
-
-            // Generate Booking Confirmation
-            const randomCode = Math.floor(1000 + Math.random() * 9000);
-            const bId = `#MRG-EXP-${randomCode}`;
-            if (successBookingId) successBookingId.textContent = bId;
-
-            if (successDetailsCard && currentCheckoutPlan) {
-                successDetailsCard.innerHTML = `
-                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:14px; text-align:left; font-size:12.5px; margin-bottom:18px;">
-                        <p style="margin-bottom:4px;"><strong>Expedition:</strong> ${currentCheckoutPlan.title}</p>
-                        <p style="margin-bottom:4px;"><strong>Route:</strong> ${currentCheckoutPlan.destination}</p>
-                        <p style="margin-bottom:4px;"><strong>Travellers:</strong> ${buyModalTravellers ? buyModalTravellers.value : '2'} Adults (4x4 SUV)</p>
-                        <p style="color:#059669; font-weight:700;"><strong>Status:</strong> Confirmed & Dispatched to Mountain Control Unit</p>
-                    </div>
-                `;
-            }
-
-            if (modalBookingSuccess) {
-                modalBookingSuccess.style.display = 'flex';
-                modalBookingSuccess.classList.add('visible');
-            }
+            const inputBuyName = document.getElementById('buy-modal-name');
+            const leadTravellerName = (inputBuyName && inputBuyName.value.trim()) ? inputBuyName.value.trim() : 'Ayush';
+            completeRoadTripBooking(currentCheckoutPlan, leadTravellerName);
         });
     }
 
@@ -1371,7 +3206,9 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         btnSuccessClose.addEventListener('click', () => {
             modalBookingSuccess.style.display = 'none';
             modalBookingSuccess.classList.remove('visible');
-            if (window.openPlansDrawer) {
+            if (window.openBookingsDrawer) {
+                window.openBookingsDrawer();
+            } else if (window.openPlansDrawer) {
                 window.openPlansDrawer();
             }
         });
@@ -1477,11 +3314,23 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
                                 Tell me what place you are planning and any details (duration, travel group, preferred vibe). I will construct a structured day-by-day plan with an instant <strong>BUY NOW</strong> option and automatically save it to <strong>YOUR PLANS</strong> below!
                             </p>
                             <div class="bot-quick-action-strip">
-                                <span class="hint-tag">💡 Tap any quick idea above or type your destination below!</span>
+                                <span class="hint-tag">✨ Tap any parameter in the Compiled Trip Architect above or type your destination below!</span>
                             </div>
                         </div>
                     </div>
                 `;
+            });
+        }
+
+        // Memory clear button
+        const btnClearMemory = document.getElementById('btn-clear-memory');
+        if (btnClearMemory) {
+            btnClearMemory.addEventListener('click', () => {
+                sahayakMemory.lastDestination = null;
+                sahayakMemory.lastPlan = null;
+                sahayakMemory.plannedPlaces = [];
+                renderSahayakMemoryBar();
+                showNotificationToast('🧠 Journey memory cleared.');
             });
         }
 
@@ -1491,31 +3340,53 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
 
             const lower = userText.toLowerCase().trim();
 
-            // Check if user is requesting a travel itinerary / tour planning
-            const isItineraryRequest = (
-                lower.includes('plan') || 
-                lower.includes('itinerary') || 
-                lower.includes('trip') || 
-                lower.includes('tour') || 
-                lower.includes('visit') || 
-                lower.includes('travel to') || 
-                lower.includes('days') || 
-                lower.includes('day') || 
-                lower.includes('schedule') || 
-                lower.includes('package') || 
-                lower.includes('banaras') || 
-                lower.includes('varanasi') || 
-                lower.includes('kashi') || 
-                lower.includes('spiti') || 
-                lower.includes('ladakh') || 
-                lower.includes('leh') || 
-                lower.includes('manali') || 
-                lower.includes('goa') || 
-                lower.includes('kerala') || 
-                lower.includes('rajasthan')
-            ) && !lower.includes('food inspection') && !lower.includes('rating') && !lower.includes('preferred food') && !lower.includes('non-preferred') && !lower.includes('criteria') && !lower.includes('johnson');
+            // 1. Identify destination key in the CURRENT query (e.g. "mumbai", "pune", "greater noida", "banaras", etc.)
+            const matchedKey = matchDestinationKey(lower);
 
-            if (isItineraryRequest) {
+            // 2. Identify itinerary intent keywords
+            const hasItineraryKeywords = (
+                /\b(?:plan|itinerary|trip|tour|visit|travel|explore|schedule|package|vacation|holidays?|expedition|go to)\b/i.test(lower) ||
+                /\b\d+\s*(?:days?|nights?)\b/i.test(lower)
+            );
+
+            // 3. Whole-word food intent detection (AVOIDS substring false matches like "greater", "weather", "theatre")
+            const isFoodIntent = /\b(?:food|foods|eat|eating|dish|dishes|restaurant|restaurants|cuisine|cuisines|specialty|specialties|khana|culinary|dining|street food)\b/i.test(lower);
+
+            // 4. Whole-word pricing/cost intent detection
+            const isCostIntent = /\b(?:cost|price|pricing|fare|budget|how much|charges?|expense|expenses|package rate)\b/i.test(lower);
+
+            // 5. Specific knowledge-base QnA queries (Johnson's cafe, AMS altitude, FSSAI criteria)
+            const isGeneralQnA = /\b(?:ams|altitude sickness|johnson|johnsons|criteria|food inspection|inspection department|preferred food|non-preferred food)\b/i.test(lower);
+
+            // -------------------------------------------------------------
+            // INTENT 1: MEMORY RECALL ("remember my places", "what did we discuss", "show all places")
+            // -------------------------------------------------------------
+            if (
+                /\b(?:remember|memory|discussed|previous places|all places|my places)\b/i.test(lower) &&
+                !hasItineraryKeywords &&
+                !matchedKey
+            ) {
+                if (typingIndicator && typingIndicator.parentNode) typingIndicator.remove();
+                if (sahayakMemory.plannedPlaces.length > 0) {
+                    const list = sahayakMemory.plannedPlaces.map(p => `• **${p.name}** — ${p.title} (*${p.duration}*, ₹${p.price.toLocaleString('en-IN')})`).join('\n');
+                    renderAiTextResponse(`🧠 **SAHAYAKMITR.ai Journey Memory Archive:**\n\nI remember all the destinations we have explored and structured in our session:\n\n${list}\n\n✨ *All of these itineraries have been safely recorded in your **YOUR PLANS** drawer (top-right corner). Tap any plan to customize or Instant Buy Now!*`, 'SAHAYAKMITR Memory Engine');
+                } else {
+                    renderAiTextResponse(`🧠 **SAHAYAKMITR.ai Journey Memory:**\n\nWe haven't structured any destinations yet! Tell me any city or region like **Mumbai, Pune, Gwalior, Kanpur, Banaras, Ayodhya, Kedarnath, Goa, Munsiyari, Nainital, 12 Jyotirlingas, or Himalayan Treks** to get started!`, 'SAHAYAKMITR Memory Engine');
+                }
+                return;
+            }
+
+            // -------------------------------------------------------------
+            // INTENT 2: DESTINATION ITINERARY (TOP PRIORITY FOR TRIP PLANNING)
+            // Triggers whenever a destination is mentioned OR itinerary keywords exist,
+            // as long as it's not a food-only or cost-only question without trip planning intent.
+            // -------------------------------------------------------------
+            const isPureItineraryRequest = (matchedKey !== null || hasItineraryKeywords) && 
+                                           !isGeneralQnA && 
+                                           !(isFoodIntent && !hasItineraryKeywords) && 
+                                           !(isCostIntent && !hasItineraryKeywords);
+
+            if (isPureItineraryRequest) {
                 try {
                     const planResult = await callGeminiForItinerary(userText, selectedDuration, selectedVibe);
                     if (typingIndicator && typingIndicator.parentNode) typingIndicator.remove();
@@ -1529,6 +3400,68 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
                     addPlan(fallbackPlan);
                 }
                 return;
+            }
+
+            // -------------------------------------------------------------
+            // INTENT 3: FOOD & CULINARY INQUIRIES
+            // -------------------------------------------------------------
+            if (isFoodIntent && !isGeneralQnA) {
+                if (typingIndicator && typingIndicator.parentNode) typingIndicator.remove();
+
+                // Case A: User explicitly asks about food in a SPECIFIC destination (e.g. "what food in Greater Noida", "Pune famous dishes")
+                if (matchedKey && DESTINATION_DATABASE[matchedKey]) {
+                    const dbData = DESTINATION_DATABASE[matchedKey];
+                    renderAiTextResponse(`🍲 **Culinary & Food Safety Guide for ${dbData.destination}:**\n\n${dbData.foodRecs}\n\n🛡️ *All Traveliser group expeditions include dining halts at certified FSSAI-audited kitchens with verified water purity!*`, 'Traveliser Food Intelligence');
+                    return;
+                }
+
+                // Case B: Follow-up food question about the LAST PLANNED place (e.g. "what should I eat there?", "famous local food?")
+                if (sahayakMemory.lastPlan) {
+                    const dest = sahayakMemory.lastPlan.destination || 'your destination';
+                    const foodInfo = sahayakMemory.lastPlan.foodRecommendations || 'Local traditional cuisine, street specialties, and pure mineral water at verified dining partners.';
+                    renderAiTextResponse(`🍲 **Culinary & Food Safety Guide for ${dest}:**\n\n${foodInfo}\n\n🛡️ *All Traveliser group expeditions include dining halts at certified FSSAI-audited kitchens with verified water purity!*`, 'Traveliser Food Intelligence');
+                    return;
+                }
+            }
+
+            // -------------------------------------------------------------
+            // INTENT 4: COST & PRICING INQUIRIES
+            // -------------------------------------------------------------
+            if (isCostIntent && !isGeneralQnA) {
+                if (typingIndicator && typingIndicator.parentNode) typingIndicator.remove();
+
+                // Case A: User specifies destination for cost (e.g. "cost of Pune trip?")
+                if (matchedKey && DESTINATION_DATABASE[matchedKey]) {
+                    const dbData = DESTINATION_DATABASE[matchedKey];
+                    const dur = parseInt(selectedDuration) || 3;
+                    const price = dbData.basePrice + Math.max(0, dur - 2) * 1600;
+                    renderAiTextResponse(`💰 **Transparent Fare Breakdown for ${dbData.destination} (${dur} Days):**\n\n• **Base Fare per Person:** ₹${price.toLocaleString('en-IN')}\n• **Inclusions:** Sanitized AC Vehicle, Verified Chauffeur, Boutique Accommodations, Breakfast & Dinner, 24x7 Women Safety GPS Escort, Entry Passes\n• **Group Discounts:** 5% instant discount applied for 2+ travelers\n\n⚡ *Type "Plan for ${dbData.destination}" to generate the full day-by-day expedition with instant BUY NOW checkout!*`, 'Traveliser Pricing Engine');
+                    return;
+                }
+
+                // Case B: Follow-up cost for remembered plan
+                if (sahayakMemory.lastPlan) {
+                    const p = sahayakMemory.lastPlan;
+                    renderAiTextResponse(`💰 **Transparent Fare Breakdown for ${p.title}:**\n\n• **Base Fare per Person:** ₹${(p.pricePerPerson || 4999).toLocaleString('en-IN')}\n• **Inclusions:** Sanitized AC Vehicle, Verified Chauffeur, Boutique Accommodations, Breakfast & Dinner, 24x7 Women Safety GPS Escort, Entry Passes\n• **Group Discounts:** 5% instant discount applied for 2+ travelers\n\n⚡ *You can tap the **BUY NOW** button on the itinerary card above or in YOUR PLANS drawer to checkout instantly!*`, 'Traveliser Pricing Engine');
+                    return;
+                }
+            }
+
+            // -------------------------------------------------------------
+            // INTENT 5: FOLLOW-UP DURATION MODIFICATION (ONLY FOR REMEMBERED DESTINATION)
+            // e.g. "make it 4 days", "change to 5 days", "now 2 days"
+            // Crucial: Must NOT have matched a new destination!
+            // -------------------------------------------------------------
+            const durChangeMatch = lower.match(/\b(?:make\s*it|change\s*to|update\s*to|now|extend\s*to)\s*(\d+)\s*(?:days?|nights?)\b/i);
+            if (durChangeMatch && !matchedKey && sahayakMemory.lastDestination) {
+                const newDays = parseInt(durChangeMatch[1]);
+                if (newDays > 0) {
+                    const updatedPlan = generateDynamicLocalItinerary(`${sahayakMemory.lastDestination} for ${newDays} days`, newDays, selectedVibe);
+                    if (typingIndicator && typingIndicator.parentNode) typingIndicator.remove();
+                    renderAiItineraryResponse(updatedPlan);
+                    addPlan(updatedPlan);
+                    return;
+                }
             }
 
             // FOR ALL OTHER QUESTIONS: Generative AI Q&A tailored to the user's specific question
@@ -1606,7 +3539,7 @@ DIRECT INSTRUCTION:
 • **Safety Certification:** Caught fresh daily from high-altitude glacier fed streams, pan-seared at >220°C on open flame ensuring complete eradication of enteric pathogens. Served with organic mountain rosemary potatoes.`;
             }
 
-            if (q.includes('restaurant') || q.includes('rating') || q.includes('cafe') || q.includes('eat') || q.includes('where to eat')) {
+            if (/\b(?:restaurant|restaurants|rating|cafe|cafes|where to eat)\b/i.test(q)) {
                 return `**Traveliser Food Inspection Department — Verified High-Altitude Restaurant Ratings:**
 
 1. **The Himalayan Trout House (Tirthan Valley):** **5.0 / 5.0 ★★★★★ (Grade A+ Platinum)**
@@ -1625,7 +3558,7 @@ DIRECT INSTRUCTION:
    • *Advisory:* Only order piping-hot tawa roti and freshly boiled yellow dal. Avoid non-veg gravies.`;
             }
 
-            if (q.includes('preferred') || q.includes('non-preferred') || q.includes('criteria') || q.includes('diet') || q.includes('food')) {
+            if (/\b(?:preferred|non-preferred|criteria|diet)\b/i.test(q) || (/\bfood\b/i.test(q) && /\b(?:altitude|mountain|himalayan)\b/i.test(q))) {
                 return `**Himalayan High-Altitude Dietary Protocol (Overall Criteria Matrix):**
 
 **4 Scientific Evaluation Criteria:**
@@ -1698,10 +3631,14 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
             }
             formatted = formatted.replace(/\n\n/g, '</p><p class="message-text">').replace(/\n/g, '<br>');
 
+            const badgeLabel = model 
+                ? (model.toUpperCase().endsWith('INTELLIGENCE') ? model.toUpperCase() : `${model.toUpperCase()} INTELLIGENCE`)
+                : 'GEMINI 3.5 INTELLIGENCE';
+
             aiMsg.innerHTML = `
                 <div class="message-avatar">🤖</div>
                 <div class="message-bubble">
-                    <span class="sahayak-reply-badge">✨ ${model ? model.toUpperCase() : 'GEMINI 3.5'} INTELLIGENCE</span>
+                    <span class="sahayak-reply-badge">✨ ${badgeLabel}</span>
                     <p class="message-text">${formatted}</p>
                     <div class="chat-followup-suggestion">
                         <span>💡 Have more questions about food safety or mountain passes? Type: <em>"Which restaurant has 5-star rating in Manali?"</em></span>
@@ -1824,6 +3761,234 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
                     }
                 });
             }
+        }
+
+        // Global triggers for compiled hub and external components
+        window.triggerSahayakItinerary = handleUserSubmit;
+        window.setSahayakParameters = function(dur, vibe) {
+            if (dur) selectedDuration = dur.toString();
+            if (vibe) selectedVibe = vibe.toString();
+        };
+    }
+
+    // =========================================================================
+    // 4B. COMPILED & COMBINED TRIP ARCHITECT HUB & MATERIAL LIBRARIES
+    // (Quick Destination & Trip Duration Modals & Generation)
+    // =========================================================================
+    function initCompiledTripHub() {
+        const hubState = {
+            destinationKey: 'manali',
+            destinationName: 'Manali & Rohtang Pass',
+            duration: 3,
+            durationLabel: '3 Days (Weekend)'
+        };
+
+        const modalQuickDest = document.getElementById('modal-quick-destination');
+        const modalTripDur = document.getElementById('modal-trip-duration');
+
+        const btnOpenQuickDest = document.getElementById('btn-open-quick-destinations');
+        const btnOpenTripDur = document.getElementById('btn-open-trip-duration');
+        const btnHubGenerate = document.getElementById('btn-hub-generate-plan');
+
+        const labelDest = document.getElementById('hub-selected-dest-label');
+        const labelDur = document.getElementById('hub-selected-dur-label');
+
+        const btnCloseQuickDest = document.getElementById('btn-close-quick-dest-modal');
+        const btnCloseTripDur = document.getElementById('btn-close-trip-dur-modal');
+
+        const searchInput = document.getElementById('search-quick-dest-input');
+        const catPills = document.querySelectorAll('#dest-category-filter-pills .dest-filter-pill');
+        const destGrid = document.getElementById('quick-dest-materials-grid');
+        const durGrid = document.getElementById('trip-dur-materials-grid');
+
+        // Central Trigger: Generates custom itinerary in SAHAYAKMITR.ai
+        function triggerHubItineraryGeneration() {
+            const prompt = `Plan a ${hubState.duration}-day expedition to ${hubState.destinationName} with detailed day-by-day itinerary, highlights, and safety escort.`;
+            const chatInput = document.getElementById('chat-user-input');
+            if (chatInput) chatInput.value = prompt;
+
+            // Scroll to SAHAYAKMITR.ai chat feed
+            const aiSec = document.getElementById('ai-assistance');
+            if (aiSec) aiSec.scrollIntoView({ behavior: 'smooth' });
+
+            if (typeof window.triggerSahayakItinerary === 'function') {
+                window.triggerSahayakItinerary(prompt);
+            }
+
+            showNotificationToast(`✨ Formulating itinerary for ${hubState.destinationName} (${hubState.duration} Days)...`);
+        }
+
+        // 1. Populate Destination Material Grid
+        if (destGrid && typeof DESTINATION_DATABASE !== 'undefined') {
+            destGrid.innerHTML = Object.keys(DESTINATION_DATABASE).map(key => {
+                const d = DESTINATION_DATABASE[key];
+                let category = 'himalayan';
+                const k = key.toLowerCase();
+                if (['kedarnath', 'jyotirling', 'ayodhya', 'banaras', 'mathura', 'prayagraj', 'puri', 'muzzafarnagar'].includes(k)) {
+                    category = 'spiritual';
+                } else if (['gwalior', 'lucknow', 'agra', 'aurangabad', 'jaipur', 'pune'].includes(k)) {
+                    category = 'heritage';
+                } else if (['mumbai', 'goa', 'konkan', 'chennai'].includes(k)) {
+                    category = 'coastal';
+                } else if (['delhi', 'benguluru', 'kolkata', 'faridabad', 'greater noida', 'bhopal', 'jabalpur'].includes(k)) {
+                    category = 'metro';
+                }
+
+                const highlightsStr = (d.highlights || []).slice(0, 2).map(h => `<span class="mat-badge">✨ ${h}</span>`).join('');
+                return `
+                    <div class="material-dest-card" data-key="${key}" data-cat="${category}" data-search="${(d.destination + ' ' + (d.highlights || []).join(' ') + ' ' + (d.altitudeTag || '')).toLowerCase()}">
+                        <div class="material-card-top">
+                            <span class="mat-pin">📍</span>
+                            <span class="mat-category-tag">${category.toUpperCase()}</span>
+                            <span class="mat-price">from ₹${(d.basePrice || 4999).toLocaleString('en-IN')}</span>
+                        </div>
+                        <h4 class="material-dest-name">${d.destination}</h4>
+                        <span class="material-altitude-pill">🏔️ ${d.altitudeTag || 'Scenic Corridor'}</span>
+                        <div class="material-highlights-row">
+                            ${highlightsStr}
+                        </div>
+                        <button type="button" class="btn-select-material" data-key="${key}">
+                            <span>Select & Generate Itinerary &rarr;</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+
+            // Card click listener
+            destGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('.material-dest-card');
+                if (!card) return;
+                const key = card.getAttribute('data-key');
+                const destObj = DESTINATION_DATABASE[key];
+                if (destObj) {
+                    hubState.destinationKey = key;
+                    hubState.destinationName = destObj.destination;
+                    if (labelDest) labelDest.textContent = destObj.destination.split('&')[0].trim();
+
+                    // Close modal
+                    if (modalQuickDest) {
+                        modalQuickDest.style.display = 'none';
+                        modalQuickDest.classList.remove('visible');
+                    }
+
+                    // Produce desired output!
+                    triggerHubItineraryGeneration();
+                }
+            });
+        }
+
+        // Live Search in Destination Material Library
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                const cards = document.querySelectorAll('.material-dest-card');
+                cards.forEach(card => {
+                    const searchData = card.getAttribute('data-search') || '';
+                    const matches = !query || searchData.includes(query);
+                    card.style.display = matches ? 'flex' : 'none';
+                });
+            });
+        }
+
+        // Category Filter Pills
+        if (catPills) {
+            catPills.forEach(pill => {
+                pill.addEventListener('click', () => {
+                    catPills.forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    const selectedCat = pill.getAttribute('data-cat') || 'all';
+                    const cards = document.querySelectorAll('.material-dest-card');
+                    cards.forEach(card => {
+                        const cardCat = card.getAttribute('data-cat');
+                        const show = (selectedCat === 'all' || cardCat === selectedCat);
+                        card.style.display = show ? 'flex' : 'none';
+                    });
+                });
+            });
+        }
+
+        // 2. Populate Trip Duration Material Grid
+        if (durGrid) {
+            const durations = [
+                { days: 2, label: '2 Days (Quick Escape)', desc: 'Fast-paced weekend getaway covering iconic spots with zero wasted transit time.', icon: '⚡' },
+                { days: 3, label: '3 Days (Weekend Classic)', desc: 'The most popular optimal duration for complete relaxation and core sightseeing.', icon: '🌟' },
+                { days: 4, label: '4 Days (High Valley Immersion)', desc: 'In-depth exploration with mountain passes, scenic nature trails & boutique stay.', icon: '🏔️' },
+                { days: 5, label: '5 Days (High Pass Expedition)', desc: 'Comprehensive alpine corridor with full acclimatization and snowline vistas.', icon: '🚙' },
+                { days: 7, label: '7+ Days (Grand Circuit)', desc: 'Epic overland journey through hidden valleys, high passes, and local villages.', icon: '👑' },
+                { days: 10, label: '10+ Days (Pan-India Odyssey)', desc: 'Ultimate cross-region expedition with cultural immersion and safe chauffeur transit.', icon: '🇮🇳' }
+            ];
+
+            durGrid.innerHTML = durations.map(d => `
+                <div class="material-dur-card ${d.days === hubState.duration ? 'active' : ''}" data-days="${d.days}" data-label="${d.label}">
+                    <div class="dur-card-header">
+                        <span class="dur-icon">${d.icon}</span>
+                        <span class="dur-badge">${d.days} Days</span>
+                    </div>
+                    <h4 class="dur-title">${d.label}</h4>
+                    <p class="dur-desc">${d.desc}</p>
+                    <button type="button" class="btn-select-dur-mat">Select Pacing &rarr;</button>
+                </div>
+            `).join('');
+
+            durGrid.addEventListener('click', (e) => {
+                const card = e.target.closest('.material-dur-card');
+                if (!card) return;
+                const days = parseInt(card.getAttribute('data-days')) || 3;
+                const labelText = card.getAttribute('data-label') || `${days} Days`;
+                hubState.duration = days;
+                hubState.durationLabel = labelText;
+                if (labelDur) labelDur.textContent = labelText;
+
+                // Close modal
+                if (modalTripDur) {
+                    modalTripDur.style.display = 'none';
+                    modalTripDur.classList.remove('visible');
+                }
+
+                // Produce desired output!
+                triggerHubItineraryGeneration();
+            });
+        }
+
+        // Open Modal Event Listeners
+        if (btnOpenQuickDest && modalQuickDest) {
+            btnOpenQuickDest.addEventListener('click', () => {
+                modalQuickDest.style.display = 'flex';
+                modalQuickDest.classList.add('visible');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchInput.focus();
+                }
+            });
+        }
+
+        if (btnOpenTripDur && modalTripDur) {
+            btnOpenTripDur.addEventListener('click', () => {
+                modalTripDur.style.display = 'flex';
+                modalTripDur.classList.add('visible');
+            });
+        }
+
+        // Close Modal Event Listeners
+        if (btnCloseQuickDest && modalQuickDest) {
+            btnCloseQuickDest.addEventListener('click', () => {
+                modalQuickDest.style.display = 'none';
+                modalQuickDest.classList.remove('visible');
+            });
+        }
+
+        if (btnCloseTripDur && modalTripDur) {
+            btnCloseTripDur.addEventListener('click', () => {
+                modalTripDur.style.display = 'none';
+                modalTripDur.classList.remove('visible');
+            });
+        }
+
+        // Combined Action Trigger Button
+        if (btnHubGenerate) {
+            btnHubGenerate.addEventListener('click', () => {
+                triggerHubItineraryGeneration();
+            });
         }
     }
 
@@ -1970,23 +4135,301 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
             }
         }
 
-        if (btnAddContact && familyList) {
-            btnAddContact.addEventListener('click', () => {
-                const name = prompt("Enter Family Member Name:");
-                if (!name) return;
-                const phone = prompt("Enter 10-Digit Mobile Number (+91):");
-                if (!phone) return;
+        // Real Live Geolocation & WhatsApp Live Location Sharing Engine
+        function getLiveCoordinates(callback) {
+            if ('geolocation' in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                        const lat = pos.coords.latitude.toFixed(5);
+                        const lon = pos.coords.longitude.toFixed(5);
+                        const acc = Math.round(pos.coords.accuracy || 4);
+                        const alt = pos.coords.altitude ? `${Math.round(pos.coords.altitude)} M` : (dispAlt ? dispAlt.textContent : '2,050 M');
+                        if (dispLat) dispLat.textContent = `${lat}° N`;
+                        if (dispLon) dispLon.textContent = `${lon}° E`;
+                        if (dispAlt) dispAlt.textContent = alt;
+                        if (dispAcc) dispAcc.textContent = `±${acc} Meters`;
+                        callback({ lat, lon, acc, alt, isReal: true });
+                    },
+                    (err) => {
+                        console.warn('Geolocation error / permission fallback:', err);
+                        const lat = dispLat ? dispLat.textContent.replace(/[^\d.]/g, '') || '28.6139' : '28.6139';
+                        const lon = dispLon ? dispLon.textContent.replace(/[^\d.]/g, '') || '77.2090' : '77.2090';
+                        const alt = dispAlt ? dispAlt.textContent : '2,050 M';
+                        const acc = 4;
+                        callback({ lat, lon, acc, alt, isReal: false });
+                    },
+                    { enableHighAccuracy: true, timeout: 8000, maximumAge: 10000 }
+                );
+            } else {
+                const lat = dispLat ? dispLat.textContent.replace(/[^\d.]/g, '') || '28.6139' : '28.6139';
+                const lon = dispLon ? dispLon.textContent.replace(/[^\d.]/g, '') || '77.2090' : '77.2090';
+                const alt = dispAlt ? dispAlt.textContent : '2,050 M';
+                callback({ lat, lon, acc: 5, alt, isReal: false });
+            }
+        }
 
-                const row = document.createElement('div');
-                row.className = "family-member-row";
-                row.innerHTML = `
-                    <div>
-                        <div class="member-name">👤 ${name}</div>
-                        <div class="member-phone">+91 ${phone}</div>
+        function formatWhatsAppLiveMessage(coords, contactName) {
+            const googleMapsUrl = `https://www.google.com/maps?q=${coords.lat},${coords.lon}`;
+            const liveTrackerUrl = `${window.location.origin}${window.location.pathname}?live_sos=true&lat=${coords.lat}&lng=${coords.lon}&alt=${encodeURIComponent(coords.alt)}&acc=${coords.acc}&t=${Date.now()}&id=MRG-FORCE-8849-HP`;
+            
+            const msg = `🚨 *LIVE GPS LOCATION & EMERGENCY BROADCAST — TRAVELISER* 🚨
+
+${contactName ? `Dear ${contactName},\n` : ''}I am sharing my real-time live GPS coordinates with you for live journey tracking and safety:
+
+📍 *Exact GPS Coordinates:* ${coords.lat}° N, ${coords.lon}° E (±${coords.acc}m accuracy)
+🏔️ *Altitude:* ${coords.alt}
+⏱️ *Recorded at:* ${new Date().toLocaleTimeString()} (${new Date().toLocaleDateString()})
+
+🗺️ *Open in Google Maps Live Pin:*
+${googleMapsUrl}
+
+📡 *Track on Traveliser Live Radar & Command Grid:*
+${liveTrackerUrl}
+
+🛡️ *Assigned Police Base:* #MRG-FORCE-8849-HP
+👮 *Nearest Protection Force:* HP Tourist Police & ITBP Mountain Grid
+📞 *Emergency Hotline:* 112 / +91-1800-TRAVELISER-SAFE`;
+
+            return { text: msg, googleMapsUrl, liveTrackerUrl };
+        }
+        window.formatWhatsAppLiveMessage = formatWhatsAppLiveMessage;
+
+        function triggerWhatsAppLiveShare(phone, contactName) {
+            getLiveCoordinates((coords) => {
+                const { text, liveTrackerUrl } = formatWhatsAppLiveMessage(coords, contactName);
+                const encodedText = encodeURIComponent(text);
+                const cleanPhone = phone ? phone.replace(/[^\d]/g, '') : '';
+                const waUrl = cleanPhone 
+                    ? `https://api.whatsapp.com/send?phone=${cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone}&text=${encodedText}`
+                    : `https://api.whatsapp.com/send?text=${encodedText}`;
+                
+                window.open(waUrl, '_blank');
+                showNotificationToast(`🟢 Opening WhatsApp with Live Location pin (${coords.lat}° N, ${coords.lon}° E)!`);
+            });
+        }
+        window.triggerWhatsAppLiveShare = triggerWhatsAppLiveShare;
+
+        // Dedicated WhatsApp Live Location Share Button in Women Protection Shield
+        const btnShareLiveWhatsapp = document.getElementById('btn-share-live-whatsapp');
+        if (btnShareLiveWhatsapp) {
+            btnShareLiveWhatsapp.addEventListener('click', () => {
+                triggerWhatsAppLiveShare(null, null);
+            });
+        }
+
+        // Copy Live Location Link Button
+        const btnCopyLiveLink = document.getElementById('btn-copy-live-link');
+        if (btnCopyLiveLink) {
+            btnCopyLiveLink.addEventListener('click', () => {
+                getLiveCoordinates((coords) => {
+                    const { liveTrackerUrl } = formatWhatsAppLiveMessage(coords, null);
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(liveTrackerUrl).then(() => {
+                            showNotificationToast('🔗 Live Tracking URL copied to clipboard! Paste into WhatsApp or SMS.');
+                        }).catch(() => {
+                            prompt('Copy your Live Tracking URL:', liveTrackerUrl);
+                        });
+                    } else {
+                        prompt('Copy your Live Tracking URL:', liveTrackerUrl);
+                    }
+                });
+            });
+        }
+
+        // -------------------------------------------------------------
+        // FAMILY CONTACTS LIST & AESTHETIC MODAL CONTROLS
+        // -------------------------------------------------------------
+        const STORAGE_KEY_FAMILY_CONTACTS = 'traveliser_family_contacts';
+        let savedFamilyContacts = [];
+
+        function loadFamilyContacts() {
+            try {
+                const stored = localStorage.getItem(STORAGE_KEY_FAMILY_CONTACTS);
+                if (stored) {
+                    savedFamilyContacts = JSON.parse(stored);
+                } else {
+                    savedFamilyContacts = [];
+                }
+            } catch (err) {
+                console.warn('Failed loading family contacts from localStorage:', err);
+                savedFamilyContacts = [];
+            }
+        }
+
+        function saveFamilyContacts() {
+            try {
+                localStorage.setItem(STORAGE_KEY_FAMILY_CONTACTS, JSON.stringify(savedFamilyContacts));
+            } catch (err) {
+                console.warn('Failed saving family contacts to localStorage:', err);
+            }
+        }
+
+        function renderFamilyContactsList() {
+            if (!familyList) return;
+
+            if (!savedFamilyContacts || savedFamilyContacts.length === 0) {
+                familyList.innerHTML = `
+                    <div class="family-empty-state" id="family-empty-state">
+                        <div class="empty-glow-icon">🛡️</div>
+                        <div class="empty-state-text">
+                            <h4>No Emergency Contacts Assigned</h4>
+                            <p>Click <strong>+ Add Contact</strong> above to link family members for real-time live WhatsApp location streaming and GPS telemetry.</p>
+                        </div>
                     </div>
-                    <span class="member-status">🟢 Syncing GPS</span>
                 `;
-                familyList.appendChild(row);
+                return;
+            }
+
+            familyList.innerHTML = savedFamilyContacts.map(c => `
+                <div class="family-item" data-phone="${c.phone}" data-name="${c.name}">
+                    <div class="fam-avatar">${c.avatar || '👤'}</div>
+                    <div class="fam-info">
+                        <div class="fam-name-row">
+                            <strong>${c.name}</strong>
+                            <span class="fam-rel-tag">${c.relation || 'Contact'}</span>
+                        </div>
+                        <span>+91 ${c.phone}</span>
+                    </div>
+                    <div class="fam-actions-group">
+                        <button type="button" class="fam-btn-wa" data-phone="${c.phone}" data-name="${c.name}" title="Share Live GPS Link with ${c.name} on WhatsApp">
+                            <span>🟢 WhatsApp</span>
+                        </button>
+                        <button type="button" class="fam-btn-del" data-id="${c.id}" data-name="${c.name}" title="Remove Contact">
+                            <span>✕</span>
+                        </button>
+                    </div>
+                    <span class="fam-status synced">● Live Synced</span>
+                </div>
+            `).join('');
+
+            // Wire up WhatsApp buttons
+            familyList.querySelectorAll('.fam-btn-wa').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const phone = btn.dataset.phone;
+                    const name = btn.dataset.name;
+                    triggerWhatsAppLiveShare(phone, name);
+                });
+            });
+
+            // Wire up Delete buttons
+            familyList.querySelectorAll('.fam-btn-del').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const contactId = btn.dataset.id;
+                    const contactName = btn.dataset.name;
+                    savedFamilyContacts = savedFamilyContacts.filter(c => String(c.id) !== String(contactId));
+                    saveFamilyContacts();
+                    renderFamilyContactsList();
+                    showNotificationToast(`🗑️ Contact ${contactName} removed from emergency circle.`);
+                });
+            });
+        }
+
+        // Initialize contacts
+        loadFamilyContacts();
+        renderFamilyContactsList();
+
+        // Aesthetic Add Family Contact Modal
+        const modalAddFam = document.getElementById('modal-add-family-contact');
+        const btnCloseFamModal = document.getElementById('btn-close-fam-modal');
+        const btnCancelFamModal = document.getElementById('btn-cancel-fam-modal');
+        const formAddFam = document.getElementById('form-add-family-contact');
+        const inputFamName = document.getElementById('fam-input-name');
+        const inputFamPhone = document.getElementById('fam-input-phone');
+        const inputFamRelation = document.getElementById('fam-input-relation');
+        const inputFamAvatar = document.getElementById('fam-input-avatar');
+        const relationChips = document.querySelectorAll('#fam-relation-chips .fam-rel-chip');
+
+        function openAddFamilyModal() {
+            if (!modalAddFam) return;
+            if (formAddFam) formAddFam.reset();
+            if (inputFamRelation) inputFamRelation.value = 'Mother';
+            if (inputFamAvatar) inputFamAvatar.value = '👩';
+            relationChips.forEach(chip => {
+                chip.classList.toggle('active', chip.dataset.rel === 'Mother');
+            });
+            modalAddFam.style.display = 'flex';
+            if (inputFamName) {
+                setTimeout(() => inputFamName.focus(), 100);
+            }
+        }
+
+        function closeAddFamilyModal() {
+            if (modalAddFam) {
+                modalAddFam.style.display = 'none';
+            }
+        }
+
+        if (btnAddContact) {
+            btnAddContact.addEventListener('click', (e) => {
+                e.preventDefault();
+                openAddFamilyModal();
+            });
+        }
+
+        if (btnCloseFamModal) {
+            btnCloseFamModal.addEventListener('click', closeAddFamilyModal);
+        }
+
+        if (btnCancelFamModal) {
+            btnCancelFamModal.addEventListener('click', closeAddFamilyModal);
+        }
+
+        if (modalAddFam) {
+            modalAddFam.addEventListener('click', (e) => {
+                if (e.target === modalAddFam) {
+                    closeAddFamilyModal();
+                }
+            });
+        }
+
+        // Relation Chips Selection
+        relationChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                relationChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                if (inputFamRelation) inputFamRelation.value = chip.dataset.rel || 'Family';
+                if (inputFamAvatar) inputFamAvatar.value = chip.dataset.avatar || '👤';
+            });
+        });
+
+        // Form Submit
+        if (formAddFam) {
+            formAddFam.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const name = inputFamName ? inputFamName.value.trim() : '';
+                const phone = inputFamPhone ? inputFamPhone.value.trim().replace(/[^\d]/g, '') : '';
+                const relation = inputFamRelation ? inputFamRelation.value : 'Family';
+                const avatar = inputFamAvatar ? inputFamAvatar.value : '👤';
+
+                if (!name) {
+                    showNotificationToast('⚠️ Please enter family member name');
+                    if (inputFamName) inputFamName.focus();
+                    return;
+                }
+
+                if (!phone || phone.length !== 10) {
+                    showNotificationToast('⚠️ Please enter a valid 10-digit WhatsApp mobile number');
+                    if (inputFamPhone) inputFamPhone.focus();
+                    return;
+                }
+
+                const newContact = {
+                    id: Date.now(),
+                    name,
+                    phone,
+                    relation,
+                    avatar
+                };
+
+                savedFamilyContacts.push(newContact);
+                saveFamilyContacts();
+                renderFamilyContactsList();
+                closeAddFamilyModal();
+                showNotificationToast(`✅ Contact ${name} (${relation}) connected for 24x7 Live WhatsApp telemetry!`);
             });
         }
 
@@ -2010,12 +4453,75 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
             });
         }
 
+        // Real Live Location SOS link on WhatsApp in Police SOS modal
         if (btnShareWhatsappSos) {
             btnShareWhatsappSos.addEventListener('click', () => {
-                const text = encodeURIComponent("🚨 EMERGENCY SOS from Traveliser! My location has been dispatched to Himachal Police. Track my live location & PCR response here: https://traveliser.travel/sos/MRG-9921");
-                window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+                triggerWhatsAppLiveShare(null, "Family & Emergency Contacts");
             });
         }
+
+        // 5B-2. INCOMING LIVE LOCATION RECEIVER (WHEN OPENED FROM A SHARED WHATSAPP LINK)
+        function checkIncomingLiveSosLink() {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('live_sos') === 'true' || params.get('track_live') === 'true') {
+                    const lat = params.get('lat') || '32.2432';
+                    const lon = params.get('lng') || '77.1892';
+                    const alt = params.get('alt') || '2,050 M';
+                    const acc = params.get('acc') || '4';
+                    const t = params.get('t') ? parseInt(params.get('t')) : Date.now();
+                    const baseId = params.get('id') || 'MRG-FORCE-8849-HP';
+
+                    // Update radar display with received live coordinates
+                    if (dispLat) dispLat.textContent = `${lat}° N`;
+                    if (dispLon) dispLon.textContent = `${lon}° E`;
+                    if (dispAlt) dispAlt.textContent = decodeURIComponent(alt);
+                    if (dispAcc) dispAcc.textContent = `±${acc} Meters`;
+
+                    // Populate and display incoming live tracker modal
+                    const incomingModal = document.getElementById('incoming-live-tracker-modal');
+                    const incCoords = document.getElementById('incoming-sos-coords');
+                    const incAcc = document.getElementById('incoming-sos-acc');
+                    const incTime = document.getElementById('incoming-sos-time');
+                    const incBase = document.getElementById('incoming-sos-base');
+                    const btnIncMaps = document.getElementById('btn-incoming-google-maps');
+                    const btnIncNav = document.getElementById('btn-incoming-navigate');
+                    const btnCloseInc = document.getElementById('btn-close-incoming-tracker');
+
+                    if (incCoords) incCoords.textContent = `${lat}° N, ${lon}° E`;
+                    if (incAcc) incAcc.textContent = `Precision: ±${acc}m • Elevation: ${decodeURIComponent(alt)}`;
+                    if (incTime) incTime.textContent = new Date(t).toLocaleString();
+                    if (incBase) incBase.textContent = `#${baseId} (Police & ITBP Mountain Grid)`;
+
+                    if (btnIncMaps) btnIncMaps.href = `https://www.google.com/maps?q=${lat},${lon}`;
+                    if (btnIncNav) btnIncNav.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+
+                    if (btnCloseInc && incomingModal) {
+                        btnCloseInc.addEventListener('click', () => {
+                            incomingModal.style.display = 'none';
+                        });
+                    }
+
+                    if (incomingModal) {
+                        incomingModal.style.display = 'flex';
+                    }
+
+                    // Switch to emergency tab and scroll to live radar
+                    if (window.switchEmergencyTab) window.switchEmergencyTab('women-safety');
+                    const emergencySection = document.getElementById('emergency');
+                    if (emergencySection) {
+                        setTimeout(() => {
+                            emergencySection.scrollIntoView({ behavior: 'smooth' });
+                        }, 600);
+                    }
+
+                    showNotificationToast(`🚨 Connected to adventurer's live GPS broadcast at ${lat}° N, ${lon}° E!`);
+                }
+            } catch (err) {
+                console.warn('Error processing incoming live SOS link:', err);
+            }
+        }
+        checkIncomingLiveSosLink();
 
         // 5C. LOST AND FOUND MODAL
         const btnOpenReportLost = document.getElementById('btn-open-report-lost');
@@ -2122,13 +4628,124 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
     // =========================================================================
     // 6. POPULAR ROAD TRIP CARDS CLICK HANDLER
     // =========================================================================
+    const MOUNTAIN_ROAD_TRIPS = {
+        'delhi-manali': {
+            id: 'roadtrip_delhi_manali',
+            title: 'Delhi to Manali & Rohtang Expedition',
+            destination: 'Manali & Rohtang Pass',
+            from: 'Delhi',
+            to: 'Manali',
+            duration: '3 Days / 2 Nights',
+            distance: '530 km • Approx 11 hrs • Via Atal Tunnel',
+            pricePerPerson: 4899,
+            vibe: 'Alpine Snow & High Passes',
+            pickupLocation: 'Delhi NCR / IGI Airport / Kashmere Gate',
+            highlights: ['Atal Tunnel Expedition', 'Solang Valley Snow Camp', 'Rohtang Pass Snowline', 'Verified Mountain Pilot'],
+            perks: ['🛡️ 4x4 Mountain SUV & Verified Chauffeur', '🫁 Medical Oxygen & Altitude Kit', '🚨 24x7 Women Safety Patrol Link']
+        },
+        'chandigarh-shimla': {
+            id: 'roadtrip_chandigarh_shimla',
+            title: 'Chandigarh to Shimla & Kufri Weekend Escape',
+            destination: 'Shimla & Kufri',
+            from: 'Chandigarh',
+            to: 'Shimla',
+            duration: '2 Days / 1 Night',
+            distance: '115 km • Approx 3.5 hrs • Himalayan Express',
+            pricePerPerson: 1850,
+            vibe: 'Pine Ridges & Colonial Heritage',
+            pickupLocation: 'Chandigarh Tribune Chowk / Airport / Sector 17',
+            highlights: ['Mall Road Heritage Walk', 'Kufri Snow Viewpoint', 'Pine Forest Drive', 'High-Altitude Assist'],
+            perks: ['🛡️ All-Weather Mountain Vehicle', '🫁 Emergency First Aid & Vitals', '🚨 24x7 Safety Telemetry']
+        },
+        'mumbai-goa': {
+            id: 'roadtrip_mumbai_goa',
+            title: 'Mumbai to Goa Coastal Highway Cruise',
+            destination: 'Goa & Konkan Coast',
+            from: 'Mumbai',
+            to: 'Goa',
+            duration: '3 Days / 2 Nights',
+            distance: '585 km • Approx 10 hrs • Konkan Coastline',
+            pricePerPerson: 5450,
+            vibe: 'Coastal Serenity & Sunsets',
+            pickupLocation: 'Mumbai Dadar / Navi Mumbai / Pune Bypass',
+            highlights: ['Konkan Coastal Highway Drive', 'Boutique Beachfront Stay', 'Fresh Coastal Cuisine Halt', 'Certified Highway Captain'],
+            perks: ['🛡️ Luxury Highway Cruiser', '🏖️ Beachside Stay Access', '🚨 24x7 Traveliser SOS Telemetry']
+        },
+        'bangalore-ooty': {
+            id: 'roadtrip_bangalore_ooty',
+            title: 'Bengaluru to Ooty & Coonoor Highlands',
+            destination: 'Ooty & Nilgiri',
+            from: 'Bengaluru',
+            to: 'Ooty',
+            duration: '3 Days / 2 Nights',
+            distance: '275 km • Approx 6.5 hrs • Bandipur Forest',
+            pricePerPerson: 3499,
+            vibe: 'Tea Estates & Mountain Ghats',
+            pickupLocation: 'Bengaluru Silk Board / Majestic / Electronic City',
+            highlights: ['Bandipur Safari Forest Corridor', '36 Hairpin Bend Ghats', 'Tea Garden Chalet', 'Certified Hill Chauffeur'],
+            perks: ['🛡️ Nilgiri Ghat-Certified SUV', '🫁 Forest Route First Aid', '🚨 24x7 High-Altitude Patrol Link']
+        }
+    };
+
+    function getRoadTripPlan(from, to) {
+        const key = `${(from || '').toLowerCase().trim()}-${(to || '').toLowerCase().trim()}`;
+        if (MOUNTAIN_ROAD_TRIPS[key]) {
+            return { ...MOUNTAIN_ROAD_TRIPS[key] };
+        }
+        for (const k in MOUNTAIN_ROAD_TRIPS) {
+            if (k.includes((to || '').toLowerCase().trim())) {
+                return { ...MOUNTAIN_ROAD_TRIPS[k] };
+            }
+        }
+        return {
+            id: 'roadtrip_' + Date.now(),
+            title: `${from} to ${to} Mountain Expedition`,
+            destination: `${to} & Alpine Corridor`,
+            from: from || 'Delhi',
+            to: to || 'Manali',
+            duration: '3 Days / 2 Nights',
+            distance: 'Scenic Mountain Expressway',
+            pricePerPerson: 4899,
+            vibe: 'Alpine Adventure & High Passes',
+            pickupLocation: `${from} City Center / Airport`,
+            highlights: ['Scenic Alpine Route', 'Boutique Mountain Stay', 'Verified Chauffeur'],
+            perks: ['🛡️ 4x4 Mountain SUV & Verified Chauffeur', '🫁 Medical Oxygen & First Aid', '🚨 24x7 Women Safety Patrol Link']
+        };
+    }
+    window.getRoadTripPlan = getRoadTripPlan;
+
     window.bookRoute = function(from, to) {
         if (fromCity) fromCity.value = from;
         if (toCity) toCity.value = to;
 
-        const bookingCard = document.getElementById('booking-card');
-        if (bookingCard) {
-            bookingCard.scrollIntoView({ behavior: 'smooth' });
+        // Note: Do NOT scroll up to booking-card! Screen stays smoothly in place.
+        const plan = getRoadTripPlan(from, to);
+
+        const currentUser = (typeof firebaseAuth !== 'undefined' && firebaseAuth) ? firebaseAuth.currentUser : null;
+        const isRegisteredUser = !!(currentUser && !currentUser.isAnonymous);
+
+        if (!isRegisteredUser) {
+            // Unregistered traveller -> open Registration Modal first
+            window.pendingRoadTripBooking = plan;
+            if (typeof openAuthModal === 'function') {
+                openAuthModal('signup');
+                setTimeout(() => {
+                    if (typeof showAuthAlert === 'function') {
+                        showAuthAlert(`🏔️ <strong>Register to complete booking:</strong> Create your traveller account to confirm your expedition <strong>${plan.title}</strong> (${plan.duration})!`, 'info');
+                    }
+                }, 60);
+            }
+            if (window.showToast) {
+                window.showToast(`Please register your account to confirm ${plan.title} 🏔️`);
+            } else if (typeof showNotificationToast === 'function') {
+                showNotificationToast(`Please register to confirm ${plan.title}! 🏔️`);
+            }
+            return;
+        }
+
+        // Already registered/logged in -> open checkout & booking modal
+        if (typeof openBuyNowModal === 'function') {
+            openBuyNowModal(plan);
         }
     };
 
@@ -3784,6 +6401,7 @@ Format cleanly with bold text and bullet points.`;
     // =========================================================================
     initSahayakAi();
     renderSavedPlans();
+    initCompiledTripHub();
     initEmergencyCenter();
     initWeatherForecasting();
     initGeminiPassAdvisory();

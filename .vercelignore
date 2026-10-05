@@ -1,5 +1,7 @@
 # Vercel Deployment Ignore
 .git
 *.bat
-test_verify.py
 *.zip
+test_*.py
+test_verify.py
+

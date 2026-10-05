@@ -70,6 +70,12 @@
                     <span class="action-label">SAHAYAKMITR.ai</span>
                 </a>
 
+                <a href="#your-bookings" class="header-action-item highlight-bookings" id="header-my-bookings-btn" title="Your Confirmed Bookings & Passes">
+                    <span class="action-icon">🎫</span>
+                    <span class="action-label">Your Booking</span>
+                    <span class="header-plans-badge booking-badge" id="header-bookings-count">0</span>
+                </a>
+
                 <a href="#your-plans" class="header-action-item highlight-plans" id="header-my-plans-btn" title="Your Saved Expeditions">
                     <span class="action-icon">📋</span>
                     <span class="action-label">Your Plans</span>
@@ -143,6 +149,15 @@
                         </svg>
                     </span>
                     <span class="cat-card-name">SAHAYAKMITR.ai</span>
+                </a>
+                <a href="#your-bookings" class="cat-card cat-featured-bookings" id="cat-your-bookings" data-cat="bookings">
+                    <span class="cat-card-icon-box icon-bookings">
+                        <svg class="cat-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="20" height="14" x="2" y="5" rx="2"/>
+                            <line x1="2" x2="22" y1="10" y2="10"/>
+                        </svg>
+                    </span>
+                    <span class="cat-card-name">Your Booking <span class="cat-inline-badge booking-badge" id="cat-bookings-count">0</span></span>
                 </a>
                 <a href="#your-plans" class="cat-card cat-featured-plans" data-cat="plans">
                     <span class="cat-card-icon-box icon-plans">
@@ -493,62 +508,56 @@
                     </div>
                 </div>
 
-                <!-- Fast Itinerary Customizer Bar -->
-                <div class="itinerary-customizer-bar">
-                    <div class="customizer-group">
-                        <span class="custom-label">TRIP DURATION:</span>
-                        <div class="custom-chips" id="duration-chips">
-                            <button class="filter-chip active" data-filter="duration" data-val="3">3 Days (Weekend)</button>
-                            <button class="filter-chip" data-filter="duration" data-val="5">5 Days (High Pass)</button>
-                            <button class="filter-chip" data-filter="duration" data-val="7">7+ Days (Grand Circuit)</button>
+                <!-- ========================================================
+                     COMPILED & COMBINED TRIP ARCHITECT HUB
+                     (Quick Destination, Trip Duration, Travel Vibe Windows)
+                     ======================================================== -->
+                <div class="trip-parameter-hub" id="trip-parameter-hub">
+                    <div class="hub-header">
+                        <div class="hub-title-badge">
+                            <span class="hub-sparkle">✨</span>
+                            <span class="hub-title-text">COMPILED TRIP ARCHITECT</span>
                         </div>
+                        <span class="hub-subtitle">Click any parameter below to view all options in a dedicated window, select materials, and generate your custom itinerary:</span>
                     </div>
-                    <div class="customizer-group">
-                        <span class="custom-label">TRAVEL VIBE:</span>
-                        <div class="custom-chips" id="vibe-chips">
-                            <button class="filter-chip active" data-filter="vibe" data-val="mountain">🏔️ Mountain Passes</button>
-                            <button class="filter-chip" data-filter="vibe" data-val="spiritual">🛕 Heritage & Spiritual</button>
-                            <button class="filter-chip" data-filter="vibe" data-val="coastal">🌊 Coastal Drive</button>
-                            <button class="filter-chip" data-filter="vibe" data-val="adventure">⛺ 4x4 Overland</button>
-                        </div>
+
+                    <div class="hub-controls-row">
+                        <!-- Function 1: Quick Destination -->
+                        <button type="button" class="hub-control-button" id="btn-open-quick-destinations" title="Explore & Choose Destination Material">
+                            <div class="hub-btn-icon-wrap icon-dest">📍</div>
+                            <div class="hub-btn-text">
+                                <span class="hub-btn-tag">QUICK DESTINATION</span>
+                                <strong class="hub-btn-value" id="hub-selected-dest-label">Manali & Rohtang Pass</strong>
+                            </div>
+                            <span class="hub-btn-action-arrow">Explore 31+ ▾</span>
+                        </button>
+
+                        <!-- Function 2: Trip Duration -->
+                        <button type="button" class="hub-control-button" id="btn-open-trip-duration" title="Choose Trip Duration Material">
+                            <div class="hub-btn-icon-wrap icon-dur">⏱️</div>
+                            <div class="hub-btn-text">
+                                <span class="hub-btn-tag">TRIP DURATION</span>
+                                <strong class="hub-btn-value" id="hub-selected-dur-label">3 Days (Weekend)</strong>
+                            </div>
+                            <span class="hub-btn-action-arrow">Select Days ▾</span>
+                        </button>
+
+                        <!-- Combined Action Trigger -->
+                        <button type="button" class="hub-generate-action-btn" id="btn-hub-generate-plan" title="Generate Custom Itinerary Now">
+                            <span>⚡ Generate Itinerary</span>
+                            <span class="hub-gen-arrow">&rarr;</span>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Quick Prompt Ideas Strip -->
-                <div class="quick-prompts-container">
-                    <span class="prompts-label">QUICK IDEAS:</span>
-                    <div class="prompts-scroll">
-                        <button class="prompt-chip" data-prompt="Which restaurants have the highest food safety rating in Manali and what is their best signature food?">
-                            <span>🥗 Food Safety Ratings in Manali</span>
-                        </button>
-                        <button class="prompt-chip" data-prompt="What are the preferred and non-preferred foods for travelers in high altitude mountain areas based on overall safety criteria?">
-                            <span>📋 Preferred vs Non-Preferred Foods</span>
-                        </button>
-                        <button class="prompt-chip" data-prompt="What is the food hygiene score, water purity, and best food at Johnson's Cafe & Bar in Old Manali?">
-                            <span>🐟 Best Food at Johnson's Cafe</span>
-                        </button>
-                        <button class="prompt-chip" data-prompt="Plan a 5-day scenic road trip from Delhi to Manali and Spiti Valley with scenic halts and high-altitude safety tips.">
-                            <span>🏔️ 5-Day Manali & Spiti Circuit</span>
-                        </button>
-                        <button class="prompt-chip" data-prompt="Design a 4-day high-altitude adventure crossing Atal Tunnel and Rohtang Pass with snow activities.">
-                            <span>❄️ 4-Day Rohtang Pass & Atal Snow Corridor</span>
-                        </button>
-                        <button class="prompt-chip" data-prompt="What medicines and acclimatization steps prevent acute mountain sickness (AMS) in Ladakh and Spiti?">
-                            <span>🫁 Altitude Sickness (AMS) Guide</span>
-                        </button>
-                        <button class="prompt-chip" data-prompt="Plan a 7-day epic expedition from Delhi to Leh Ladakh via Manali highway with night halts.">
-                            <span>⛺ 7-Day Epic Leh-Ladakh Overland</span>
-                        </button>
-                        <button class="prompt-chip" data-prompt="What vehicle preparations, tire pressure, and permits are needed for crossing Khardung La and Rohtang?">
-                            <span>🚙 4x4 & High-Pass Vehicle Prep</span>
-                        </button>
-                        <button class="prompt-chip" data-prompt="What safety precautions, safe accommodation corridors, and police contact points are best for solo women travelers in Himachal?">
-                            <span>🛡️ Women Safety in High Passes</span>
-                        </button>
-                        <button class="prompt-chip" data-prompt="Plan a 4-day scenic Konkan coastal highway road trip from Mumbai to South Goa with seaside halts.">
-                            <span>🌊 4-Day Mumbai to Goa Coastal Cruise</span>
-                        </button>
+                <!-- Live Journey Memory Bar -->
+                <div class="sahayak-memory-bar" id="sahayak-memory-bar" style="display: none;">
+                    <div class="memory-indicator">
+                        <span class="memory-brain-icon">🧠</span>
+                        <span class="memory-label">JOURNEY MEMORY:</span>
+                        <div class="memory-tags" id="memory-tags-list"></div>
                     </div>
+                    <button type="button" class="btn-clear-memory" id="btn-clear-memory" title="Reset Itinerary Memory">✕ Clear Memory</button>
                 </div>
 
                 <!-- Chat Conversation Feed -->
@@ -564,7 +573,7 @@
                                 Tell me your desired destination, starting city, group size, or duration. I will structure an optimized day-by-day plan with <strong>morning, afternoon, and evening timelines</strong>, altitude acclimation alerts, scenic photography halts, and estimated driving hours!
                             </p>
                             <div class="bot-quick-action-strip">
-                                <span class="hint-tag">💡 Tap any quick idea above or type your destination below!</span>
+                                <span class="hint-tag">✨ Tap any parameter in the Compiled Trip Architect above or type your destination below!</span>
                             </div>
                         </div>
                     </div>
@@ -577,7 +586,7 @@
                             type="text" 
                             id="chat-user-input" 
                             class="chat-input-field" 
-                            placeholder="Ask SAHAYAKMITR.ai: e.g. Plan a 4-day road trip from Delhi to Manali with family..."
+                            placeholder="Ask SAHAYAKMITR.ai: e.g. Plan 3 days in Mumbai, Pune, Gwalior, Kedarnath, Ayodhya, Banaras, Kanpur, Puri, Konkan..."
                             autocomplete="off"
                         >
                         <button type="submit" class="btn-chat-send" id="btn-chat-send" title="Send to SAHAYAKMITR.ai">
@@ -617,6 +626,12 @@
             </div>
         </div>
 
+        <!-- Drawer View Tabs -->
+        <div class="drawer-view-tabs">
+            <button type="button" class="drawer-tab-btn active">📋 Your Plans (<span id="plans-tab-plans-count">0</span>)</button>
+            <button type="button" class="drawer-tab-btn" id="btn-plans-switch-to-bookings">🎫 Your Booking (<span id="plans-tab-bookings-count">0</span>)</button>
+        </div>
+
         <div class="plans-drawer-body">
             <p class="plans-sub-heading">
                 All customized itineraries architected by <strong>SAHAYAKMITR.ai</strong> are stored here like your order cart. Review day-by-day schedules, route alerts, inclusions, and book with <strong>Instant Buy Now</strong>.
@@ -634,6 +649,56 @@
             </div>
             <a href="#ai-assistance" class="btn-create-more-plans" id="btn-drawer-ask-ai">
                 <span>+ Ask AI For New Plan</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ========================================================
+         ECOMMERCE CORNER SLIDE-DRAWER: YOUR BOOKING
+         (JUST LIKE YOUR PLANS, BUT FOR CONFIRMED EXPEDITION ORDERS)
+         ======================================================== -->
+    <aside class="plans-corner-drawer bookings-corner-drawer" id="your-bookings" aria-label="Your Bookings Drawer">
+        <div class="plans-drawer-header">
+            <div class="plans-drawer-header-left">
+                <div class="plans-kicker-pill booking-kicker-pill">
+                    <span class="plans-live-dot">🎫</span>
+                    <span>CONFIRMED & ACTIVE ORDERS</span>
+                </div>
+                <h2 class="plans-main-heading">YOUR BOOKING</h2>
+                <span class="plans-drawer-sub">Official Traveliser Passes & Active Road Trips</span>
+            </div>
+            <div class="plans-drawer-header-right">
+                <div class="plans-count-badge-card booking-badge-card">
+                    <span class="plans-count-number" id="bookings-count-display">0</span>
+                    <span class="plans-count-label">Booked</span>
+                </div>
+                <button class="btn-close-plans-drawer" id="btn-close-bookings-drawer" title="Close Your Bookings Drawer">✕</button>
+            </div>
+        </div>
+
+        <!-- Drawer View Tabs -->
+        <div class="drawer-view-tabs">
+            <button type="button" class="drawer-tab-btn" id="btn-tab-switch-to-plans">📋 Your Plans (<span id="tab-plans-count">0</span>)</button>
+            <button type="button" class="drawer-tab-btn active" id="btn-tab-switch-to-bookings">🎫 Your Booking (<span id="tab-bookings-count">0</span>)</button>
+        </div>
+
+        <div class="plans-drawer-body">
+            <p class="plans-sub-heading">
+                All confirmed expeditions, high-altitude road trips, and passes booked on <strong>TRAVELISER</strong> are stored here. Your verified chauffeur details, 4x4 vehicle SafeTag, and e-voucher are accessible 24x7.
+            </p>
+            <!-- Bookings Grid -->
+            <div class="bookings-grid" id="bookings-grid">
+                <!-- Dynamically rendered booking cards will appear here -->
+            </div>
+        </div>
+
+        <div class="plans-drawer-footer">
+            <div class="plans-drawer-guarantee">
+                <span class="shield-mini-icon">🛡️</span>
+                <span>All active bookings backed by 24x7 Women Safety Patrol & Medical Telemetry</span>
+            </div>
+            <a href="#packages" class="btn-create-more-plans" id="btn-drawer-explore-more">
+                <span>+ Explore More Expeditions</span>
             </a>
         </div>
     </aside>
@@ -965,6 +1030,20 @@
                             </div>
                         </div>
 
+                        <!-- REAL WHATSAPP LIVE LOCATION SHARING STRIP -->
+                        <div class="safety-whatsapp-share-strip">
+                            <button type="button" class="btn-whatsapp-live-share" id="btn-share-live-whatsapp">
+                                <span class="wa-btn-icon">🟢</span>
+                                <div class="wa-btn-text">
+                                    <strong>SHARE LIVE LOCATION VIA WHATSAPP</strong>
+                                    <span>Broadcast real-time Google Maps live pin & Traveliser telemetry link to family/friends</span>
+                                </div>
+                            </button>
+                            <button type="button" class="btn-copy-live-link" id="btn-copy-live-link" title="Copy Live Tracking URL to Clipboard">
+                                <span>🔗 Copy Live Link</span>
+                            </button>
+                        </div>
+
                         <!-- Emergency Police Dispatch Action Strip -->
                         <div class="police-dispatch-action-area">
                             <div class="dispatch-warning-note">
@@ -1063,22 +1142,19 @@
                                 <button class="btn-add-contact" id="btn-add-contact">+ Add Contact</button>
                             </div>
                             <div class="family-list" id="family-list">
-                                <div class="family-item">
-                                    <div class="fam-avatar">👩</div>
-                                    <div class="fam-info">
-                                        <strong>Mother (Primary Emergency Contact)</strong>
-                                        <span>+91 98765 43210</span>
+                                <!-- Dynamically populated by app.js from saved contacts -->
+                                <div class="family-empty-state" id="family-empty-state">
+                                    <div class="empty-glow-icon">🛡️</div>
+                                    <div class="empty-state-text">
+                                        <h4>No Emergency Contacts Assigned</h4>
+                                        <p>Click <strong>+ Add Contact</strong> above to link family members for real-time live WhatsApp location streaming and GPS telemetry.</p>
                                     </div>
-                                    <span class="fam-status synced">● Live Link Synced</span>
                                 </div>
-                                <div class="family-item">
-                                    <div class="fam-avatar">👨</div>
-                                    <div class="fam-info">
-                                        <strong>Brother (Secondary Contact)</strong>
-                                        <span>+91 98123 45678</span>
+                                <template id="family-item-template">
+                                    <div class="family-item">
+                                        <button type="button" class="fam-btn-wa" title="Share Live GPS Link on WhatsApp"><span>🟢 WhatsApp</span></button>
                                     </div>
-                                    <span class="fam-status synced">● Live Link Synced</span>
-                                </div>
+                                </template>
                             </div>
                         </div>
                     </div>
@@ -1450,7 +1526,7 @@
                         <div class="route-meta">530 km • Approx 11 hrs • Via Atal Tunnel</div>
                         <div class="route-price-row">
                             <span class="route-price">From ₹4,899</span>
-                            <span class="route-action">Explore & Book &rarr;</span>
+                            <span class="route-action" onclick="event.stopPropagation(); bookRoute('Delhi', 'Manali');" title="Book this Road Trip Expedition">Explore & Book &rarr;</span>
                         </div>
                     </div>
                 </div>
@@ -1465,7 +1541,7 @@
                         <div class="route-meta">115 km • Approx 3.5 hrs • Himalayan Express</div>
                         <div class="route-price-row">
                             <span class="route-price">From ₹1,850</span>
-                            <span class="route-action">Explore & Book &rarr;</span>
+                            <span class="route-action" onclick="event.stopPropagation(); bookRoute('Chandigarh', 'Shimla');" title="Book this Road Trip Expedition">Explore & Book &rarr;</span>
                         </div>
                     </div>
                 </div>
@@ -1480,7 +1556,7 @@
                         <div class="route-meta">585 km • Approx 10 hrs • Konkan Coastline</div>
                         <div class="route-price-row">
                             <span class="route-price">From ₹5,450</span>
-                            <span class="route-action">Explore & Book &rarr;</span>
+                            <span class="route-action" onclick="event.stopPropagation(); bookRoute('Mumbai', 'Goa');" title="Book this Road Trip Expedition">Explore & Book &rarr;</span>
                         </div>
                     </div>
                 </div>
@@ -1495,7 +1571,7 @@
                         <div class="route-meta">275 km • Approx 6.5 hrs • Bandipur Forest</div>
                         <div class="route-price-row">
                             <span class="route-price">From ₹3,499</span>
-                            <span class="route-action">Explore & Book &rarr;</span>
+                            <span class="route-action" onclick="event.stopPropagation(); bookRoute('Bangalore', 'Ooty');" title="Book this Road Trip Expedition">Explore & Book &rarr;</span>
                         </div>
                     </div>
                 </div>
@@ -1597,6 +1673,127 @@
     </div>
 
     <!-- ========================================================
+         AESTHETIC ADD FAMILY EMERGENCY CONTACT MODAL
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="modal-add-family-contact" style="display:none;">
+        <div class="family-modal-card">
+            <div class="family-modal-header">
+                <div class="fam-modal-brand">
+                    <span class="fam-modal-pill">🛡️ 24x7 TELEMETRY LIVE STREAM</span>
+                    <h3 class="fam-modal-title">Link Trusted Family Contact</h3>
+                    <p class="fam-modal-sub">Enable real-time encrypted GPS telemetry broadcasts & 1-tap WhatsApp emergency alert.</p>
+                </div>
+                <button type="button" class="btn-close-modal" id="btn-close-fam-modal" title="Close Modal">&times;</button>
+            </div>
+
+            <form id="form-add-family-contact" class="family-modal-body">
+                <div class="fam-input-group">
+                    <label class="fam-label" for="fam-input-name">Family Member / Contact Name <span class="req-star">*</span></label>
+                    <div class="fam-input-field-wrap">
+                        <span class="fam-field-icon">👤</span>
+                        <input type="text" id="fam-input-name" class="fam-modal-input" placeholder="e.g. Mom, Papa, Priya, Ayush" required autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="fam-input-group">
+                    <label class="fam-label">Relationship / Circle</label>
+                    <div class="fam-relation-chips" id="fam-relation-chips">
+                        <button type="button" class="fam-rel-chip active" data-rel="Mother" data-avatar="👩">👩 Mother</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Father" data-avatar="👨">👨 Father</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Spouse" data-avatar="💍">💍 Spouse</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Sibling" data-avatar="👫">👫 Sibling</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Best Friend" data-avatar="🤝">🤝 Friend</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Guardian" data-avatar="🛡️">🛡️ Guardian</button>
+                    </div>
+                    <input type="hidden" id="fam-input-relation" value="Mother">
+                    <input type="hidden" id="fam-input-avatar" value="👩">
+                </div>
+
+                <div class="fam-input-group">
+                    <label class="fam-label" for="fam-input-phone">WhatsApp Mobile Number <span class="req-star">*</span></label>
+                    <div class="fam-phone-field-wrap">
+                        <div class="fam-country-badge">
+                            <span class="country-flag">🇮🇳</span>
+                            <span class="country-code">+91</span>
+                        </div>
+                        <input type="tel" id="fam-input-phone" class="fam-modal-input fam-phone-input" placeholder="98765 43210" maxlength="10" required pattern="[0-9]{10}" autocomplete="tel">
+                    </div>
+                    <span class="fam-helper-text">🔒 Live GPS coordinates, altitude, and interactive radar tracker will be sent directly via WhatsApp.</span>
+                </div>
+
+                <div class="fam-features-checklist">
+                    <div class="fam-feature-item">
+                        <span class="feature-icon">🟢</span>
+                        <div class="feature-desc">
+                            <strong>Live Radar Telemetry Pairing</strong>
+                            <span>Streams real coordinates and elevation to this contact every 5 seconds when Protection Shield is active.</span>
+                        </div>
+                    </div>
+                    <div class="fam-feature-item">
+                        <span class="feature-icon">🚨</span>
+                        <div class="feature-desc">
+                            <strong>1-Tap WhatsApp Emergency Dispatch</strong>
+                            <span>Includes instant Google Maps pin and recipient telemetry monitor link.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fam-modal-actions">
+                    <button type="button" class="btn-fam-cancel" id="btn-cancel-fam-modal">Cancel</button>
+                    <button type="submit" class="btn-fam-save" id="btn-save-fam-modal">
+                        <span>Save & Connect Contact 🟢</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         LIVE GPS TELEMETRY RECEIVER MODAL (WHEN VISITING FROM WHATSAPP LINK)
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="incoming-live-tracker-modal" style="display:none;">
+        <div class="emergency-modal-card incoming-tracker-card">
+            <div class="modal-emergency-banner live-incoming-banner">
+                <span class="alarm-pulsing-badge" id="incoming-sos-badge">🚨 LIVE TRACKER ACTIVE</span>
+                <h3>Shared Live Location Signal</h3>
+                <p>You are viewing real-time GPS telemetry broadcast by an adventurer via Traveliser Women & Traveler Safety Grid.</p>
+            </div>
+            <div class="modal-dispatch-details">
+                <div class="dispatch-item">
+                    <span>Transmitted Coordinates:</span>
+                    <strong class="font-mono text-cyan" id="incoming-sos-coords">--</strong>
+                </div>
+                <div class="dispatch-item">
+                    <span>GPS Accuracy & Altitude:</span>
+                    <strong class="font-mono text-success" id="incoming-sos-acc">--</strong>
+                </div>
+                <div class="dispatch-item">
+                    <span>Broadcast Recorded At:</span>
+                    <strong class="font-mono text-amber" id="incoming-sos-time">--</strong>
+                </div>
+                <div class="dispatch-item">
+                    <span>Assigned Security Base:</span>
+                    <strong class="text-danger" id="incoming-sos-base">#MRG-FORCE-8849-HP (Police & ITBP Grid)</strong>
+                </div>
+            </div>
+            <div class="modal-urgent-actions">
+                <a href="#" class="btn-modal-maps-live" id="btn-incoming-google-maps" target="_blank" rel="noopener">
+                    <span>🗺️ Open Live Pin in Google Maps</span>
+                </a>
+                <a href="#" class="btn-modal-navigate" id="btn-incoming-navigate" target="_blank" rel="noopener">
+                    <span>🚗 Start Turn-by-Turn GPS Navigation</span>
+                </a>
+                <a href="tel:112" class="btn-modal-call" id="btn-incoming-call-police">
+                    <span>📞 Emergency Police Hotline (112)</span>
+                </a>
+                <button type="button" class="btn-modal-cancel" id="btn-close-incoming-tracker">
+                    <span>✕ Close Tracker & View Radar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
          REPORT LOST/FOUND ITEM MODAL
          ======================================================== -->
     <div class="emergency-modal-backdrop" id="lf-modal" style="display:none;">
@@ -1667,11 +1864,11 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Lead Traveller Name</label>
-                        <input type="text" id="buy-modal-name" class="modal-input" placeholder="e.g. Aditi Sharma" value="Aditi Sharma" required>
+                        <input type="text" id="buy-modal-name" class="modal-input" placeholder="e.g. Ayush" value="" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label">Mobile & WhatsApp</label>
-                        <input type="tel" id="buy-modal-phone" class="modal-input" placeholder="+91 98765 43210" value="+91 98765 43210" required>
+                        <input type="tel" id="buy-modal-phone" class="modal-input" placeholder="e.g. +91 98765 43210" value="" required>
                     </div>
                 </div>
 
@@ -1951,12 +2148,12 @@
                 <form id="auth-form" class="auth-form">
                     <div class="form-group" id="auth-name-group" style="display:none;">
                         <label class="form-label" for="auth-name">Full Name</label>
-                        <input type="text" id="auth-name" class="modal-input" placeholder="e.g. Aditi Sharma" autocomplete="name">
+                        <input type="text" id="auth-name" class="modal-input" placeholder="e.g. Ayush" autocomplete="name">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="auth-email">Email Address</label>
-                        <input type="email" id="auth-email" class="modal-input" placeholder="aditi@example.com" required autocomplete="email">
+                        <input type="email" id="auth-email" class="modal-input" placeholder="ayush@example.com" required autocomplete="email">
                     </div>
 
                     <div class="form-group">
@@ -2111,6 +2308,101 @@
             </div>
         </div>
     </footer>
+
+    <!-- ========================================================
+         MODAL 1: QUICK DESTINATION MATERIAL CATALOG WINDOW
+         ======================================================== -->
+    <div class="materials-modal-backdrop" id="modal-quick-destination" style="display:none;">
+        <div class="materials-modal-card">
+            <div class="materials-modal-header">
+                <div class="materials-modal-title-box">
+                    <div class="materials-kicker-pill">
+                        <span class="materials-kicker-dot">📍</span>
+                        <span>EXPEDITION MATERIAL CATALOG</span>
+                    </div>
+                    <h3 class="materials-modal-heading">Quick Destination Materials</h3>
+                    <p class="materials-modal-sub">Click any destination material below to immediately formulate a customized itinerary in SAHAYAKMITR.ai</p>
+                </div>
+                <button type="button" class="btn-close-materials-modal" id="btn-close-quick-dest-modal" title="Close Library">&times;</button>
+            </div>
+            <div class="materials-filter-toolbar">
+                <div class="materials-search-wrap">
+                    <span class="search-lens-icon">🔍</span>
+                    <input type="text" id="search-quick-dest-input" class="materials-search-input" placeholder="Search by city, pass, region, or temple (e.g. Manali, Kedarnath, Mumbai, Banaras...)" />
+                </div>
+                <div class="materials-category-pills" id="dest-category-filter-pills">
+                    <button type="button" class="dest-filter-pill active" data-cat="all">All (31+)</button>
+                    <button type="button" class="dest-filter-pill" data-cat="himalayan">🏔️ Himalayan & Passes</button>
+                    <button type="button" class="dest-filter-pill" data-cat="spiritual">🛕 Spiritual & Jyotirlinga</button>
+                    <button type="button" class="dest-filter-pill" data-cat="heritage">🏰 Heritage & Citadel</button>
+                    <button type="button" class="dest-filter-pill" data-cat="coastal">🌊 Coastal & Konkan</button>
+                    <button type="button" class="dest-filter-pill" data-cat="metro">🌆 Metro & Modern</button>
+                </div>
+            </div>
+            <div class="materials-modal-body">
+                <div class="quick-dest-materials-grid" id="quick-dest-materials-grid">
+                    <!-- Populated dynamically from DESTINATION_DATABASE in app.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL 2: TRIP DURATION MATERIAL CATALOG WINDOW
+         ======================================================== -->
+    <div class="materials-modal-backdrop" id="modal-trip-duration" style="display:none;">
+        <div class="materials-modal-card materials-modal-compact">
+            <div class="materials-modal-header">
+                <div class="materials-modal-title-box">
+                    <div class="materials-kicker-pill">
+                        <span class="materials-kicker-dot">⏱️</span>
+                        <span>TIMELINE PACING MATERIALS</span>
+                    </div>
+                    <h3 class="materials-modal-heading">Trip Duration Options</h3>
+                    <p class="materials-modal-sub">Select your desired expedition length. SAHAYAKMITR.ai will automatically recalibrate your itinerary</p>
+                </div>
+                <button type="button" class="btn-close-materials-modal" id="btn-close-trip-dur-modal" title="Close Library">&times;</button>
+            </div>
+            <div class="materials-modal-body">
+                <div class="trip-dur-materials-grid" id="trip-dur-materials-grid">
+                    <!-- Populated dynamically or statically via app.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL 3: E-TICKET & OFFICIAL TRAVELISER BOOKING PASS
+         ======================================================== -->
+    <div class="materials-modal-backdrop" id="modal-view-eticket" style="display:none;">
+        <div class="eticket-modal-card">
+            <div class="eticket-modal-header">
+                <div class="eticket-header-badge">
+                    <span class="eticket-shield">🛡️</span>
+                    <span>TRAVELISER SECURE EXPEDITION PASS</span>
+                </div>
+                <button type="button" class="btn-close-materials-modal" id="btn-close-eticket-modal" title="Close Pass">&times;</button>
+            </div>
+            <div class="eticket-modal-body">
+                <h3 class="eticket-modal-title" id="eticket-title">Expedition Pass</h3>
+                <div id="eticket-body-content" class="eticket-body-content">
+                    <!-- Dynamically populated in app.js -->
+                </div>
+            </div>
+            <div class="eticket-modal-footer">
+                <button type="button" class="btn-print-eticket" id="btn-print-eticket">
+                    <span>🖨️ Print / Save PDF Voucher</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING CORNER LAUNCHER FOR YOUR BOOKINGS (JUST ABOVE YOUR PLANS) -->
+    <button class="floating-bookings-corner-btn" id="floating-bookings-corner-btn" title="Open Your Bookings Drawer">
+        <span class="floating-bookings-icon">🎫</span>
+        <span class="floating-bookings-label">YOUR BOOKING</span>
+        <span class="floating-bookings-badge" id="floating-bookings-count">0</span>
+    </button>
 
     <!-- FLOATING CORNER LAUNCHER FOR YOUR PLANS (ECOMMERCE STYLE) -->
     <button class="floating-plans-corner-btn" id="floating-plans-corner-btn" title="Open Your Plans Drawer">
