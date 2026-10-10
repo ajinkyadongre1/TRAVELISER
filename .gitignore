@@ -11,6 +11,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 *.tmp
+*.bak
+
+# Temporary Test / Screenshot Artifacts
+proto_screenshot*.png
 
 # Operating System Files
 .DS_Store

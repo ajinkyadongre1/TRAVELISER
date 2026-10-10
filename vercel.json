@@ -1,10 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "name": "traveliser",
+  "name": "margify",
   "framework": null,
-  "outputDirectory": ".",
-  "buildCommand": null,
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
@@ -26,7 +24,7 @@
       ]
     },
     {
-      "source": "/(car_frames|logo_frames)/(.*)",
+      "source": "/(images|car_frames|logo_frames)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
@@ -42,4 +40,3 @@
     }
   ]
 }
-
