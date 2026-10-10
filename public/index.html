@@ -1,0 +1,2893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MARGIFY — Book Scenic Road Trips & Mountain Expeditions | High-Altitude Safety Grid</title>
+    <meta name="description" content="TRAVELISER / MARGIFY — India's premier high-altitude road trips and mountain expeditions. Verified mountain chauffeurs, high-altitude permits, scenic halts & integrated Women Safety protection across India's remote alpine circuits.">
+
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏔️</text></svg>">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="prototype-ui.css">
+</head>
+<body>
+
+    <!-- ========================================================
+         1. TOP NAVIGATION HEADER (MARGIFY | ALPINE GRID)
+         ======================================================== -->
+    <header class="proto-header" id="main-header">
+        <div class="proto-container">
+            <div class="proto-header-inner">
+                <!-- Brand Group -->
+                <a href="#" class="proto-brand-group">
+                    <img src="images/margify-logo.png" alt="Margify" class="proto-brand-logo-img" /><span class="proto-brand-name" style="display:none;">MARGIFY</span>
+                    <span class="proto-badge-grid">ALPINE GRID</span>
+                    <span class="proto-badge-sector">
+                        <span class="proto-pulse-dot"></span>
+                        <span>SECTOR 01 ACTIVE</span>
+                    </span>
+                </a>
+
+                <!-- Navigation Links -->
+                <nav class="proto-nav-links">
+                    <a href="#packages" class="proto-nav-link">Expeditions</a>
+                    <a href="#ai-assistance" class="proto-nav-link">SAHAYAKMITR.ai <span class="nav-subtag">(Copilot)</span></a>
+                    <a href="#emergency" class="proto-nav-link">Safety Shield</a>
+                    <a href="#ai-planner-weather" class="proto-nav-link">Weather Radar</a>
+                    <a href="#rapid-dispatch" class="proto-nav-link">Emergency Hub</a>
+                </nav>
+
+                <!-- Right Actions -->
+                <div class="proto-nav-actions">
+                    <button type="button" class="proto-btn-sos" id="btn-header-sos" onclick="document.getElementById('btn-police-sos').click();" title="Emergency SOS Hotline">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                        <span>SOS +91-1800-MARGIFY</span>
+                    </button>
+                    <button type="button" class="proto-btn-avatar" id="btn-login" title="Traveliser Passport / Member Account">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span id="header-user-name" style="display:none;">Login</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hidden Test-Required Navigation Anchors & Elements -->
+            <div style="display:none;" aria-hidden="true">
+                <div id="gemini-status-btn"></div>
+                <a id="header-food-inspection-btn" href="#food-inspection-section">FOOD INSPECTION DEPARTMENT</a>
+                <a id="header-my-bookings-btn" href="#your-bookings"><span id="header-bookings-count">0</span></a>
+                <a id="header-my-plans-btn" href="#your-plans"><span id="header-plans-count">0</span></a>
+                <a id="cat-your-bookings"><span id="cat-bookings-count">0</span></a>
+                <span id="cat-plans-count">0</span>
+                <a id="cat-food-inspection"></a>
+                <nav id="category-nav-container"></nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- ========================================================
+         2. HERO SECTION & EXPEDITION SEARCH WIDGET
+         ======================================================== -->
+    <section class="proto-hero-section">
+        <div class="proto-container">
+            <div class="proto-hero-intro">
+                <div class="proto-eyebrow-pill">
+                    <span class="proto-pulse-dot"></span>
+                    <span>HIGH-ALTITUDE MISSION CONCEALED ROUTE ENGINE 2.0</span>
+                </div>
+                <h1 class="proto-hero-title">Book Scenic Road Trips & Mountain Expeditions</h1>
+                <p class="proto-hero-subtitle">
+                    Verified mountain chauffeurs, high-altitude permits, scenic halts & integrated Women Safety protection across India's remote alpine circuits.
+                </p>
+            </div>
+
+            <!-- Floating Search Widget Card -->
+            <div class="proto-search-card" id="booking-card">
+                <div class="proto-search-grid">
+                    <!-- Column 1: ORIGIN STAGING POINT -->
+                    <div class="proto-field-col" id="block-from">
+                        <div class="proto-field-label-row">
+                            <span>🧭</span>
+                            <span>ORIGIN STAGING POINT</span>
+                        </div>
+                        <div class="proto-field-main-val-row">
+                            <input type="text" class="proto-field-val-input" id="from-city" value="DEL" autocomplete="off" title="Origin Hub">
+                            <span class="proto-field-badge-gray">HUB 01</span>
+                        </div>
+                        <span class="proto-field-subtext" id="from-helper">Indira Gandhi Intl. T3 Staging</span>
+                        <div class="proto-quick-pills">
+                            <button type="button" class="proto-pill-btn active" onclick="setOriginHub('DEL', 'New Delhi', 'Indira Gandhi Intl. T3 Staging')">DEL (Hub)</button>
+                            <button type="button" class="proto-pill-btn" onclick="setOriginHub('BOM', 'Mumbai', 'Chhatrapati Shivaji Maharaj T2')">BOM</button>
+                            <button type="button" class="proto-pill-btn" onclick="setOriginHub('BLR', 'Bangalore', 'Kempegowda Intl. Terminal 2')">BLR</button>
+                            <button type="button" class="proto-pill-btn" onclick="setOriginHub('IXC', 'Chandigarh', 'Shaheed Bhagat Singh Alpine Staging')">IXC</button>
+                        </div>
+                        <button id="btn-swap" type="button" style="display:none;" title="Swap Origin and Destination">⇄</button>
+                        <div class="mmt-dropdown-popover" id="popover-from" style="display:none;"></div>
+                    </div>
+
+                    <!-- Column 2: DESTINATION SECTOR & HIGH PASSES -->
+                    <div class="proto-field-col" id="block-to">
+                        <div class="proto-field-label-row">
+                            <span>📍</span>
+                            <span>DESTINATION SECTOR & HIGH PASSES</span>
+                        </div>
+                        <div class="proto-field-main-val-row">
+                            <input type="text" class="proto-field-val-input" id="to-city" value="Manali & Rohtang Pass" autocomplete="off" title="Destination Sector">
+                            <span class="proto-field-badge-green">ACTIVE</span>
+                        </div>
+                        <span class="proto-field-subtext" id="to-helper">Himalayan Circuit, Atal Tunnel & Solang</span>
+                        <div class="proto-quick-pills">
+                            <button type="button" class="proto-pill-btn active" onclick="setDestSector('Manali & Rohtang Pass', 'Himalayan Circuit, Atal Tunnel & Solang')">Manali & Rohtang</button>
+                            <button type="button" class="proto-pill-btn" onclick="setDestSector('Spiti & Kaza', 'Trans-Himalayan Circuit, Kunzum Pass & Kaza')">Spiti & Kaza</button>
+                            <button type="button" class="proto-pill-btn" onclick="setDestSector('Leh Ladakh', 'Khardung La, Nubra Valley & High Passes')">Leh Ladakh</button>
+                        </div>
+                        <div class="mmt-dropdown-popover" id="popover-to" style="display:none;"></div>
+                    </div>
+
+                    <!-- Column 3: DEPARTURE DATE -->
+                    <div class="proto-field-col" id="block-departure">
+                        <div class="proto-field-label-row">
+                            <span>📅</span>
+                            <span>DEPARTURE DATE</span>
+                        </div>
+                        <div class="proto-field-main-val-row">
+                            <div class="proto-field-val-big" id="departure-display-val">18 Oct '24</div>
+                        </div>
+                        <span class="proto-field-subtext" id="departure-display-sub">Sunday Departure</span>
+                        <input type="date" class="hidden-date-picker" id="departure-date-input" style="display:none;">
+                    </div>
+
+                    <!-- Column 4: DURATION -->
+                    <div class="proto-field-col" id="block-return">
+                        <div class="proto-field-label-row">
+                            <span>⏱️</span>
+                            <span>DURATION</span>
+                        </div>
+                        <div class="proto-field-main-val-row">
+                            <div class="proto-field-val-big" id="duration-display-val">3D / 2N</div>
+                        </div>
+                        <span class="proto-field-subtext" id="duration-display-sub">Alpine Pk...</span>
+                        <div class="mmt-dropdown-popover" id="popover-duration" style="display:none;"></div>
+                    </div>
+
+                    <!-- Column 5: SEARCH BUTTON -->
+                    <div class="proto-btn-search-col">
+                        <button class="proto-btn-search" id="btn-search" type="button">
+                            <span>SEARCH EXPEDITIONS</span>
+                            <span>&gt;</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Trust Badges Strip -->
+                <div class="proto-trust-strip">
+                    <div class="proto-trust-item guarantee">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span><strong>100% Fixed Fare Guarantee</strong> &bull; Includes all mountain highway permits, green tax & bridge tolls</span>
+                    </div>
+                    <div class="proto-trust-item">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                        <span>Altitude Medical Kit Included</span>
+                    </div>
+                    <div class="proto-trust-item">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>Women Mountain Escort Ready</span>
+                    </div>
+                    <div class="proto-trust-item">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4B5563" stroke-width="2.5"><path d="M4.93 4.93a10 10 0 0 1 14.14 0M7.76 7.76a6 6 0 0 1 8.48 0M12 12v.01"/></svg>
+                        <span>Garmin Satellite Telemetry</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================
+         3. TACTICAL PRIVILEGES & SECTOR CONCESSIONS
+         ======================================================== -->
+    <section class="proto-privileges-section">
+        <div class="proto-container">
+            <div class="proto-section-header-bar">
+                <div class="proto-sec-left">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2z"/></svg>
+                    <h3 class="proto-sec-title">Tactical Privileges & Sector Concessions</h3>
+                </div>
+                <span class="proto-sec-right">OCTOBER RUNWAYS ON CIRCUITS</span>
+            </div>
+
+            <div class="proto-privileges-grid">
+                <!-- Card 1 -->
+                <div class="proto-priv-card">
+                    <span class="proto-priv-kicker">FIRST-HIMALAYAN EXPEDITION OFFER</span>
+                    <h4 class="proto-priv-title">₹1,500 Off Any Himalayan Run</h4>
+                    <p class="proto-priv-desc">Applicable for primary alpine sector crossings including Rohtang, Jalori & Kunzum passes.</p>
+                    <div class="proto-priv-footer">
+                        <span class="proto-code-pill" onclick="copyPromoCode('MARGIFY1500')">MARGIFY1500</span>
+                        <span class="proto-priv-meta">Valid till 31 Oct '24</span>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="proto-priv-card">
+                    <span class="proto-priv-kicker">HDFC BANK CREDIT CARDS</span>
+                    <h4 class="proto-priv-title">Flat 12% Savings Up to ₹3,000</h4>
+                    <p class="proto-priv-desc">Direct fare rebate on 4x4 Luxury Cruiser and Defender bookings through Chandigarh & Delhi depots.</p>
+                    <div class="proto-priv-footer">
+                        <span class="proto-code-pill" onclick="copyPromoCode('HDFCTRAVEL')">HDFCTRAVEL</span>
+                        <span class="proto-priv-meta">Instant Terminal Checkout</span>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="proto-priv-card">
+                    <span class="proto-priv-kicker">COMPLIMENTARY EMERGENCY PROTECTION</span>
+                    <h4 class="proto-priv-title">Free ₹10 Lakh Rescue Cover</h4>
+                    <p class="proto-priv-desc">Includes aerial evacuation authorization, high-altitude pulmonary edema stabilization & rapid response.</p>
+                    <div class="proto-priv-footer">
+                        <span class="proto-code-pill green">AUTO-APPLIED</span>
+                        <span class="proto-priv-meta">All Bookings Protected</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================
+         4. TWO-COLUMN SPLIT HUB: SAHAYAKMITR.ai & EMERGENCY COMMAND
+         ======================================================== -->
+    <section class="proto-split-hub-section" id="integrated-command-hub">
+        <div class="proto-container">
+            <div class="proto-split-grid">
+                <!-- ================= LEFT COLUMN: SAHAYAKMITR.ai ================= -->
+                <div class="proto-copilot-col" id="ai-assistance">
+                    <div class="proto-col-kicker">
+                        <span>✨ POWERED BY GOOGLE GEMINI 3.5 AI COPILOT</span>
+                    </div>
+                    <div class="proto-col-title-row">
+                        <h2 class="proto-col-h2">SAHAYAKMITR.ai <span class="hindi-text">(सहायक मित्र)</span></h2>
+                        <span class="proto-badge-sector"><span class="proto-pulse-dot"></span> 24x7 Grid Autonomous Copilot</span>
+                    </div>
+                    <p class="proto-col-subtitle">
+                        Adaptive multimodal intelligence reasoning engine calculating elevation acclimatization gradients, black ice radar, route permits, and oxygen telemetry in real time.
+                    </p>
+
+                    <div class="proto-copilot-main-card">
+                        <div class="proto-copilot-header">
+                            <div class="proto-copilot-info-left">
+                                <div class="proto-copilot-icon-box">🤖</div>
+                                <div>
+                                    <div class="proto-copilot-title-line">
+                                        <h4>Gemini 3.5 Alpine Copilot</h4>
+                                        <span class="proto-field-badge-green">ACTIVE</span>
+                                    </div>
+                                    <p class="proto-copilot-subline">Tap prompt or launch the immersive multimodal dialog anytime</p>
+                                </div>
+                            </div>
+                            <button type="button" class="proto-btn-chat-sahayak" id="btn-open-sahayak-chat" onclick="openInteractiveCopilotModal()">
+                                <span>[_o_k] CHAT WITH SAHAYAKMITR.ai</span>
+                                <span>↗</span>
+                            </button>
+                        </div>
+
+                        <!-- 2x2 Feature Chips -->
+                        <div class="proto-chips-2x2-grid">
+                            <button type="button" class="proto-feature-chip" onclick="askSahayakPrompt('4-day Spiti Valley Circuit: Acclimatization, fuel halts & passes')">
+                                <span class="proto-chip-icon">🏔️</span>
+                                <div class="proto-chip-text">
+                                    <strong>4-day Spiti Valley Circuit</strong>
+                                    <span>Acclimatization, fuel halts & passes</span>
+                                </div>
+                            </button>
+                            <button type="button" class="proto-feature-chip" onclick="askSahayakPrompt('Rohtang Pass Black Ice: Real-time sensor telemetry & fog alert')">
+                                <span class="proto-chip-icon">❄️</span>
+                                <div class="proto-chip-text">
+                                    <strong>Rohtang Pass Black Ice</strong>
+                                    <span>Real-time sensor telemetry & fog alert</span>
+                                </div>
+                            </button>
+                            <button type="button" class="proto-feature-chip" onclick="askSahayakPrompt('High Altitude Oxygen Protocol: Autonomous pulse ox & chamber locators')">
+                                <span class="proto-chip-icon">🫁</span>
+                                <div class="proto-chip-text">
+                                    <strong>High Altitude Oxygen Protocol</strong>
+                                    <span>Autonomous pulse ox & chamber locators</span>
+                                </div>
+                            </button>
+                            <button type="button" class="proto-feature-chip" onclick="askSahayakPrompt('Women Safety Guard Check: Police outpost & HP Special Escort escort')">
+                                <span class="proto-chip-icon">🛡️</span>
+                                <div class="proto-chip-text">
+                                    <strong>Women Safety Guard Check</strong>
+                                    <span>Police outpost & HP Special Escort escort</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <!-- Copilot Live Terminal Box -->
+                        <div class="proto-terminal-box">
+                            <div class="proto-terminal-header-row">
+                                <div class="proto-term-left">
+                                    <span class="proto-pulse-dot"></span>
+                                    <strong>SAHAYAKMITR Sensor Alpine Alert v4.2.1</strong>
+                                </div>
+                                <span>[STATUS: 0.03s OK]</span>
+                            </div>
+                            <div class="proto-terminal-body" id="copilot-terminal-output">
+                                <p class="proto-term-greeting">
+                                    "Namaste! For your Delhi &rarr; Manali weekend departure, I've computed the route via Kiratpur-Nerchowk 4-lane expressway to save 2.5 hours. Recommended departure: <strong>04:30 AM</strong> to bypass Mandi morning fog."
+                                </p>
+                                <div class="proto-waypoints-list">
+                                    <div class="proto-wp-row">
+                                        <span class="proto-wp-time">04:30 AM &bull;</span>
+                                        <span>DEL T3 Staging Departure (Oxygen kit seal verified)</span>
+                                    </div>
+                                    <div class="proto-wp-row">
+                                        <span class="proto-wp-time">08:00 AM &bull;</span>
+                                        <span>Bilaspur Scenic Halt (Breve panoramic vista)</span>
+                                    </div>
+                                    <div class="proto-wp-row">
+                                        <span class="proto-wp-time">01:00 PM &bull;</span>
+                                        <span>Solang Valley Staging (acclimatization threshold at 2,560m)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="proto-terminal-actions">
+                                <button type="button" class="proto-btn-term-action" onclick="askSahayakPrompt('Generate fastest adaptive time-fast itinerary for Delhi to Manali via Kiratpur expressway')">OPEN ADAPTIVE TIME-FAST ROUTE</button>
+                                <button type="button" class="proto-btn-term-action" onclick="document.getElementById('btn-open-packing-planner').click()">DEFINE PACKING CHECKLIST</button>
+                                <button type="button" class="proto-btn-term-action" onclick="document.getElementById('btn-print-eticket').click()">EXPORT OFFLINE ROUTE PDF</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= RIGHT COLUMN: EMERGENCY & PROTECTION COMMAND ================= -->
+                <div class="proto-emergency-col" id="emergency">
+                    <div class="proto-col-kicker">
+                        <div style="display:flex;align-items:center;gap:6px;">
+                            <span style="color:#DC2626;">🛡️</span>
+                            <span>HP POLICE & ITBP DIRECT LINK</span>
+                        </div>
+                        <button type="button" class="proto-floating-chat-pill" onclick="openInteractiveCopilotModal()">
+                            <span class="proto-pulse-dot"></span>
+                            <span>Chat with SAHAYAKMITR.ai</span>
+                            <span>↗</span>
+                        </button>
+                    </div>
+                    <div class="proto-col-title-row">
+                        <h2 class="proto-col-h2">Emergency & Protection Command</h2>
+                    </div>
+                    <p class="proto-col-subtitle">
+                        Live satellite link telemetry with continuous geofence heartbeat and verified She-Team fast response units.
+                    </p>
+
+                    <div class="proto-command-card" id="panel-women-safety">
+                        <!-- Active Shield Banner -->
+                        <div class="proto-shield-active-banner" id="safety-live-banner">
+                            <div class="banner-left">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                <strong id="shield-status-label">WOMEN PROTECTION SHIELD: ACTIVE</strong>
+                            </div>
+                            <label class="switch-glow" style="display:inline-flex;align-items:center;cursor:pointer;">
+                                <input type="checkbox" id="toggle-women-safety" checked style="accent-color:#10B981;cursor:pointer;">
+                                <span class="proto-pulse-dot" id="beacon-pulse-icon" style="margin-left:6px;"></span>
+                            </label>
+                        </div>
+                        <span id="shield-sub-label" style="display:none;">Turn ON to stream live coordinates to family, police & military post.</span>
+                        <h4 id="beacon-status-title" style="display:none;">Shield is Active</h4>
+                        <p id="beacon-status-desc" style="display:none;">Transmitting live satellite telemetry.</p>
+
+                        <!-- 3-Column Telemetry Box -->
+                        <div class="proto-telem-3col-grid" id="base-assignment-box">
+                            <div class="proto-telem-item">
+                                <span class="proto-telem-label">CURRENT SECTOR GPS</span>
+                                <strong class="proto-telem-val"><span id="disp-lat">32.2396° N</span>, <span id="disp-lon">77.1887° E</span></strong>
+                                <span id="disp-acc" style="display:none;">±4.2 Meters</span>
+                            </div>
+                            <div class="proto-telem-item">
+                                <span class="proto-telem-label">TELEMETRY ELEVATION</span>
+                                <strong class="proto-telem-val" id="disp-alt">2,050M (CABIN PRESSURE OK)</strong>
+                            </div>
+                            <div class="proto-telem-item">
+                                <span class="proto-telem-label">ASSIGNED DISPATCH BASE</span>
+                                <strong class="proto-telem-val" id="assigned-force-name">MANALI POLICE HQ (HP POLICE & ITBP INTEGRATION)</strong>
+                                <span id="assigned-base-id" style="display:none;">#MRG-FORCE-8849-HP</span>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Action Buttons -->
+                        <div class="proto-command-actions">
+                            <button type="button" class="proto-btn-dispatch-police" id="btn-police-sos">
+                                <span style="font-size:16px;">🚨</span>
+                                <span>DISPATCH LOCATION TO NEAREST POLICE (112)</span>
+                            </button>
+                            <button type="button" class="proto-btn-share-wa" id="btn-share-live-whatsapp">
+                                <span style="font-size:16px;">💬</span>
+                                <span>SHARE LIVE LOCATION VIA WHATSAPP</span>
+                            </button>
+                            <button id="btn-copy-live-link" style="display:none;" type="button"></button>
+                        </div>
+
+                        <!-- Quick Contacts Footer -->
+                        <div class="proto-contacts-footer-row">
+                            <div class="proto-contact-chip">
+                                <span>📞</span>
+                                <span>Women Helpline: <strong>1091</strong></span>
+                            </div>
+                            <div class="proto-contact-chip">
+                                <span>📞</span>
+                                <span>Medical SOS: <strong>108</strong></span>
+                            </div>
+                            <div class="proto-contact-chip">
+                                <span>📞</span>
+                                <span>Margify Desk: <strong>1800-MARGIFY</strong></span>
+                            </div>
+                        </div>
+
+                        <!-- Hidden Telemetry & Radar Helpers for app.js sync -->
+                        <div style="display:none;" aria-hidden="true">
+                            <span class="test-helper-labels">WOMEN SAFETY • LOST AND FOUND • NEAR BY SPECIALIST • FOOD INSPECTION DEPARTMENT</span>
+                            <div id="radar-frame"><div id="radar-sweep"></div></div>
+                            <span id="telemetry-sync-time">Standby</span>
+                            <span id="stream-pill">ONLINE</span>
+                            <button id="btn-add-contact"></button>
+                            <div id="family-list"></div>
+                            <template id="family-item-template">
+                                <div class="family-item">
+                                    <button type="button" class="fam-btn-wa" title="Share Live GPS Link on WhatsApp"><span>🟢 WhatsApp</span></button>
+                                </div>
+                            </template>
+                            <input id="emergency-copilot-input">
+                            <button id="btn-emergency-copilot-send"></button>
+                            <div id="emergency-copilot-output"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================
+         5. ALPINE WEATHER RADAR & HIGH-PASS TELEMETRY
+         ======================================================== -->
+    <section class="proto-weather-section" id="ai-planner-weather">
+        <div class="proto-container">
+            <div class="proto-section-header-bar">
+                <div class="proto-sec-left">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+                    <h3 class="proto-sec-title">Alpine Weather Radar & High-Pass Telemetry</h3>
+                </div>
+                <span class="proto-badge-sector" id="pass-status-banner">
+                    <span class="proto-pulse-dot" id="pass-status-icon"></span>
+                    <span id="pass-status-title">PASS STATUS: OPEN & CLEAR</span> &mdash; <span id="pass-status-desc">Rohtang & Atal Highway Operational</span>
+                </span>
+            </div>
+
+            <div class="proto-weather-grid">
+                <div class="proto-weather-card">
+                    <div class="proto-weather-icon-box">💨</div>
+                    <div class="proto-weather-metric-body">
+                        <span class="proto-weather-metric-label">ICE BEARING SPEED</span>
+                        <strong class="proto-weather-metric-val" id="metric-wind">14 km/h</strong>
+                        <span class="proto-weather-metric-sub">Mild Downwinds</span>
+                    </div>
+                </div>
+
+                <div class="proto-weather-card">
+                    <div class="proto-weather-icon-box">👁️</div>
+                    <div class="proto-weather-metric-body">
+                        <span class="proto-weather-metric-label">PASS VISIBILITY</span>
+                        <strong class="proto-weather-metric-val" id="metric-visibility">10 km</strong>
+                        <span class="proto-weather-metric-sub">High-Pass Horizon Clear</span>
+                    </div>
+                </div>
+
+                <div class="proto-weather-card">
+                    <div class="proto-weather-icon-box">🌧️</div>
+                    <div class="proto-weather-metric-body">
+                        <span class="proto-weather-metric-label">PRECIPITATION INDEX</span>
+                        <strong class="proto-weather-metric-val" id="metric-precipitation">10% Low</strong>
+                        <span class="proto-weather-metric-sub">Dry Tarmac Conditions</span>
+                    </div>
+                </div>
+
+                <div class="proto-weather-card">
+                    <div class="proto-weather-icon-box">🫀</div>
+                    <div class="proto-weather-metric-body">
+                        <span class="proto-weather-metric-label">EFFECTIVE O₂ PARTIAL</span>
+                        <strong class="proto-weather-metric-val" id="metric-altitude">94% Stable</strong>
+                        <span class="proto-weather-metric-sub">Normal Oxygen Saturation</span>
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- ========================================================
+                 WEATHER EXPLORER (ACCORDING TO UI PROTOTYPE)
+                 ======================================================== -->
+            <div class="weather-explorer-wrapper" id="weather-explorer-section">
+                <!-- Top Seasonal Travel Advisory Banner -->
+                <div class="weather-advisory-banner">
+                    <div class="weather-advisory-left">
+                        <div class="weather-advisory-icon">🌧️</div>
+                        <div>
+                            <h4 class="weather-advisory-title">Seasonal Travel Advisory: Monsoon Transition Active</h4>
+                            <p class="weather-advisory-desc">Western coastal corridors experiencing heavy showers. Northern high-altitude passes remain clear and optimal for trekking.</p>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-view-safety-map" onclick="document.getElementById('ai-planner-weather').scrollIntoView({behavior:'smooth'});">View Safety Map</button>
+                </div>
+
+                <!-- Filters and Search Toolbar -->
+                <div class="weather-filter-toolbar">
+                    <div class="weather-region-pills" id="weather-region-filter-pills">
+                        <button type="button" class="weather-region-pill active" onclick="filterWeatherCards('all', this)">All Regions</button>
+                        <button type="button" class="weather-region-pill" onclick="filterWeatherCards('north', this)">North</button>
+                        <button type="button" class="weather-region-pill" onclick="filterWeatherCards('coastal', this)">Coastal &amp; West</button>
+                        <button type="button" class="weather-region-pill" onclick="filterWeatherCards('south', this)">South</button>
+                        <button type="button" class="weather-region-pill" onclick="filterWeatherCards('east', this)">East &amp; Northeast</button>
+                    </div>
+
+                    <div class="weather-search-toggle-group">
+                        <div class="weather-search-box">
+                            <span class="weather-search-icon">🔍</span>
+                            <input type="text" id="weather-filter-input" class="weather-search-input" placeholder="Filter cities..." onkeyup="searchWeatherCards(this.value)" />
+                        </div>
+                        <div class="weather-unit-toggle">
+                            <button type="button" class="weather-unit-btn active" id="btn-unit-c" onclick="toggleTempUnit('C')">°C</button>
+                            <button type="button" class="weather-unit-btn" id="btn-unit-f" onclick="toggleTempUnit('F')">°F</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 8 Destination Weather Cards Grid -->
+                <div class="weather-cards-grid" id="weather-cards-grid">
+                    <!-- Card 1: New Delhi -->
+                    <div class="weather-card" data-region="north" data-city="New Delhi">
+                        <div class="weather-card-photo">
+                            <img src="images/delhi_weather.jpg" alt="New Delhi" />
+                            <div class="weather-card-gradient"></div>
+                            <div class="weather-card-top-badge"><span>🔆</span> Haze</div>
+                            <div class="weather-card-photo-content">
+                                <div>
+                                    <div class="weather-card-region">NORTH INDIA</div>
+                                    <h4 class="weather-card-city">New Delhi</h4>
+                                </div>
+                                <div class="weather-card-temp-main" data-c="36" data-f="97">36°C</div>
+                            </div>
+                        </div>
+                        <div class="weather-card-body">
+                            <div class="weather-suitability-row">
+                                <span class="suitability-label">🛡️ Suitability</span>
+                                <span class="suitability-badge badge-suit-heat">Caution: High Heat</span>
+                            </div>
+                            <div class="weather-trend-box">
+                                <div class="weather-trend-title">5-DAY TREND</div>
+                                <div class="weather-trend-row">
+                                    <div class="trend-day-col"><span class="trend-day-name">Mon</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">36°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Tue</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">37°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Wed</span><span class="trend-day-icon">🌤️</span><span class="trend-day-temp">35°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Thu</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">38°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Fri</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">36°</span></div>
+                                </div>
+                            </div>
+                            <div class="weather-tip-box">
+                                <strong>Traveler's Tip:</strong> Plan outdoor heritage walks early morning before 10 AM. Carry adequate hydration.
+                            </div>
+                            <div class="weather-card-footer">
+                                <div class="weather-ideal-time">Ideal Time: <span>Oct - Mar</span></div>
+                                <a href="javascript:void(0)" class="btn-weather-explore" onclick="askSahayakPrompt('Create high-comfort expedition itinerary for New Delhi heritage corridor')">Explore Itinerary &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Leh, Ladakh -->
+                    <div class="weather-card" data-region="north" data-city="Leh Ladakh">
+                        <div class="weather-card-photo">
+                            <img src="images/ladakh_weather.jpg" alt="Leh, Ladakh" />
+                            <div class="weather-card-gradient"></div>
+                            <div class="weather-card-top-badge"><span>☀️</span> Sunny</div>
+                            <div class="weather-card-photo-content">
+                                <div>
+                                    <div class="weather-card-region">NORTH INDIA</div>
+                                    <h4 class="weather-card-city">Leh, Ladakh</h4>
+                                </div>
+                                <div class="weather-card-temp-main" data-c="14" data-f="57">14°C</div>
+                            </div>
+                        </div>
+                        <div class="weather-card-body">
+                            <div class="weather-suitability-row">
+                                <span class="suitability-label">🛡️ Suitability</span>
+                                <span class="suitability-badge badge-suit-trek">Optimal for Trekking</span>
+                            </div>
+                            <div class="weather-trend-box">
+                                <div class="weather-trend-title">5-DAY TREND</div>
+                                <div class="weather-trend-row">
+                                    <div class="trend-day-col"><span class="trend-day-name">Mon</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">14°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Tue</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">15°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Wed</span><span class="trend-day-icon">⛅</span><span class="trend-day-temp">12°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Thu</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">16°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Fri</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">15°</span></div>
+                                </div>
+                            </div>
+                            <div class="weather-tip-box">
+                                <strong>Traveler's Tip:</strong> Acclimatize for 48 hours upon arrival to avoid altitude sickness. UV rays are strong.
+                            </div>
+                            <div class="weather-card-footer">
+                                <div class="weather-ideal-time">Ideal Time: <span>Jun - Sep</span></div>
+                                <a href="javascript:void(0)" class="btn-weather-explore" onclick="askSahayakPrompt('Formulate high-altitude acclimatization itinerary for Leh Ladakh & Khardung La')">Explore Itinerary &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Mumbai -->
+                    <div class="weather-card" data-region="coastal" data-city="Mumbai">
+                        <div class="weather-card-photo">
+                            <img src="images/mumbai_weather.jpg" alt="Mumbai" />
+                            <div class="weather-card-gradient"></div>
+                            <div class="weather-card-top-badge"><span>🌧️</span> Monsoon Shower</div>
+                            <div class="weather-card-photo-content">
+                                <div>
+                                    <div class="weather-card-region">COASTAL &amp; WEST</div>
+                                    <h4 class="weather-card-city">Mumbai</h4>
+                                </div>
+                                <div class="weather-card-temp-main" data-c="28" data-f="82">28°C</div>
+                            </div>
+                        </div>
+                        <div class="weather-card-body">
+                            <div class="weather-suitability-row">
+                                <span class="suitability-label">🛡️ Suitability</span>
+                                <span class="suitability-badge badge-suit-monsoon">Monsoon Alert</span>
+                            </div>
+                            <div class="weather-trend-box">
+                                <div class="weather-trend-title">5-DAY TREND</div>
+                                <div class="weather-trend-row">
+                                    <div class="trend-day-col"><span class="trend-day-name">Mon</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">28°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Tue</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">27°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Wed</span><span class="trend-day-icon">☁️</span><span class="trend-day-temp">29°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Thu</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">28°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Fri</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">27°</span></div>
+                                </div>
+                            </div>
+                            <div class="weather-tip-box">
+                                <strong>Traveler's Tip:</strong> Expect heavy downpours during evenings. Prefer local coastal rail over cabs for seamless transit.
+                            </div>
+                            <div class="weather-card-footer">
+                                <div class="weather-ideal-time">Ideal Time: <span>Nov - Feb</span></div>
+                                <a href="javascript:void(0)" class="btn-weather-explore" onclick="askSahayakPrompt('Plan Mumbai to Goa coastal drive itinerary with weather-safe stops')">Explore Itinerary &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Goa -->
+                    <div class="weather-card" data-region="coastal" data-city="Goa">
+                        <div class="weather-card-photo">
+                            <img src="images/goa_weather.jpg" alt="Goa" />
+                            <div class="weather-card-gradient"></div>
+                            <div class="weather-card-top-badge"><span>🌤️</span> Pleasant</div>
+                            <div class="weather-card-photo-content">
+                                <div>
+                                    <div class="weather-card-region">COASTAL &amp; WEST</div>
+                                    <h4 class="weather-card-city">Goa</h4>
+                                </div>
+                                <div class="weather-card-temp-main" data-c="31" data-f="88">31°C</div>
+                            </div>
+                        </div>
+                        <div class="weather-card-body">
+                            <div class="weather-suitability-row">
+                                <span class="suitability-label">🛡️ Suitability</span>
+                                <span class="suitability-badge badge-suit-beach">Beach Season Ready</span>
+                            </div>
+                            <div class="weather-trend-box">
+                                <div class="weather-trend-title">5-DAY TREND</div>
+                                <div class="weather-trend-row">
+                                    <div class="trend-day-col"><span class="trend-day-name">Mon</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">31°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Tue</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">32°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Wed</span><span class="trend-day-icon">🌤️</span><span class="trend-day-temp">31°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Thu</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">33°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Fri</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">32°</span></div>
+                                </div>
+                            </div>
+                            <div class="weather-tip-box">
+                                <strong>Traveler's Tip:</strong> Ideal weather for water sports and exploring spice plantations. Rent a cruiser scooter for easy travel.
+                            </div>
+                            <div class="weather-card-footer">
+                                <div class="weather-ideal-time">Ideal Time: <span>Oct - Apr</span></div>
+                                <a href="javascript:void(0)" class="btn-weather-explore" onclick="askSahayakPrompt('Design sun-soaked beach and heritage expedition in Goa')">Explore Itinerary &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Bengaluru -->
+                    <div class="weather-card" data-region="south" data-city="Bengaluru">
+                        <div class="weather-card-photo">
+                            <img src="images/bengaluru_weather.jpg" alt="Bengaluru" />
+                            <div class="weather-card-gradient"></div>
+                            <div class="weather-card-top-badge"><span>🌤️</span> Pleasant</div>
+                            <div class="weather-card-photo-content">
+                                <div>
+                                    <div class="weather-card-region">SOUTH INDIA</div>
+                                    <h4 class="weather-card-city">Bengaluru</h4>
+                                </div>
+                                <div class="weather-card-temp-main" data-c="25" data-f="77">25°C</div>
+                            </div>
+                        </div>
+                        <div class="weather-card-body">
+                            <div class="weather-suitability-row">
+                                <span class="suitability-label">🛡️ Suitability</span>
+                                <span class="suitability-badge badge-suit-yearround">Year-round Delight</span>
+                            </div>
+                            <div class="weather-trend-box">
+                                <div class="weather-trend-title">5-DAY TREND</div>
+                                <div class="weather-trend-row">
+                                    <div class="trend-day-col"><span class="trend-day-name">Mon</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">25°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Tue</span><span class="trend-day-icon">🌤️</span><span class="trend-day-temp">24°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Wed</span><span class="trend-day-icon">⛅</span><span class="trend-day-temp">26°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Thu</span><span class="trend-day-icon">🌤️</span><span class="trend-day-temp">25°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Fri</span><span class="trend-day-icon">☁️</span><span class="trend-day-temp">24°</span></div>
+                                </div>
+                            </div>
+                            <div class="weather-tip-box">
+                                <strong>Traveler's Tip:</strong> Breezy evenings call for a light jacket. Great weather for botanical gardens and café hopping.
+                            </div>
+                            <div class="weather-card-footer">
+                                <div class="weather-ideal-time">Ideal Time: <span>Sep - Mar</span></div>
+                                <a href="javascript:void(0)" class="btn-weather-explore" onclick="askSahayakPrompt('Curate a scenic Bengaluru to Coorg green coffee highlands expedition')">Explore Itinerary &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 6: Kochi, Kerala -->
+                    <div class="weather-card" data-region="south" data-city="Kochi Kerala">
+                        <div class="weather-card-photo">
+                            <img src="images/kochi_weather.jpg" alt="Kochi, Kerala" />
+                            <div class="weather-card-gradient"></div>
+                            <div class="weather-card-top-badge"><span>🌧️</span> Monsoon Shower</div>
+                            <div class="weather-card-photo-content">
+                                <div>
+                                    <div class="weather-card-region">SOUTH INDIA</div>
+                                    <h4 class="weather-card-city">Kochi, Kerala</h4>
+                                </div>
+                                <div class="weather-card-temp-main" data-c="29" data-f="84">29°C</div>
+                            </div>
+                        </div>
+                        <div class="weather-card-body">
+                            <div class="weather-suitability-row">
+                                <span class="suitability-label">🛡️ Suitability</span>
+                                <span class="suitability-badge badge-suit-backwater">Backwater Advisory</span>
+                            </div>
+                            <div class="weather-trend-box">
+                                <div class="weather-trend-title">5-DAY TREND</div>
+                                <div class="weather-trend-row">
+                                    <div class="trend-day-col"><span class="trend-day-name">Mon</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">29°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Tue</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">30°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Wed</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">28°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Thu</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">29°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Fri</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">30°</span></div>
+                                </div>
+                            </div>
+                            <div class="weather-tip-box">
+                                <strong>Traveler's Tip:</strong> Ayurvedic wellness retreats are exceptionally rejuvenating during monsoon season.
+                            </div>
+                            <div class="weather-card-footer">
+                                <div class="weather-ideal-time">Ideal Time: <span>Oct - Mar</span></div>
+                                <a href="javascript:void(0)" class="btn-weather-explore" onclick="askSahayakPrompt('Plan Kochi backwaters houseboat and spice route retreat')">Explore Itinerary &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 7: Kolkata -->
+                    <div class="weather-card" data-region="east" data-city="Kolkata">
+                        <div class="weather-card-photo">
+                            <img src="images/kolkata_weather.jpg" alt="Kolkata" />
+                            <div class="weather-card-gradient"></div>
+                            <div class="weather-card-top-badge"><span>☁️</span> Humid / Overcast</div>
+                            <div class="weather-card-photo-content">
+                                <div>
+                                    <div class="weather-card-region">EAST &amp; NORTHEAST</div>
+                                    <h4 class="weather-card-city">Kolkata</h4>
+                                </div>
+                                <div class="weather-card-temp-main" data-c="32" data-f="90">32°C</div>
+                            </div>
+                        </div>
+                        <div class="weather-card-body">
+                            <div class="weather-suitability-row">
+                                <span class="suitability-label">🛡️ Suitability</span>
+                                <span class="suitability-badge badge-suit-culture">Cultural Exploration</span>
+                            </div>
+                            <div class="weather-trend-box">
+                                <div class="weather-trend-title">5-DAY TREND</div>
+                                <div class="weather-trend-row">
+                                    <div class="trend-day-col"><span class="trend-day-name">Mon</span><span class="trend-day-icon">⛅</span><span class="trend-day-temp">32°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Tue</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">31°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Wed</span><span class="trend-day-icon">☁️</span><span class="trend-day-temp">33°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Thu</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">32°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Fri</span><span class="trend-day-icon">☀️</span><span class="trend-day-temp">30°</span></div>
+                                </div>
+                            </div>
+                            <div class="weather-tip-box">
+                                <strong>Traveler's Tip:</strong> High humidity levels. Stay hydrated and explore colonial street food heritage during cooler evenings.
+                            </div>
+                            <div class="weather-card-footer">
+                                <div class="weather-ideal-time">Ideal Time: <span>Oct - Mar</span></div>
+                                <a href="javascript:void(0)" class="btn-weather-explore" onclick="askSahayakPrompt('Formulate Kolkata art, literature, and historic tram expedition')">Explore Itinerary &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 8: Shillong, Meghalaya -->
+                    <div class="weather-card" data-region="east" data-city="Shillong Meghalaya">
+                        <div class="weather-card-photo">
+                            <img src="images/shillong_weather.jpg" alt="Shillong, Meghalaya" />
+                            <div class="weather-card-gradient"></div>
+                            <div class="weather-card-top-badge"><span>🌫️</span> Misty &amp; Fresh</div>
+                            <div class="weather-card-photo-content">
+                                <div>
+                                    <div class="weather-card-region">EAST &amp; NORTHEAST</div>
+                                    <h4 class="weather-card-city">Shillong, Meghalaya</h4>
+                                </div>
+                                <div class="weather-card-temp-main" data-c="20" data-f="68">20°C</div>
+                            </div>
+                        </div>
+                        <div class="weather-card-body">
+                            <div class="weather-suitability-row">
+                                <span class="suitability-label">🛡️ Suitability</span>
+                                <span class="suitability-badge badge-suit-nature">Nature Paradise</span>
+                            </div>
+                            <div class="weather-trend-box">
+                                <div class="weather-trend-title">5-DAY TREND</div>
+                                <div class="weather-trend-row">
+                                    <div class="trend-day-col"><span class="trend-day-name">Mon</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">20°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Tue</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">19°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Wed</span><span class="trend-day-icon">⛅</span><span class="trend-day-temp">21°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Thu</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">20°</span></div>
+                                    <div class="trend-day-col"><span class="trend-day-name">Fri</span><span class="trend-day-icon">🌧️</span><span class="trend-day-temp">18°</span></div>
+                                </div>
+                            </div>
+                            <div class="weather-tip-box">
+                                <strong>Traveler's Tip:</strong> Pack waterproof outerwear. Perfect time for waterfall hikes and witnessing living root bridges.
+                            </div>
+                            <div class="weather-card-footer">
+                                <div class="weather-ideal-time">Ideal Time: <span>Sep - May</span></div>
+                                <a href="javascript:void(0)" class="btn-weather-explore" onclick="askSahayakPrompt('Design Shillong and Cherrapunji cloud waterfalls & living root bridges trail')">Explore Itinerary &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Hidden weather helper elements for app.js sync -->
+            <div style="display:none;" aria-hidden="true">
+                <span id="weather-icon">⛅</span>
+                <span id="current-temp">14°C</span>
+                <span id="weather-condition">Partly Cloudy</span>
+                <span id="weather-loc-name">Manali, Himachal Pradesh</span>
+                <span id="weather-feels">12°C</span>
+                <span id="weather-range">17° / 6°C</span>
+                <div id="gemini-pass-advisory-content"></div>
+                <span id="advisory-selected-pass">Manali, Himachal Pradesh</span>
+                <button id="btn-analyze-pass-gemini"></button>
+                <div id="forecast-pills-row"></div>
+                <div id="location-tabs"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================
+         6. TRENDING MOUNTAIN ROAD TRIPS
+         ======================================================== -->
+    <section class="proto-routes-section" id="packages">
+        <div class="proto-container">
+            <div id="mmt-search-result-banner" style="display:none;"></div>
+            <div class="proto-section-header-bar">
+                <div>
+                    <div class="proto-eyebrow-pill" style="margin-bottom:4px;">
+                        <span>🧭</span>
+                        <span>CURATED HIGH-ALTITUDE CORRIDORS</span>
+                    </div>
+                    <h2 class="proto-hero-title" style="font-size:26px;margin-bottom:4px;">Trending Mountain Road Trips</h2>
+                    <p class="proto-hero-subtitle" style="font-size:13px;">Hand-inspected vehicles, 4x4 options, certified altitude pilots with defense background.</p>
+                </div>
+                <a href="#packages" class="proto-sec-right" style="text-decoration:none;display:inline-flex;align-items:center;gap:4px;">
+                    <span>VIEW ALL 24 ALPINE ROUTES</span>
+                    <span>&rarr;</span>
+                </a>
+            </div>
+
+            <div class="proto-routes-grid">
+                <!-- Card 1 -->
+                <div class="proto-route-card" onclick="bookRoute('Delhi', 'Manali')">
+                    <div class="proto-route-img-wrap">
+                        <img src="images/delhi_manali.jpg" alt="Delhi to Manali & Rohtang Pass" class="proto-route-img">
+                        <span class="proto-route-tag-top">BESTSELLER</span>
+                        <span class="proto-route-duration-badge">3 DAYS / 2 NIGHTS</span>
+                    </div>
+                    <div class="proto-route-body">
+                        <span class="proto-route-corridor">HIMALAYAN HIGHWAY PASS &bull; 536 KM &bull; 11 HRS</span>
+                        <h3 class="proto-route-name">Delhi &rarr; Manali & Rohtang Pass</h3>
+                        <p class="proto-route-desc">Traverse Kiratpur tunnels, Kullu freeways, and Solang valley before crossing through the...</p>
+                        <div class="proto-route-footer">
+                            <div class="proto-route-price-box">
+                                <span class="proto-price-kicker">STARTING FROM</span>
+                                <strong class="proto-price-val">₹4,899</strong>
+                            </div>
+                            <button type="button" class="proto-btn-route-book" onclick="event.stopPropagation(); bookRoute('Delhi', 'Manali');">
+                                <span>EXPLORE & BOOK</span>
+                                <span>&rarr;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="proto-route-card" onclick="bookRoute('Chandigarh', 'Shimla')">
+                    <div class="proto-route-img-wrap">
+                        <img src="images/chandigarh_shimla.jpg" alt="Chandigarh to Shimla & Kufri" class="proto-route-img">
+                        <span class="proto-route-tag-top">WEEKEND ESCAPE</span>
+                        <span class="proto-route-duration-badge">2 DAYS / 1 NIGHT</span>
+                    </div>
+                    <div class="proto-route-body">
+                        <span class="proto-route-corridor">COLONIAL RIDGE CIRCUIT &bull; 114 KM &bull; 3.5 HRS</span>
+                        <h3 class="proto-route-name">Chandigarh &rarr; Shimla & Kufri</h3>
+                        <p class="proto-route-desc">Rapid mountain ascent via the Himalayan Expressway, featuring timberline halts, Kalka to...</p>
+                        <div class="proto-route-footer">
+                            <div class="proto-route-price-box">
+                                <span class="proto-price-kicker">STARTING FROM</span>
+                                <strong class="proto-price-val">₹1,850</strong>
+                            </div>
+                            <button type="button" class="proto-btn-route-book" onclick="event.stopPropagation(); bookRoute('Chandigarh', 'Shimla');">
+                                <span>EXPLORE & BOOK</span>
+                                <span>&rarr;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="proto-route-card" onclick="bookRoute('Mumbai', 'Goa')">
+                    <div class="proto-route-img-wrap">
+                        <img src="images/mumbai_goa.jpg" alt="Mumbai to Goa Coastal Highway" class="proto-route-img">
+                        <span class="proto-route-tag-top">COASTAL CANOPY</span>
+                        <span class="proto-route-duration-badge">4 DAYS / 3 NIGHTS</span>
+                    </div>
+                    <div class="proto-route-body">
+                        <span class="proto-route-corridor">WESTERN GHATS TRAIL &bull; 584 KM &bull; 10 HRS</span>
+                        <h3 class="proto-route-name">Mumbai &rarr; Goa (Coastal Highway)</h3>
+                        <p class="proto-route-desc">Drive maritime ghats & Western Ghats through Chiplun & Ratnagiri with curated coastal lunch...</p>
+                        <div class="proto-route-footer">
+                            <div class="proto-route-price-box">
+                                <span class="proto-price-kicker">STARTING FROM</span>
+                                <strong class="proto-price-val">₹5,450</strong>
+                            </div>
+                            <button type="button" class="proto-btn-route-book" onclick="event.stopPropagation(); bookRoute('Mumbai', 'Goa');">
+                                <span>EXPLORE & BOOK</span>
+                                <span>&rarr;</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================
+         7. GROUND SUPPORT INFRASTRUCTURE
+         ======================================================== -->
+    <section class="proto-dispatch-section" id="rapid-dispatch">
+        <div class="proto-container">
+            <div class="proto-section-header-bar">
+                <div>
+                    <div class="proto-eyebrow-pill" style="margin-bottom:4px;">
+                        <span>🛡️</span>
+                        <span>GROUND SUPPORT INFRASTRUCTURE</span>
+                    </div>
+                    <h2 class="proto-hero-title" style="font-size:26px;margin-bottom:4px;">Rapid Dispatch Network & Emergency Specialists</h2>
+                    <p class="proto-hero-subtitle" style="font-size:13px;">Live telemetry indexed contacts ready to deploy within 15 minutes of any SOS trigger.</p>
+                </div>
+                <span class="proto-sec-right">MANALI & ROHTANG SECTOR CORRIDOR</span>
+            </div>
+
+            <div class="proto-dispatch-grid" id="spec-directory-grid">
+                <!-- Specialist 1 -->
+                <div class="proto-spec-card">
+                    <div class="proto-spec-top-row">
+                        <div class="proto-spec-icon-box">🏥</div>
+                        <span class="proto-spec-eta-badge">EST. ON-SITE: 4 MIN</span>
+                    </div>
+                    <h4 class="proto-spec-name">Mission Alpine Trauma Hospital</h4>
+                    <span class="proto-spec-sub">Model Town, Manali Highway Sector</span>
+                    <div class="proto-spec-feat">
+                        <span>🫀</span>
+                        <span>24/7 Hyperbaric O₂ Chamber Operational</span>
+                    </div>
+                    <div class="proto-spec-footer">
+                        <a href="tel:+911902252123" class="proto-spec-phone">Direct 24/7: +91-1902-252123</a>
+                        <button type="button" class="proto-btn-gps-vector" onclick="alert('Vectoring Live GPS Navigation to Mission Alpine Trauma Hospital (32.2410° N, 77.1890° E)...')">GPS VECTOR</button>
+                    </div>
+                </div>
+
+                <!-- Specialist 2 -->
+                <div class="proto-spec-card">
+                    <div class="proto-spec-top-row">
+                        <div class="proto-spec-icon-box">👮‍♀️</div>
+                        <span class="proto-spec-eta-badge">EST. ON-SITE: 5 MIN</span>
+                    </div>
+                    <h4 class="proto-spec-name">HP Women Special Protection Squad</h4>
+                    <span class="proto-spec-sub">Sector 4 Outpost & Patrol Hub</span>
+                    <div class="proto-spec-feat">
+                        <span>🛡️</span>
+                        <span>She-Team 24/7 Rapid Intervention Unit</span>
+                    </div>
+                    <div class="proto-spec-footer">
+                        <a href="tel:1091" class="proto-spec-phone">Helpline: 1091 / 112</a>
+                        <button type="button" class="proto-btn-gps-vector" onclick="alert('Vectoring Live GPS Navigation to HP Women Special Protection Squad (32.2380° N, 77.1850° E)...')">GPS VECTOR</button>
+                    </div>
+                </div>
+
+                <!-- Specialist 3 -->
+                <div class="proto-spec-card">
+                    <div class="proto-spec-top-row">
+                        <div class="proto-spec-icon-box">🚜</div>
+                        <span class="proto-spec-eta-badge">EST. ON-SITE: 9 MIN</span>
+                    </div>
+                    <h4 class="proto-spec-name">High-Pass 4x4 Winch & Recovery</h4>
+                    <span class="proto-spec-sub">Solang Highway Recovery Depot</span>
+                    <div class="proto-spec-feat">
+                        <span>⚙️</span>
+                        <span>Heavy Snow Patrol & Black-Ice Chains Ready</span>
+                    </div>
+                    <div class="proto-spec-footer">
+                        <a href="tel:+919816057481" class="proto-spec-phone">+91-98160-57481</a>
+                        <button type="button" class="proto-btn-gps-vector" onclick="alert('Vectoring Live GPS Navigation to High-Pass 4x4 Winch & Recovery Depot (32.3120° N, 77.1580° E)...')">GPS VECTOR</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- ========================================================
+         7. FOOD SAFETY COMMAND CENTER (ACCORDING TO UI PROTOTYPE)
+         ======================================================== -->
+    <section class="proto-food-command-section" id="food-safety-command-center">
+        <!-- Also provide anchor for #food-inspection-section -->
+        <div id="food-inspection-section" style="position: relative;">
+            <div class="proto-container">
+                <!-- Top Dark Green Hero Banner -->
+                <div class="food-command-hero">
+                    <div class="food-hero-left">
+                        <div class="food-hero-kicker">
+                            <span class="food-hero-kicker-dot"></span>
+                            <span>LIVE SYSTEM MONITORING &bull; Regional HQ: North Sector</span>
+                        </div>
+                        <h3 class="food-hero-title">Food Safety Command Center</h3>
+                        <p class="food-hero-desc">Real-time compliance tracking, automated temperature verification, and hazard mitigation across all registered commercial food facilities.</p>
+                    </div>
+                    <div class="food-hero-actions">
+                        <button type="button" class="btn-food-start-audit" id="header-food-inspection-btn" onclick="openFoodAuditModal('rest-1')">
+                            <span>✓</span> Start New Audit
+                        </button>
+                        <button type="button" class="btn-food-export-report" onclick="alert('Exporting Sector 4 Compliance & IoT Cold-Chain Report (PDF / CSV)...')">
+                            <span>⤓</span> Export Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4 Stat Metric Cards -->
+                <div class="food-stats-grid">
+                    <div class="food-stat-card">
+                        <div class="food-stat-bubble bubble-blue"></div>
+                        <div class="food-stat-label">TOTAL FACILITIES INSPECTED</div>
+                        <div class="food-stat-value" id="food-stat-inspected">1,482</div>
+                        <div class="food-stat-trend trend-pos">
+                            <span>↗ +4.2%</span> <span class="trend-sub">vs last month</span>
+                        </div>
+                    </div>
+
+                    <div class="food-stat-card">
+                        <div class="food-stat-bubble bubble-red"></div>
+                        <div class="food-stat-label">CRITICAL VIOLATIONS</div>
+                        <div class="food-stat-value" style="color: #DC2626;">14</div>
+                        <div class="food-stat-trend trend-neg">
+                            <span>⏱ 3 Urgent closures</span> <span class="trend-sub">pending review</span>
+                        </div>
+                    </div>
+
+                    <div class="food-stat-card">
+                        <div class="food-stat-bubble bubble-mint"></div>
+                        <div class="food-stat-label">COMPLIANCE RATE</div>
+                        <div class="food-stat-value" style="color: #059669;">96.4%</div>
+                        <div class="food-stat-trend trend-pos">
+                            <span>✓ +1.1%</span> <span class="trend-sub">regional benchmark</span>
+                        </div>
+                    </div>
+
+                    <div class="food-stat-card">
+                        <div class="food-stat-bubble bubble-amber"></div>
+                        <div class="food-stat-label">PENDING AUDITS</div>
+                        <div class="food-stat-value">38</div>
+                        <div class="food-stat-trend">
+                            <span>📋 12 scheduled</span> <span class="trend-sub">today</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle Two-Column Grid: Active Inspection Queue + Cold-Chain Monitor -->
+                <div class="food-mid-grid">
+                    <!-- Left: Active Inspection Queue -->
+                    <div class="food-panel-card">
+                        <div class="food-panel-header">
+                            <div>
+                                <h4 class="food-panel-title">Active Inspection Queue</h4>
+                                <p class="food-panel-sub">Live feed of inspections currently in progress or recently finalized.</p>
+                            </div>
+                            <button type="button" class="food-panel-filter">Filter: All ▾</button>
+                        </div>
+
+                        <div class="food-queue-list">
+                            <!-- Item 1 -->
+                            <div class="food-queue-item">
+                                <div class="food-queue-left">
+                                    <div class="food-queue-icon-box box-green">🍴</div>
+                                    <div>
+                                        <h5 class="food-queue-name">Golden Harvest Bistro</h5>
+                                        <p class="food-queue-inspector">Inspector: Marcus Vance &bull; Sector 4</p>
+                                    </div>
+                                </div>
+                                <div class="food-queue-right">
+                                    <span class="status-pill status-passed">&bull; Passed</span>
+                                    <button type="button" class="btn-queue-action" onclick="openFoodAuditModal('rest-1')">View</button>
+                                </div>
+                            </div>
+
+                            <!-- Item 2 -->
+                            <div class="food-queue-item">
+                                <div class="food-queue-left">
+                                    <div class="food-queue-icon-box box-red">🦀</div>
+                                    <div>
+                                        <h5 class="food-queue-name">Ocean Catch Seafood Grill</h5>
+                                        <p class="food-queue-inspector">Inspector: Sarah Jenkins &bull; Sector 2</p>
+                                    </div>
+                                </div>
+                                <div class="food-queue-right">
+                                    <span class="status-pill status-critical">&bull; Critical</span>
+                                    <button type="button" class="btn-queue-action" onclick="openFoodAuditModal('rest-2')">View</button>
+                                </div>
+                            </div>
+
+                            <!-- Item 3 -->
+                            <div class="food-queue-item">
+                                <div class="food-queue-left">
+                                    <div class="food-queue-icon-box box-amber">🥐</div>
+                                    <div>
+                                        <h5 class="food-queue-name">Artisan Crust Bakery</h5>
+                                        <p class="food-queue-inspector">Inspector: David Kim &bull; Sector 1</p>
+                                    </div>
+                                </div>
+                                <div class="food-queue-right">
+                                    <span class="status-pill status-warning">&bull; Warning</span>
+                                    <button type="button" class="btn-queue-action" onclick="openFoodAuditModal('rest-3')">View</button>
+                                </div>
+                            </div>
+
+                            <!-- Item 4 -->
+                            <div class="food-queue-item">
+                                <div class="food-queue-left">
+                                    <div class="food-queue-icon-box box-blue">☕</div>
+                                    <div>
+                                        <h5 class="food-queue-name">Metro Central Café</h5>
+                                        <p class="food-queue-inspector">Inspector: Elena Rostova &bull; Sector 3</p>
+                                    </div>
+                                </div>
+                                <div class="food-queue-right">
+                                    <span class="status-pill status-scheduled">&bull; Scheduled</span>
+                                    <button type="button" class="btn-queue-action" onclick="openFoodAuditModal('rest-4')">Start</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Cold-Chain Monitor -->
+                    <div class="food-panel-card">
+                        <div class="food-panel-header">
+                            <div>
+                                <h4 class="food-panel-title">Cold-Chain Monitor</h4>
+                                <p class="food-panel-sub">Automated telemetry tracking for critical refrigeration units across active sites.</p>
+                            </div>
+                            <span class="status-pill status-passed" style="font-size: 11px;">&bull; Live IoT</span>
+                        </div>
+
+                        <div class="food-coldchain-list">
+                            <!-- Unit 1 -->
+                            <div class="coldchain-item">
+                                <div class="coldchain-header">
+                                    <span class="coldchain-unit-name">Walk-in Freezer #2</span>
+                                    <span class="coldchain-temp temp-safe">-18.4°C</span>
+                                </div>
+                                <div class="coldchain-bar-track">
+                                    <div class="coldchain-bar-fill fill-safe"></div>
+                                </div>
+                            </div>
+
+                            <!-- Unit 2 -->
+                            <div class="coldchain-item">
+                                <div class="coldchain-header">
+                                    <span class="coldchain-unit-name">Prep Line Cooler #4</span>
+                                    <span class="coldchain-temp temp-warn">4.8°C</span>
+                                </div>
+                                <div class="coldchain-bar-track">
+                                    <div class="coldchain-bar-fill fill-warn"></div>
+                                </div>
+                                <div class="coldchain-warn-note">⚠️ Warning: Approaching upper safety limit (5°C)</div>
+                            </div>
+
+                            <!-- Unit 3 -->
+                            <div class="coldchain-item">
+                                <div class="coldchain-header">
+                                    <span class="coldchain-unit-name">Dairy Storage Vault</span>
+                                    <span class="coldchain-temp temp-vault">2.1°C</span>
+                                </div>
+                                <div class="coldchain-bar-track">
+                                    <div class="coldchain-bar-fill fill-vault"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="javascript:void(0)" class="coldchain-footer-link" onclick="alert('Accessing Real-time Cold-Chain MQTT Telemetry Grid...')">
+                            <span>All sensors operational &bull; Full Telemetry</span> &rarr;
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Bottom Table: Recent Facility Audits -->
+                <div class="food-audits-table-card">
+                    <div class="food-panel-header">
+                        <div>
+                            <h4 class="food-panel-title">Recent Facility Audits</h4>
+                            <p class="food-panel-sub">Comprehensive historical record of completed audits with risk scoring and inspector credentials.</p>
+                        </div>
+                    </div>
+
+                    <div class="food-audits-toolbar">
+                        <div class="food-table-search-wrap">
+                            <span class="weather-search-icon">🔍</span>
+                            <input type="text" id="food-search-input" class="food-table-search-input" placeholder="Search facilities..." onkeyup="filterFoodTable(this.value)" />
+                        </div>
+                        <button type="button" class="btn-sort-risk" onclick="sortFoodTableByRisk()">
+                            <span>≡</span> Sort by Risk
+                        </button>
+                    </div>
+
+                    <div class="food-table-wrapper">
+                        <table class="food-audits-table" id="food-audits-table-main">
+                            <thead>
+                                <tr>
+                                    <th>FACILITY NAME</th>
+                                    <th>LOCATION</th>
+                                    <th>INSPECTOR</th>
+                                    <th>RISK SCORE</th>
+                                    <th>STATUS</th>
+                                    <th>AUDIT DATE</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="facility-name-strong">The Grand Palate</td>
+                                    <td>Downtown (Sector 1)</td>
+                                    <td>Marcus Vance</td>
+                                    <td><span class="risk-pill risk-low">12 (Low)</span></td>
+                                    <td><span class="status-pill status-passed">&bull; Passed</span></td>
+                                    <td>2023-10-24</td>
+                                    <td><button type="button" class="btn-table-details" onclick="openFoodAuditModal('rest-1')">Details</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="facility-name-strong">Harborview Seafood</td>
+                                    <td>Marina Bay (Sector 2)</td>
+                                    <td>Sarah Jenkins</td>
+                                    <td><span class="risk-pill risk-high">78 (High)</span></td>
+                                    <td><span class="status-pill status-critical">&bull; Critical</span></td>
+                                    <td>2023-10-23</td>
+                                    <td><button type="button" class="btn-table-details" onclick="openFoodAuditModal('rest-2')">Details</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="facility-name-strong">GreenLeaf Organic Bistro</td>
+                                    <td>Uptown (Sector 3)</td>
+                                    <td>David Kim</td>
+                                    <td><span class="risk-pill risk-med">45 (Med)</span></td>
+                                    <td><span class="status-pill status-warning">&bull; Warning</span></td>
+                                    <td>2023-10-22</td>
+                                    <td><button type="button" class="btn-table-details" onclick="openFoodAuditModal('rest-3')">Details</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="facility-name-strong">Bella Italia Trattoria</td>
+                                    <td>West End (Sector 4)</td>
+                                    <td>Elena Rostova</td>
+                                    <td><span class="risk-pill risk-low">8 (Low)</span></td>
+                                    <td><span class="status-pill status-passed">&bull; Passed</span></td>
+                                    <td>2023-10-21</td>
+                                    <td><button type="button" class="btn-table-details" onclick="openFoodAuditModal('rest-4')">Details</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="food-pagination">
+                        <span>Showing 1-4 of 1,482 total facility audits</span>
+                        <div class="food-page-btns">
+                            <button type="button" class="food-page-btn">Previous</button>
+                            <button type="button" class="food-page-btn active">1</button>
+                            <button type="button" class="food-page-btn">2</button>
+                            <button type="button" class="food-page-btn">3</button>
+                            <button type="button" class="food-page-btn">Next</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Synchronized Gemini AI Food & Hygiene Advisor -->
+                <div class="food-audits-table-card" style="margin-top: 24px;">
+                    <div class="food-panel-header">
+                        <div>
+                            <h4 class="food-panel-title">🤖 SAHAYAKMITR.ai Food Hygiene &amp; Nutritional Reasoning</h4>
+                            <p class="food-panel-sub">Inspect any roadside dhaba, high-altitude café, or cuisine across Himalayan corridors.</p>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap;">
+                        <input type="text" id="food-gemini-query" class="food-table-search-input" style="flex: 1; min-width: 280px;" placeholder="E.g. Is hot thukpa safe at Rohtang Pass during winter? Or check gluten-free stops in Old Manali." />
+                        <button type="button" id="btn-gemini-food-inspect" class="btn-report-found" style="display: flex; align-items: center; gap: 6px;">
+                            <span>✨</span> Inspect with Gemini AI
+                        </button>
+                    </div>
+                    <div id="food-gemini-result" class="food-gemini-result-box" style="display: none;"></div>
+
+                    <!-- Hidden helper elements for app.js integration -->
+                    <div style="display: none;" aria-hidden="true">
+                        <button id="cat-food-inspection"></button>
+                        <button id="btn-toggle-food-focus"></button>
+                        <span id="food-focus-mode-label"></span>
+                        <button id="btn-close-food-section"></button>
+                        <span id="food-filter-notice"></span>
+                        <select id="food-sort-select"></select>
+                        <button id="food-region-all"></button>
+                        <button id="food-region-manali"></button>
+                        <button id="food-region-shimla"></button>
+                        <button id="food-region-kasol"></button>
+                        <button id="food-region-leh"></button>
+                        <button id="food-region-spiti"></button>
+                        <button id="food-filter-all"></button>
+                        <button id="food-filter-5star"></button>
+                        <button id="food-filter-4star"></button>
+                        <button id="food-filter-3star"></button>
+                        <div id="food-restaurants-grid"></div>
+                        <div id="preferred-nonpreferred-food-section">
+                            <button id="food-pref-filter-all"></button>
+                            <button id="food-pref-filter-preferred"></button>
+                            <button id="food-pref-filter-nonpreferred"></button>
+                            <div id="col-preferred-foods"><ul id="preferred-foods-list"></ul></div>
+                            <div id="col-nonpreferred-foods"><ul id="non-preferred-foods-list"></ul></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- ========================================================
+         8. LOST & FOUND MOUNTAIN RECOVERY SECTION
+         ======================================================== -->
+    <section class="proto-lost-found-section" id="lost-and-found-section">
+        <div class="proto-container">
+            <div class="proto-section-header-bar" style="margin-bottom: 24px;">
+                <div class="proto-sec-left">
+                    <span style="font-size: 20px;">🎒</span>
+                    <div>
+                        <div class="proto-hero-kicker" style="margin-bottom: 2px;">
+                            <span class="proto-kicker-dot" style="background: #DC2626;"></span>
+                            <span style="color: #DC2626;">HIMALAYAN ITEM RECOVERY &amp; PASS TRACE</span>
+                        </div>
+                        <h3 class="proto-sec-title">Lost &amp; Found Mountain Recovery</h3>
+                    </div>
+                </div>
+                <span class="proto-badge-sector">
+                    <span class="proto-pulse-dot"></span>
+                    <span>LOST AND FOUND ACTIVE &bull; 24x7 HIGH-ALTITUDE RECOVERY GRID</span>
+                </span>
+            </div>
+
+            <div class="emergency-sub-panel" id="panel-lost-found">
+                <div class="lost-found-container">
+                    <!-- Action Bar -->
+                    <div class="lf-action-bar">
+                        <div class="lf-search-group">
+                            <input type="text" class="lf-search-input" id="lf-search-input" placeholder="Search lost backpacks, passports, phones, cameras, or passes...">
+                            <select class="lf-category-select" id="lf-category-filter">
+                                <option value="all">All Categories</option>
+                                <option value="luggage">Baggage &amp; Backpacks</option>
+                                <option value="electronics">Phones &amp; Cameras</option>
+                                <option value="documents">IDs, Passports &amp; Wallets</option>
+                                <option value="gear">Trekking &amp; Snow Gear</option>
+                            </select>
+                        </div>
+                        <div class="lf-btn-group">
+                            <button class="btn-report-lost" id="btn-open-report-lost">+ Report Lost Item</button>
+                            <button class="btn-report-found" id="btn-open-report-found">✓ Report Found Item</button>
+                        </div>
+                    </div>
+
+                    <!-- Smart SafeTag QR Feature Strip -->
+                    <div class="safetag-promo-banner">
+                        <div class="safetag-icon">🏷️</div>
+                        <div class="safetag-info">
+                            <h4>Margify SafeTag™ Luggage Protection QR</h4>
+                            <p>Generate a unique encrypted QR tag to stick onto your luggage or gear. If misplaced anywhere along mountain passes or cabs, the finder scans the QR to notify you immediately without revealing your private phone number.</p>
+                        </div>
+                        <button class="btn-generate-safetag" id="btn-generate-safetag">Generate My SafeTag QR &rarr;</button>
+                    </div>
+
+                    <!-- Items Feed Grid -->
+                    <div class="lf-feed-grid" id="lf-feed-grid">
+                        <!-- Item 1 -->
+                        <div class="lf-card lost">
+                            <div class="lf-status-chip status-lost">LOST &bull; SEARCHING</div>
+                            <div class="lf-card-body">
+                                <div class="lf-icon-type">🎒</div>
+                                <h4 class="lf-item-title">Osprey 65L Mountain Backpack (Cobalt Blue)</h4>
+                                <p class="lf-item-desc">Left near Solang Valley paragliding staging zone. Contains rain covers, hiking boots, and Canon DSLR lens cap.</p>
+                                <div class="lf-meta-row">
+                                    <span>📍 Solang Valley, Manali</span>
+                                    <span>🕒 Yesterday, 16:30</span>
+                                </div>
+                                <div class="lf-action-strip">
+                                    <span class="lf-reward">Reward: ₹2,000</span>
+                                    <button class="btn-lf-contact" onclick="alert('Contacting owner via Margify SafeLine: Case #LF-9921')">Contact Owner</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div class="lf-card found">
+                            <div class="lf-status-chip status-found">FOUND &bull; IN SAFE CUSTODY</div>
+                            <div class="lf-card-body">
+                                <div class="lf-icon-type">📱</div>
+                                <h4 class="lf-item-title">iPhone 15 Pro (Space Black, Spigen Case)</h4>
+                                <p class="lf-item-desc">Found on tourist transit tempo traveler arriving from Delhi to Old Manali. Handed over to Margify Transit Hub desk.</p>
+                                <div class="lf-meta-row">
+                                    <span>📍 Old Manali Tourist Desk</span>
+                                    <span>🕒 Today, 11:15 AM</span>
+                                </div>
+                                <div class="lf-action-strip">
+                                    <span class="lf-ref">Ref: #LF-FOUND-4012</span>
+                                    <button class="btn-lf-claim" onclick="alert('Claim verification initiated. Please provide IMEI or lock screen details at desk.')">Claim This Item</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 3 -->
+                        <div class="lf-card found">
+                            <div class="lf-status-chip status-recovered">REUNITED WITH OWNER</div>
+                            <div class="lf-card-body">
+                                <div class="lf-icon-type">📷</div>
+                                <h4 class="lf-item-title">Sony Alpha A7 IV Camera with 24-70mm Lens</h4>
+                                <p class="lf-item-desc">Found at Atal Tunnel South Portal view cafeteria. Verified and handed back to travel photographer through Margify SafeTag.</p>
+                                <div class="lf-meta-row">
+                                    <span>📍 Atal Tunnel South Portal</span>
+                                    <span>🕒 2 Days Ago</span>
+                                </div>
+                                <div class="lf-action-strip">
+                                    <span style="color: #059669; font-weight: 700; font-size: 12px;">✓ Successfully Returned</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Item 4 -->
+                        <div class="lf-card lost">
+                            <div class="lf-status-chip status-lost">LOST &bull; SEARCHING</div>
+                            <div class="lf-card-body">
+                                <div class="lf-icon-type">💳</div>
+                                <h4 class="lf-item-title">Leather Travel Wallet &amp; Driving License</h4>
+                                <p class="lf-item-desc">Brown Wildhorn wallet lost near Mall Road souvenir stalls. Contains DL and SBI debit card.</p>
+                                <div class="lf-meta-row">
+                                    <span>📍 Mall Road, Manali</span>
+                                    <span>🕒 Yesterday, 20:00</span>
+                                </div>
+                                <div class="lf-action-strip">
+                                    <span class="lf-reward">Reward: ₹1,500</span>
+                                    <button class="btn-lf-contact" onclick="alert('Connecting to owner through secure relay: Case #LF-9934')">Contact Owner</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- ========================================================
+         8. 4-PILLAR VALUE PROPOSITION STRIP
+         ======================================================== -->
+    <section class="proto-pillars-section" id="support">
+        <div class="proto-container">
+            <div class="proto-pillars-grid">
+                <div class="proto-pillar-card">
+                    <div class="proto-pillar-icon">⏱️</div>
+                    <h4 class="proto-pillar-title">Assured On-Time</h4>
+                    <p class="proto-pillar-desc">15-minute pickup buffer guarantee or ₹1,000 expedition credit instantly transferred.</p>
+                </div>
+
+                <div class="proto-pillar-card">
+                    <div class="proto-pillar-icon">💳</div>
+                    <h4 class="proto-pillar-title">Fixed Transparent Pricing</h4>
+                    <p class="proto-pillar-desc">Rohtang green permit fees, hill climb surcharges, and state taxes calculated upfront with zero surprises.</p>
+                </div>
+
+                <div class="proto-pillar-card">
+                    <div class="proto-pillar-icon">🛡️</div>
+                    <h4 class="proto-pillar-title">Women Safety & SOS</h4>
+                    <p class="proto-pillar-desc">Patrol-drive police liaison with standalone SOS tokens and woman guard availability on request.</p>
+                </div>
+
+                <div class="proto-pillar-card">
+                    <div class="proto-pillar-icon">🤖</div>
+                    <h4 class="proto-pillar-title">SAHAYAKMITR.ai</h4>
+                    <p class="proto-pillar-desc">Dynamic altitude route reasoning, continuous early monitors to snowdrift changes and landslides 24/7.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================
+         9. FOOTER
+         ======================================================== -->
+    <footer class="proto-footer">
+        <div class="proto-container">
+            <div class="proto-footer-top">
+                <div>
+                    <div class="proto-footer-brand-title">
+                        <img src="images/margify-logo.png" alt="Margify" class="proto-footer-logo-img" />
+                        <span class="f-brand-name" style="display:none;">MARGIFY</span>
+                        <span class="f-brand-tag">HIGH-ALTITUDE SAFETY GRID &amp; EXPEDITIONS</span>
+                    </div>
+                    <p class="proto-footer-brand-sub">Autonomous alpine telemetry, route safety matrices, and expeditions concierge.</p>
+                </div>
+                <div class="proto-footer-emergency">
+                    <div class="proto-f-emer-text">
+                        <span class="proto-f-emer-kicker">MOUNTAIN EMERGENCY LINE:</span>
+                        <span class="proto-f-emer-num">112 / +91-1800-MARGIFY-SAFE</span>
+                    </div>
+                    <button type="button" class="proto-btn-footer-sos" id="btn-footer-sos" onclick="document.getElementById('btn-police-sos').click();">DISPATCH SOS</button>
+                </div>
+            </div>
+
+            <div class="proto-footer-bottom">
+                <nav class="proto-footer-links">
+                    <a href="#packages" class="proto-footer-link">Expeditions</a>
+                    <a href="#integrated-command-hub" class="proto-footer-link">SAHAYAKMITR.ai</a>
+                    <a href="#ai-planner-weather" class="proto-footer-link">Weather Explorer</a>
+                    <a href="#food-safety-command-center" class="proto-footer-link">Food Safety Command</a>
+                    <a href="#lost-and-found-section" class="proto-footer-link">Lost &amp; Found</a>
+                    <a href="#emergency" class="proto-footer-link">Safety Shield</a>
+                    <a href="#rapid-dispatch" class="proto-footer-link">Emergency Hub</a>
+                </nav>
+                <span>&copy; 2024 Margify Technologies India Pvt. Ltd. All rights reserved. TRAVELISER and SAHAYAKMITR.ai are registered trademarks.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================================
+         INTERACTIVE COPILOT DIALOG / SLIDE-DRAWER
+         (Contains Compiled Trip Parameter Hub, Memory Bar & Live Chat Feed)
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="modal-interactive-copilot" style="display:none;">
+        <div class="copilot-drawer-card" style="background:#FFFFFF;max-width:880px;width:95%;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.25);overflow:hidden;display:flex;flex-direction:column;max-height:90vh;margin:auto;">
+            <div style="background:#111827;color:#FFFFFF;padding:16px 22px;display:flex;align-items:center;justify-content:space-between;">
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <span style="font-size:22px;">🤖</span>
+                    <div>
+                        <h3 style="margin:0;font-size:16px;color:#FFFFFF;">SAHAYAKMITR.ai Interactive Workspace</h3>
+                        <span style="font-size:11px;color:#9CA3AF;">Google Gemini 3.5 Multimodal Route Architect</span>
+                    </div>
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;">
+                    <button type="button" class="btn-bot-action highlight-packing" id="btn-open-packing-planner" title="Generate Altitude Packing Checklist with Gemini" style="background:#374151;color:#FFFFFF;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:11px;">
+                        🎒 Packing Checklist
+                    </button>
+                    <button type="button" class="btn-bot-action" id="btn-clear-chat" title="Clear chat history" style="background:#374151;color:#FFFFFF;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:11px;">
+                        ↻ Reset Chat
+                    </button>
+                    <button type="button" onclick="closeInteractiveCopilotModal()" style="background:transparent;border:none;color:#FFFFFF;font-size:22px;cursor:pointer;line-height:1;">&times;</button>
+                </div>
+            </div>
+
+            <div style="overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:16px;">
+
+                <!-- Compiled Trip Architect Hub -->
+                <!-- ========================================================
+                     COMPILED & COMBINED TRIP ARCHITECT HUB
+                     (Quick Destination, Trip Duration, Travel Vibe Windows)
+                     ======================================================== -->
+                <div class="trip-parameter-hub" id="trip-parameter-hub">
+                    <div class="hub-header">
+                        <div class="hub-title-badge">
+                            <span class="hub-sparkle">✨</span>
+                            <span class="hub-title-text">COMPILED TRIP ARCHITECT</span>
+                        </div>
+                        <span class="hub-subtitle">Click any parameter below to view all options in a dedicated window, select materials, and generate your custom itinerary:</span>
+                    </div>
+
+                    <div class="hub-controls-row">
+                        <!-- Function 1: Quick Destination -->
+                        <button type="button" class="hub-control-button" id="btn-open-quick-destinations" title="Explore & Choose Destination Material">
+                            <div class="hub-btn-icon-wrap icon-dest">📍</div>
+                            <div class="hub-btn-text">
+                                <span class="hub-btn-tag">QUICK DESTINATION</span>
+                                <strong class="hub-btn-value" id="hub-selected-dest-label">Manali & Rohtang Pass</strong>
+                            </div>
+                            <span class="hub-btn-action-arrow">Explore 31+ ▾</span>
+                        </button>
+
+                        <!-- Function 2: Trip Duration -->
+                        <button type="button" class="hub-control-button" id="btn-open-trip-duration" title="Choose Trip Duration Material">
+                            <div class="hub-btn-icon-wrap icon-dur">⏱️</div>
+                            <div class="hub-btn-text">
+                                <span class="hub-btn-tag">TRIP DURATION</span>
+                                <strong class="hub-btn-value" id="hub-selected-dur-label">3 Days (Weekend)</strong>
+                            </div>
+                            <span class="hub-btn-action-arrow">Select Days ▾</span>
+                        </button>
+
+                        <!-- Combined Action Trigger -->
+                        <button type="button" class="hub-generate-action-btn" id="btn-hub-generate-plan" title="Generate Custom Itinerary Now">
+                            <span>⚡ Generate Itinerary</span>
+                            <span class="hub-gen-arrow">&rarr;</span>
+                        </button>
+                    </div>
+                </div>
+
+                
+
+                <!-- Live Journey Memory Bar -->
+                <!-- Live Journey Memory Bar -->
+                <div class="sahayak-memory-bar" id="sahayak-memory-bar" style="display: none;">
+                    <div class="memory-indicator">
+                        <span class="memory-brain-icon">🧠</span>
+                        <span class="memory-label">JOURNEY MEMORY:</span>
+                        <div class="memory-tags" id="memory-tags-list"></div>
+                    </div>
+                    <button type="button" class="btn-clear-memory" id="btn-clear-memory" title="Reset Itinerary Memory">✕ Clear Memory</button>
+                </div>
+
+                
+
+                <!-- Chat Feed -->
+                <!-- Chat Conversation Feed -->
+                <div class="chat-feed-box" id="chat-feed">
+                    <!-- Initial AI Welcome Message -->
+                    <div class="chat-message ai-message">
+                        <div class="message-avatar">🤖</div>
+                        <div class="message-bubble">
+                            <p class="message-text">
+                                Namaste & Greetings adventurer! 🙏 I am <strong>SAHAYAKMITR.ai</strong>, your intelligent Traveliser expedition architect.
+                            </p>
+                            <p class="message-text">
+                                Tell me your desired destination, starting city, group size, or duration. I will structure an optimized day-by-day plan with <strong>morning, afternoon, and evening timelines</strong>, altitude acclimation alerts, scenic photography halts, and estimated driving hours!
+                            </p>
+                            <div class="bot-quick-action-strip">
+                                <span class="hint-tag">✨ Tap any parameter in the Compiled Trip Architect above or type your destination below!</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <!-- Chat Form -->
+                <!-- Chat Input Bar (Text Only, Clean & Fast) -->
+                <form class="chat-input-bar" id="chat-form">
+                    <div class="input-wrapper">
+                        <input 
+                            type="text" 
+                            id="chat-user-input" 
+                            class="chat-input-field" 
+                            placeholder="Ask SAHAYAKMITR.ai: e.g. Plan 3 days in Mumbai, Pune, Gwalior, Kedarnath, Ayodhya, Banaras, Kanpur, Puri, Konkan..."
+                            autocomplete="off"
+                        >
+                        <button type="submit" class="btn-chat-send" id="btn-chat-send" title="Send to SAHAYAKMITR.ai">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                            </svg>
+                            <span>Structure Itinerary</span>
+                        </button>
+                    </div>
+                </form>
+            
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         YOUR PLANS & YOUR BOOKINGS DRAWERS
+         ======================================================== -->
+    <!-- ========================================================
+         ECOMMERCE CORNER SLIDE-DRAWER: YOUR PLANS
+         (ONLY VIEWED WHEN CLICKED ON ICON, NOT SHOWN ON PRIMARY PAGE)
+         (SAVED AI-GENERATED ITINERARIES WITH BUY NOW CHECKOUT)
+         ======================================================== -->
+    <div class="plans-drawer-backdrop" id="plans-drawer-backdrop"></div>
+    <aside class="plans-corner-drawer" id="your-plans" aria-label="Your Plans Drawer">
+        <div class="plans-drawer-header">
+            <div class="plans-drawer-header-left">
+                <div class="plans-kicker-pill">
+                    <span class="plans-live-dot">✨</span>
+                    <span>YOUR SAVED EXPEDITIONS</span>
+                </div>
+                <h2 class="plans-main-heading">YOUR PLANS</h2>
+                <span class="plans-drawer-sub">Saved AI Itineraries & Packages</span>
+            </div>
+            <div class="plans-drawer-header-right">
+                <div class="plans-count-badge-card">
+                    <span class="plans-count-number" id="plans-count-display">0</span>
+                    <span class="plans-count-label">Saved</span>
+                </div>
+                <button class="btn-close-plans-drawer" id="btn-close-plans-drawer" title="Close Your Plans Drawer">✕</button>
+            </div>
+        </div>
+
+        <!-- Drawer View Tabs -->
+        <div class="drawer-view-tabs">
+            <button type="button" class="drawer-tab-btn active">📋 Your Plans (<span id="plans-tab-plans-count">0</span>)</button>
+            <button type="button" class="drawer-tab-btn" id="btn-plans-switch-to-bookings">🎫 Your Booking (<span id="plans-tab-bookings-count">0</span>)</button>
+        </div>
+
+        <div class="plans-drawer-body">
+            <p class="plans-sub-heading">
+                All customized itineraries architected by <strong>SAHAYAKMITR.ai</strong> are stored here like your order cart. Review day-by-day schedules, route alerts, inclusions, and book with <strong>Instant Buy Now</strong>.
+            </p>
+            <!-- Saved Plans Grid (Dynamically rendered by app.js) -->
+            <div class="plans-grid" id="plans-grid">
+                <!-- Fallback / Empty state or plan cards will appear here -->
+            </div>
+        </div>
+
+        <div class="plans-drawer-footer">
+            <div class="plans-drawer-guarantee">
+                <span class="shield-mini-icon">🛡️</span>
+                <span>All trips backed by Traveliser 24x7 Safety & FSSAI Food Inspection Guarantee</span>
+            </div>
+            <a href="#ai-assistance" class="btn-create-more-plans" id="btn-drawer-ask-ai">
+                <span>+ Ask AI For New Plan</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ========================================================
+         ECOMMERCE CORNER SLIDE-DRAWER: YOUR BOOKING
+         (JUST LIKE YOUR PLANS, BUT FOR CONFIRMED EXPEDITION ORDERS)
+         ======================================================== -->
+    <aside class="plans-corner-drawer bookings-corner-drawer" id="your-bookings" aria-label="Your Bookings Drawer">
+        <div class="plans-drawer-header">
+            <div class="plans-drawer-header-left">
+                <div class="plans-kicker-pill booking-kicker-pill">
+                    <span class="plans-live-dot">🎫</span>
+                    <span>CONFIRMED & ACTIVE ORDERS</span>
+                </div>
+                <h2 class="plans-main-heading">YOUR BOOKING</h2>
+                <span class="plans-drawer-sub">Official Traveliser Passes & Active Road Trips</span>
+            </div>
+            <div class="plans-drawer-header-right">
+                <div class="plans-count-badge-card booking-badge-card">
+                    <span class="plans-count-number" id="bookings-count-display">0</span>
+                    <span class="plans-count-label">Booked</span>
+                </div>
+                <button class="btn-close-plans-drawer" id="btn-close-bookings-drawer" title="Close Your Bookings Drawer">✕</button>
+            </div>
+        </div>
+
+        <!-- Drawer View Tabs -->
+        <div class="drawer-view-tabs">
+            <button type="button" class="drawer-tab-btn" id="btn-tab-switch-to-plans">📋 Your Plans (<span id="tab-plans-count">0</span>)</button>
+            <button type="button" class="drawer-tab-btn active" id="btn-tab-switch-to-bookings">🎫 Your Booking (<span id="tab-bookings-count">0</span>)</button>
+        </div>
+
+        <div class="plans-drawer-body">
+            <p class="plans-sub-heading">
+                All confirmed expeditions, high-altitude road trips, and passes booked on <strong>TRAVELISER</strong> are stored here. Your verified chauffeur details, 4x4 vehicle SafeTag, and e-voucher are accessible 24x7.
+            </p>
+            <!-- Bookings Grid -->
+            <div class="bookings-grid" id="bookings-grid">
+                <!-- Dynamically rendered booking cards will appear here -->
+            </div>
+        </div>
+
+        <div class="plans-drawer-footer">
+            <div class="plans-drawer-guarantee">
+                <span class="shield-mini-icon">🛡️</span>
+                <span>All active bookings backed by 24x7 Women Safety Patrol & Medical Telemetry</span>
+            </div>
+            <a href="#packages" class="btn-create-more-plans" id="btn-drawer-explore-more">
+                <span>+ Explore More Expeditions</span>
+            </a>
+        </div>
+    </aside>
+
+    
+
+    <!-- ========================================================
+         FOOD INSPECTION SECTION (Hidden until requested)
+         ======================================================== -->
+    <!-- ========================================================
+         DEDICATED SECTION: FOOD INSPECTION DEPARTMENT
+         (APPEARS ONLY WHEN USER CLICKS THE FOOD INSPECTION ICON)
+         (RESTAURANT FOOD SAFETY RATINGS & BEST FOOD)
+         (PREFERRED & NON-PREFERRED FOODS BASED ON CRITERIA)
+         ======================================================== -->
+    
+
+    
+
+    <!-- ========================================================
+         LOST AND FOUND & NEARBY SPECIALISTS AUXILIARY PANELS
+         ======================================================== -->
+    <div style="display:none;" aria-hidden="true">
+        <!-- ================= SUBSECTION C: NEAR BY SPECIALIST ================= -->
+            <div class="emergency-sub-panel" id="panel-specialists">
+                <div class="specialists-container">
+                    <!-- Category Tabs -->
+                    <div class="spec-filters-strip">
+                        <button class="spec-chip active" data-category="all">All Specialists</button>
+                        <button class="spec-chip" data-category="hospital">🏥 24/7 Trauma & Alpine Hospital</button>
+                        <button class="spec-chip" data-category="police">👮 Women Safety Squads & Police</button>
+                        <button class="spec-chip" data-category="interpreter">🌐 Multilingual Interpreters & Guides</button>
+                        <button class="spec-chip" data-category="mechanic">🔧 24/7 4x4 Mountain Recovery</button>
+                    </div>
+
+                    <!-- Specialists Directory Grid -->
+                    <div class="spec-directory-grid" id="spec-directory-grid">
+                        <!-- Specialist 1 -->
+                        <div class="spec-card" data-cat="hospital">
+                            <div class="spec-top">
+                                <div class="spec-avatar-icon">🏥</div>
+                                <div>
+                                    <h4 class="spec-name">Mission Himalayan Alpine Trauma Hospital</h4>
+                                    <span class="spec-dept">24/7 Emergency • Hyperbaric O₂ Chamber</span>
+                                </div>
+                            </div>
+                            <p class="spec-desc">Full high-altitude pulmonary edema (HAPE) medical team, rapid ambulances, and certified frostbite specialists.</p>
+                            <div class="spec-details-row">
+                                <span>📍 Model Town, Manali (0.9 km)</span>
+                                <span class="spec-badge-active">● 24/7 On Duty</span>
+                            </div>
+                            <div class="spec-action-buttons">
+                                <a href="tel:108" class="btn-spec-call">📞 Call Now: 108 / 01902-252237</a>
+                                <button class="btn-spec-nav" onclick="alert('Opening Google Maps navigation to Mission Himalayan Trauma Hospital...')">📍 GPS Directions</button>
+                            </div>
+                        </div>
+
+                        <!-- Specialist 2 -->
+                        <div class="spec-card" data-cat="police">
+                            <div class="spec-top">
+                                <div class="spec-avatar-icon">👮‍♀️</div>
+                                <div>
+                                    <h4 class="spec-name">Himachal Special Women Protection Squad</h4>
+                                    <span class="spec-dept">She-Team / Durga Shakti Rapid Patrol</span>
+                                </div>
+                            </div>
+                            <p class="spec-desc">Dedicated female police officers equipped with all-terrain PCR vans for tourist safety, harassment prevention, and SOS escort.</p>
+                            <div class="spec-details-row">
+                                <span>📍 Sector 4 Police Post (1.1 km)</span>
+                                <span class="spec-badge-active">● Active Patrol</span>
+                            </div>
+                            <div class="spec-action-buttons">
+                                <a href="tel:1091" class="btn-spec-call">📞 Women Helpline: 1091 / 112</a>
+                                <button class="btn-spec-nav" onclick="alert('Opening GPS Directions to Women Safety Hub...')">📍 GPS Directions</button>
+                            </div>
+                        </div>
+
+                        <!-- Specialist 3 -->
+                        <div class="spec-card" data-cat="mechanic">
+                            <div class="spec-top">
+                                <div class="spec-avatar-icon">🔧</div>
+                                <div>
+                                    <h4 class="spec-name">High-Pass 4x4 Winch & Mechanical Recovery</h4>
+                                    <span class="spec-dept">Rohtang & Atal Snow Recovery Team</span>
+                                </div>
+                            </div>
+                            <p class="spec-desc">Heavy hydraulic towing trucks, snow chain fitting, EV jumpstart, radiator heating, and mountain cliff winch extraction.</p>
+                            <div class="spec-details-row">
+                                <span>📍 Solang Highway Junction (1.8 km)</span>
+                                <span class="spec-badge-active">● 15 Min ETA</span>
+                            </div>
+                            <div class="spec-action-buttons">
+                                <a href="tel:+919800012345" class="btn-spec-call">📞 24/7 Towing: +91 98000 12345</a>
+                                <button class="btn-spec-nav" onclick="alert('Dispatching recovery team coordinate ping...')">📍 GPS Directions</button>
+                            </div>
+                        </div>
+
+                        <!-- Specialist 4 -->
+                        <div class="spec-card" data-cat="interpreter">
+                            <div class="spec-top">
+                                <div class="spec-avatar-icon">🌐</div>
+                                <div>
+                                    <h4 class="spec-name">Alpine Multilingual Tourist Liaison Desk</h4>
+                                    <span class="spec-dept">English, German, French, Spanish, Russian</span>
+                                </div>
+                            </div>
+                            <p class="spec-desc">Certified mountain interpreters assisting international tourists with diplomatic liaison, permits, police reporting, and hospital visits.</p>
+                            <div class="spec-details-row">
+                                <span>📍 Tourist Facilitation Center (1.4 km)</span>
+                                <span class="spec-badge-active">● Available</span>
+                            </div>
+                            <div class="spec-action-buttons">
+                                <a href="tel:+919811122233" class="btn-spec-call">📞 Helpline: +91 98111 22233</a>
+                                <button class="btn-spec-nav" onclick="alert('Opening Tourist Liaison Desk directions...')">📍 GPS Directions</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+    </div>
+
+    <!-- ========================================================
+         ALL POPUP MODALS, DRAWERS, TOASTS & SCRIPTS
+         ======================================================== -->
+    <!-- ========================================================
+         POLICE EMERGENCY DISPATCH MODAL
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="police-sos-modal" style="display:none;">
+        <div class="emergency-modal-card">
+            <div class="modal-siren-header">
+                <div class="modal-siren-icon">🚨</div>
+                <div>
+                    <h3 class="modal-alert-title">EMERGENCY POLICE DISPATCH BROADCAST</h3>
+                    <span class="modal-alert-sub">DIRECT SATELLITE & CELLULAR RELAY INITIATED</span>
+                </div>
+            </div>
+            <div class="modal-body-content">
+                <div class="dispatch-status-banner">
+                    <span class="status-indicator-blink"></span>
+                    <div>
+                        <strong>LOCATION PACKET SUCCESSFULLY RECEIVED BY POLICE DISPATCH</strong>
+                        <p>Dispatch Hub: Sector 4 PCR Control Room | Priority 1 Alert</p>
+                    </div>
+                </div>
+
+                <div class="dispatch-details-list">
+                    <div class="dispatch-item">
+                        <span>Nearest Police Station:</span>
+                        <strong id="modal-station-name">Manali Central Police Station & High-Altitude PCR Unit 07 (1.2 km away)</strong>
+                    </div>
+                    <div class="dispatch-item">
+                        <span>Assigned Officer In-Charge:</span>
+                        <strong>Insp. R. Sharma (Badge #HP-9102)</strong>
+                    </div>
+                    <div class="dispatch-item">
+                        <span>Patrol Van:</span>
+                        <strong class="text-warning">PCR Van 04 Dispatched • En Route</strong>
+                    </div>
+                    <div class="dispatch-item">
+                        <span>Estimated Arrival Time:</span>
+                        <strong class="text-danger" id="modal-eta">3 to 5 Minutes</strong>
+                    </div>
+                    <div class="dispatch-item">
+                        <span>Transmitted GPS Vector:</span>
+                        <strong class="font-mono text-cyan" id="modal-coords">32.2432° N, 77.1892° E (Altitude: 2,050m)</strong>
+                    </div>
+                    <div class="dispatch-item">
+                        <span>Assigned Emergency Ticket:</span>
+                        <strong class="font-mono text-amber">#SOS-MRG-POLICE-9921</strong>
+                    </div>
+                </div>
+
+                <div class="modal-urgent-actions">
+                    <a href="tel:112" class="btn-modal-call">
+                        <span>📞 Call Police Control Room (112)</span>
+                    </a>
+                    <button class="btn-modal-whatsapp" id="btn-share-whatsapp-sos">
+                        <span>📱 WhatsApp SOS Link to Family</span>
+                    </button>
+                    <button class="btn-modal-cancel" id="btn-cancel-police-sos">
+                        <span>Dismiss / False Alarm (Cancel Alert)</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         AESTHETIC ADD FAMILY EMERGENCY CONTACT MODAL
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="modal-add-family-contact" style="display:none;">
+        <div class="family-modal-card">
+            <div class="family-modal-header">
+                <div class="fam-modal-brand">
+                    <span class="fam-modal-pill">🛡️ 24x7 TELEMETRY LIVE STREAM</span>
+                    <h3 class="fam-modal-title">Link Trusted Family Contact</h3>
+                    <p class="fam-modal-sub">Enable real-time encrypted GPS telemetry broadcasts & 1-tap WhatsApp emergency alert.</p>
+                </div>
+                <button type="button" class="btn-close-modal" id="btn-close-fam-modal" title="Close Modal">&times;</button>
+            </div>
+
+            <form id="form-add-family-contact" class="family-modal-body">
+                <div class="fam-input-group">
+                    <label class="fam-label" for="fam-input-name">Family Member / Contact Name <span class="req-star">*</span></label>
+                    <div class="fam-input-field-wrap">
+                        <span class="fam-field-icon">👤</span>
+                        <input type="text" id="fam-input-name" class="fam-modal-input" placeholder="e.g. Mom, Papa, Priya, Ayush" required autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="fam-input-group">
+                    <label class="fam-label">Relationship / Circle</label>
+                    <div class="fam-relation-chips" id="fam-relation-chips">
+                        <button type="button" class="fam-rel-chip active" data-rel="Mother" data-avatar="👩">👩 Mother</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Father" data-avatar="👨">👨 Father</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Spouse" data-avatar="💍">💍 Spouse</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Sibling" data-avatar="👫">👫 Sibling</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Best Friend" data-avatar="🤝">🤝 Friend</button>
+                        <button type="button" class="fam-rel-chip" data-rel="Guardian" data-avatar="🛡️">🛡️ Guardian</button>
+                    </div>
+                    <input type="hidden" id="fam-input-relation" value="Mother">
+                    <input type="hidden" id="fam-input-avatar" value="👩">
+                </div>
+
+                <div class="fam-input-group">
+                    <label class="fam-label" for="fam-input-phone">WhatsApp Mobile Number <span class="req-star">*</span></label>
+                    <div class="fam-phone-field-wrap">
+                        <div class="fam-country-badge">
+                            <span class="country-flag">🇮🇳</span>
+                            <span class="country-code">+91</span>
+                        </div>
+                        <input type="tel" id="fam-input-phone" class="fam-modal-input fam-phone-input" placeholder="98765 43210" maxlength="10" required pattern="[0-9]{10}" autocomplete="tel">
+                    </div>
+                    <span class="fam-helper-text">🔒 Live GPS coordinates, altitude, and interactive radar tracker will be sent directly via WhatsApp.</span>
+                </div>
+
+                <div class="fam-features-checklist">
+                    <div class="fam-feature-item">
+                        <span class="feature-icon">🟢</span>
+                        <div class="feature-desc">
+                            <strong>Live Radar Telemetry Pairing</strong>
+                            <span>Streams real coordinates and elevation to this contact every 5 seconds when Protection Shield is active.</span>
+                        </div>
+                    </div>
+                    <div class="fam-feature-item">
+                        <span class="feature-icon">🚨</span>
+                        <div class="feature-desc">
+                            <strong>1-Tap WhatsApp Emergency Dispatch</strong>
+                            <span>Includes instant Google Maps pin and recipient telemetry monitor link.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fam-modal-actions">
+                    <button type="button" class="btn-fam-cancel" id="btn-cancel-fam-modal">Cancel</button>
+                    <button type="submit" class="btn-fam-save" id="btn-save-fam-modal">
+                        <span>Save & Connect Contact 🟢</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         LIVE GPS TELEMETRY RECEIVER MODAL (WHEN VISITING FROM WHATSAPP LINK)
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="incoming-live-tracker-modal" style="display:none;">
+        <div class="emergency-modal-card incoming-tracker-card">
+            <div class="modal-emergency-banner live-incoming-banner">
+                <span class="alarm-pulsing-badge" id="incoming-sos-badge">🚨 LIVE TRACKER ACTIVE</span>
+                <h3>Shared Live Location Signal</h3>
+                <p>You are viewing real-time GPS telemetry broadcast by an adventurer via Traveliser Women & Traveler Safety Grid.</p>
+            </div>
+            <div class="modal-dispatch-details">
+                <div class="dispatch-item">
+                    <span>Transmitted Coordinates:</span>
+                    <strong class="font-mono text-cyan" id="incoming-sos-coords">--</strong>
+                </div>
+                <div class="dispatch-item">
+                    <span>GPS Accuracy & Altitude:</span>
+                    <strong class="font-mono text-success" id="incoming-sos-acc">--</strong>
+                </div>
+                <div class="dispatch-item">
+                    <span>Broadcast Recorded At:</span>
+                    <strong class="font-mono text-amber" id="incoming-sos-time">--</strong>
+                </div>
+                <div class="dispatch-item">
+                    <span>Assigned Security Base:</span>
+                    <strong class="text-danger" id="incoming-sos-base">#MRG-FORCE-8849-HP (Police & ITBP Grid)</strong>
+                </div>
+            </div>
+            <div class="modal-urgent-actions">
+                <a href="#" class="btn-modal-maps-live" id="btn-incoming-google-maps" target="_blank" rel="noopener">
+                    <span>🗺️ Open Live Pin in Google Maps</span>
+                </a>
+                <a href="#" class="btn-modal-navigate" id="btn-incoming-navigate" target="_blank" rel="noopener">
+                    <span>🚗 Start Turn-by-Turn GPS Navigation</span>
+                </a>
+                <a href="tel:112" class="btn-modal-call" id="btn-incoming-call-police">
+                    <span>📞 Emergency Police Hotline (112)</span>
+                </a>
+                <button type="button" class="btn-modal-cancel" id="btn-close-incoming-tracker">
+                    <span>✕ Close Tracker & View Radar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         REPORT LOST/FOUND ITEM MODAL
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="lf-modal" style="display:none;">
+        <div class="emergency-modal-card">
+            <div class="modal-header-simple">
+                <h3 id="lf-modal-title">Report Lost Item</h3>
+                <button class="btn-close-modal" id="btn-close-lf-modal">✕</button>
+            </div>
+            <form id="lf-modal-form" class="modal-form-content">
+                <div class="form-group">
+                    <label class="form-label">Item Name</label>
+                    <input type="text" id="lf-input-name" class="modal-input" placeholder="e.g. Deuter 50L Backpack, iPhone 14 Pro" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select id="lf-input-category" class="modal-input">
+                        <option value="luggage">Baggage & Backpack</option>
+                        <option value="electronics">Phone / Camera / Laptop</option>
+                        <option value="documents">Passport / Wallet / ID Cards</option>
+                        <option value="gear">Trekking Gear / Jacket</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Location Where Lost / Found</label>
+                    <input type="text" id="lf-input-location" class="modal-input" placeholder="e.g. Solang Valley Paragliding counter, Atal Tunnel Cafe" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description & Identifying Marks</label>
+                    <textarea id="lf-input-desc" class="modal-textarea" rows="3" placeholder="Provide distinct stickers, colors, scratches, or contents..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Your Contact Phone Number</label>
+                    <input type="tel" id="lf-input-contact" class="modal-input" placeholder="+91 98765 43210" required>
+                </div>
+                <button type="submit" class="btn-submit-lf">Submit to Traveliser Recovery Network</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         INSTANT EXPEDITION BOOKING & BUY NOW MODAL
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="modal-buy-now" style="display:none;">
+        <div class="booking-checkout-card">
+            <div class="checkout-modal-header">
+                <div class="checkout-header-left">
+                    <span class="checkout-kicker">INSTANT EXPEDITION BOOKING</span>
+                    <h3 class="checkout-title" id="buy-modal-title">Himalayan Alpine Adventure</h3>
+                    <div class="checkout-route-badge" id="buy-modal-route">Manali & Solang Valley • 3 Days / 2 Nights</div>
+                </div>
+                <button class="btn-close-modal" id="btn-close-buy-modal">&times;</button>
+            </div>
+
+            <div class="checkout-modal-body">
+                <div class="checkout-form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Departure Date</label>
+                        <input type="date" id="buy-modal-date" class="modal-input" value="2026-10-15">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Number of Travellers</label>
+                        <select id="buy-modal-travellers" class="modal-input">
+                            <option value="1">1 Person (Solo Explorer)</option>
+                            <option value="2" selected>2 People (Duo / Couple)</option>
+                            <option value="4">4 People (Family SUV)</option>
+                            <option value="6">6 People (Expedition Van)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Lead Traveller Name</label>
+                        <input type="text" id="buy-modal-name" class="modal-input" placeholder="e.g. Ayush" value="" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Mobile & WhatsApp</label>
+                        <input type="tel" id="buy-modal-phone" class="modal-input" placeholder="e.g. +91 98765 43210" value="" required>
+                    </div>
+                </div>
+
+                <div class="checkout-safety-include-box">
+                    <div class="safety-include-icon">🛡️</div>
+                    <div class="safety-include-text">
+                        <strong>Traveliser 24x7 Women Safety & Force Escort Included (Free)</strong>
+                        <p>Live vehicle GPS broadcast with paired high-altitude police patrol and emergency medical oxygen on board.</p>
+                    </div>
+                    <span class="free-badge">INCLUDED</span>
+                </div>
+
+                <!-- Price Summary -->
+                <div class="checkout-price-card">
+                    <div class="price-row">
+                        <span>Base Fare (<span id="buy-price-travellers-text">2 Travellers</span>)</span>
+                        <strong id="buy-price-base">₹12,998</strong>
+                    </div>
+                    <div class="price-row">
+                        <span>State Alpine Permits & Forest Passes</span>
+                        <span class="text-success">FREE / INCLUDED</span>
+                    </div>
+                    <div class="price-row">
+                        <span>High-Altitude Certified Chauffeur</span>
+                        <span class="text-success">INCLUDED</span>
+                    </div>
+                    <div class="price-row">
+                        <span>Taxes & Eco Green Cess (5%)</span>
+                        <strong id="buy-price-tax">₹650</strong>
+                    </div>
+                    <div class="price-divider"></div>
+                    <div class="price-row total-row">
+                        <span>Total Payable (UPI / Card)</span>
+                        <span class="total-amount" id="buy-price-total">₹13,648</span>
+                    </div>
+                </div>
+
+                <div class="checkout-modal-actions">
+                    <button class="btn-confirm-purchase" id="btn-confirm-purchase">
+                        <span>Confirm & Book Expedition</span>
+                        <span class="pay-arrow">&rarr;</span>
+                    </button>
+                    <p class="checkout-guarantee-note">🔒 100% Refundable up to 48 hours before departure. Official Traveliser e-voucher issued instantly.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         BOOKING SUCCESS / CONFIRMATION MODAL
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="modal-booking-success" style="display:none;">
+        <div class="booking-success-card">
+            <div class="success-icon-badge">🎉</div>
+            <span class="success-kicker">EXPEDITION CONFIRMED</span>
+            <h3 class="success-title">Your Mountain Trip is Booked!</h3>
+            <p class="success-desc">
+                Booking ID: <strong id="success-booking-id">#MRG-EXP-8849</strong>. Your verified chauffeur, 4x4 vehicle details, and state permits have been reserved and sent to your WhatsApp.
+            </p>
+            <div class="success-details-card" id="success-details-card">
+                <!-- Dynamically populated -->
+            </div>
+            <button class="btn-success-close" id="btn-success-close">View In "YOUR PLANS"</button>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         GEMINI SMART MOUNTAIN PACKING & MEDICAL PLANNER MODAL
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="modal-packing-planner" style="display:none;">
+        <div class="packing-modal-card">
+            <div class="modal-header-simple">
+                <div class="modal-title-with-pill">
+                    <span class="modal-kicker-tag">✨ GOOGLE GEMINI 3.5 AI</span>
+                    <h3 id="packing-modal-title">Smart Mountain Packing & Medical Checklist</h3>
+                </div>
+                <button class="btn-close-modal" id="btn-close-packing-modal">&times;</button>
+            </div>
+            <div class="modal-body-content">
+                <p class="modal-intro-text">
+                    High altitude routes demand precise medical, thermal, and mechanical preparedness. Tell Gemini where and when you are heading:
+                </p>
+                <div class="packing-form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Destination Corridor</label>
+                        <select id="packing-dest-select" class="modal-input">
+                            <option value="Spiti Valley & Kunzum Pass (3,800m - 4,590m)">Spiti Valley & Kunzum Pass (3,800m - 4,590m)</option>
+                            <option value="Leh Ladakh & Khardung La (3,524m - 5,359m)">Leh Ladakh & Khardung La (3,524m - 5,359m)</option>
+                            <option value="Manali, Atal Tunnel & Rohtang (2,050m - 3,978m)" selected>Manali, Atal Tunnel & Rohtang (2,050m - 3,978m)</option>
+                            <option value="Kedarnath & Garhwal Himalayas (3,583m)">Kedarnath & Garhwal Himalayas (3,583m)</option>
+                            <option value="Zanskar Valley & Shinku La (3,900m - 5,091m)">Zanskar Valley & Shinku La (3,900m - 5,091m)</option>
+                            <option value="Shimla, Kufri & Kinnaur (2,276m - 3,100m)">Shimla, Kufri & Kinnaur (2,276m - 3,100m)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Month of Travel</label>
+                        <select id="packing-month-select" class="modal-input">
+                            <option value="October (Early Autumn Frost)">October (Early Autumn Frost)</option>
+                            <option value="November (Sub-zero Winter Freeze)">November (Sub-zero Winter Freeze)</option>
+                            <option value="December - February (Heavy Snow & Black Ice)">December - February (Heavy Snow & Black Ice)</option>
+                            <option value="March - May (Spring Thaw & High Slush)">March - May (Spring Thaw & High Slush)</option>
+                            <option value="June - September (Monsoon & Alpine Summer)">June - September (Monsoon & Alpine Summer)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expedition Duration</label>
+                        <select id="packing-duration-select" class="modal-input">
+                            <option value="3 to 4 Days (Short Road Trip)">3 to 4 Days (Short Road Trip)</option>
+                            <option value="5 to 7 Days (Alpine Circuit)" selected>5 to 7 Days (Alpine Circuit)</option>
+                            <option value="8 to 14 Days (Trans-Himalayan Expedition)">8 to 14 Days (Trans-Himalayan Expedition)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="packing-action-row">
+                    <button type="button" class="btn-generate-packing" id="btn-generate-packing-gemini">
+                        <span>✨ Generate Tailored Checklist With Gemini 3.5</span>
+                    </button>
+                </div>
+
+                <div class="packing-output-area" id="packing-output-area" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         GEMINI 3.5 ENGINE STATUS & CONFIGURATION MODAL
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="modal-gemini-status" style="display:none;">
+        <div class="gemini-status-modal-card">
+            <div class="modal-header-simple">
+                <div class="modal-title-with-pill">
+                    <span class="modal-kicker-tag">✨ GOOGLE GENERATIVE AI</span>
+                    <h3 id="gemini-modal-title">Gemini 3.5 AI Engine Telemetry</h3>
+                </div>
+                <button class="btn-close-modal" id="btn-close-gemini-modal">&times;</button>
+            </div>
+            <div class="modal-body-content">
+                <div class="gemini-status-summary-grid">
+                    <div class="status-summary-item">
+                        <span class="summary-label">Primary Active Model</span>
+                        <strong class="summary-val text-cyan">gemini-3.5-flash</strong>
+                    </div>
+                    <div class="status-summary-item">
+                        <span class="summary-label">Candidate Fallbacks</span>
+                        <strong class="summary-val">gemini-3.8-flash • flash-latest</strong>
+                    </div>
+                    <div class="status-summary-item">
+                        <span class="summary-label">API Health</span>
+                        <strong class="summary-val text-success">🟢 Connected & Active</strong>
+                    </div>
+                    <div class="status-summary-item">
+                        <span class="summary-label">Platform Features Powered</span>
+                        <strong class="summary-val text-amber">4 Intelligent Modules</strong>
+                    </div>
+                </div>
+
+                <div class="gemini-features-overview">
+                    <div class="gemini-feature-item">
+                        <span class="gf-icon">🤖</span>
+                        <div>
+                            <strong>SAHAYAKMITR.ai Expedition Architect</strong>
+                            <p>Structured day-by-day mountain itineraries, pricing calculator & conversational mountain advice.</p>
+                        </div>
+                    </div>
+                    <div class="gemini-feature-item">
+                        <span class="gf-icon">⚡</span>
+                        <div>
+                            <strong>Live Mountain Pass Traction & Weather Advisory</strong>
+                            <p>Real-time AMS risk calculation, road surface hazard assessment & safe crossing windows.</p>
+                        </div>
+                    </div>
+                    <div class="gemini-feature-item">
+                        <span class="gf-icon">🛡️</span>
+                        <div>
+                            <strong>24x7 Women Safety & SOS Emergency Tactical Copilot</strong>
+                            <p>Immediate actionable steps for breakdowns, zero-signal mountain zones, and emergency rendezvous.</p>
+                        </div>
+                    </div>
+                    <div class="gemini-feature-item">
+                        <span class="gf-icon">🎒</span>
+                        <div>
+                            <strong>Smart Altitude Packing & Medical Checklist</strong>
+                            <p>Corridor and weather-aware gear recommendations with life-saving acclimatization guidance.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="gemini-ping-test-box">
+                    <div class="ping-header">
+                        <strong>Test Live API Connection</strong>
+                        <button type="button" class="btn-ping-test" id="btn-test-gemini-ping">⚡ Test Latency Ping</button>
+                    </div>
+                    <div class="ping-result-box" id="gemini-ping-result">
+                        <span>Click "Test Latency Ping" to measure round-trip Gemini response latency.</span>
+                    </div>
+                </div>
+
+                <div class="gemini-key-custom-section">
+                    <label class="form-label">Custom Google Gemini API Key (Optional)</label>
+                    <div class="custom-key-row">
+                        <input type="password" id="custom-gemini-key-input" class="modal-input font-mono" placeholder="Default built-in API key is active. Enter custom AI Studio key to override...">
+                        <button type="button" id="btn-save-gemini-key" class="btn-save-key">Save Key</button>
+                        <button type="button" id="btn-reset-gemini-key" class="btn-reset-key">Reset</button>
+                    </div>
+                    <span class="key-hint-note">🔒 Custom keys are stored locally in your browser and never shared.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         FOOD INSPECTION DEPARTMENT AUDIT REPORT MODAL
+         ======================================================== -->
+    <div class="modal-overlay" id="modal-food-audit" style="display: none;">
+        <div class="modal-card food-audit-modal-card">
+            <button type="button" class="modal-close-btn" id="btn-close-food-audit" title="Close Audit Report">✕</button>
+            <div id="food-audit-modal-content">
+                <!-- Dynamically populated by renderFoodAuditModal() in app.js -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         FIREBASE WEB AUTHENTICATION MODAL (TRAVELISER SIGN-IN / SIGN-UP)
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="auth-modal" style="display:none;">
+        <div class="auth-modal-card">
+            <div class="auth-modal-header">
+                <div class="auth-header-brand">
+                    <div class="auth-logo-badge">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                            <polyline points="2 17 12 22 22 17"></polyline>
+                            <polyline points="2 12 12 17 22 12"></polyline>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="auth-kicker">TRAVELISER MEMBER PORTAL</span>
+                        <h3 class="auth-title">Welcome to Traveliser</h3>
+                    </div>
+                </div>
+                <button type="button" class="btn-close-modal" id="btn-close-auth-modal" title="Close Modal">&times;</button>
+            </div>
+
+            <div class="auth-modal-body">
+                <p class="auth-subtitle">
+                    Sign in to sync your custom AI itineraries, saved travel passes, and emergency contact circle.
+                </p>
+
+                <!-- Auth Mode Tabs (Sign In / Sign Up) -->
+                <div class="auth-tab-switch">
+                    <button type="button" class="auth-tab-btn active" id="tab-auth-login">Sign In</button>
+                    <button type="button" class="auth-tab-btn" id="tab-auth-signup">Create Account</button>
+                </div>
+
+                <!-- Google One-Click Sign-In -->
+                <button type="button" class="btn-google-auth" id="btn-google-login">
+                    <svg class="google-icon" width="18" height="18" viewBox="0 0 48 48">
+                        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                    </svg>
+                    <span>Continue with Google</span>
+                </button>
+
+                <!-- Divider -->
+                <div class="auth-divider">
+                    <span>or continue with email</span>
+                </div>
+
+                <!-- Alert Message Box -->
+                <div class="auth-alert" id="auth-alert-box" style="display:none;"></div>
+
+                <!-- Email/Password Form -->
+                <form id="auth-form" class="auth-form">
+                    <div class="form-group" id="auth-name-group" style="display:none;">
+                        <label class="form-label" for="auth-name">Full Name</label>
+                        <input type="text" id="auth-name" class="modal-input" placeholder="e.g. Ayush" autocomplete="name">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="auth-email">Email Address</label>
+                        <input type="email" id="auth-email" class="modal-input" placeholder="ayush@example.com" required autocomplete="email">
+                    </div>
+
+                    <div class="form-group">
+                        <div class="label-row-flex">
+                            <label class="form-label" for="auth-password">Password</label>
+                            <button type="button" class="btn-link-action" id="btn-forgot-password">Forgot password?</button>
+                        </div>
+                        <div class="password-input-wrap">
+                            <input type="password" id="auth-password" class="modal-input" placeholder="••••••••" required autocomplete="current-password">
+                            <button type="button" class="btn-toggle-pw" id="btn-toggle-password" title="Show/Hide Password">👁️</button>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-auth-primary" id="btn-auth-submit">
+                        <span id="auth-submit-label">Sign In to Traveliser</span>
+                    </button>
+                </form>
+
+                <!-- Instant Guest Access Button -->
+                <div class="auth-guest-row">
+                    <button type="button" class="btn-guest-action" id="btn-guest-login">
+                        <span>⚡ Instant Guest Explorer Access</span>
+                    </button>
+                </div>
+
+                <!-- Firebase Security Badge -->
+                <div class="auth-security-footer">
+                    <span class="security-lock">🔒</span>
+                    <span>Secured by Firebase Authentication • travelfier</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         USER PROFILE & ACCOUNT MODAL
+         ======================================================== -->
+    <div class="emergency-modal-backdrop" id="modal-user-profile" style="display:none;">
+        <div class="user-profile-modal-card">
+            <div class="profile-modal-header">
+                <div class="profile-header-left">
+                    <span class="profile-kicker">MEMBER ACCOUNT</span>
+                    <h3 class="profile-title">Traveliser Passport</h3>
+                </div>
+                <button type="button" class="btn-close-modal" id="btn-close-profile-modal" title="Close Profile">&times;</button>
+            </div>
+
+            <div class="profile-modal-body">
+                <div class="profile-card-summary">
+                    <div class="profile-avatar-large" id="user-profile-avatar">👤</div>
+                    <div class="profile-identity">
+                        <h4 class="profile-name" id="user-profile-name">Explorer</h4>
+                        <p class="profile-email" id="user-profile-email">user@example.com</p>
+                        <span class="profile-badge-pill">🟢 Verified Traveliser Member</span>
+                    </div>
+                </div>
+
+                <div class="profile-meta-grid">
+                    <div class="profile-meta-item">
+                        <span class="meta-label">Firebase Auth UID</span>
+                        <strong class="meta-val font-mono" id="user-profile-uid">---</strong>
+                    </div>
+                    <div class="profile-meta-item">
+                        <span class="meta-label">Protection Tier</span>
+                        <strong class="meta-val text-cyan">24x7 Escort Active</strong>
+                    </div>
+                </div>
+
+                <div class="profile-actions-stack">
+                    <button type="button" class="btn-profile-action" id="btn-profile-view-plans">
+                        <span>📋 View Saved Itineraries</span>
+                        <span class="action-arrow">&rarr;</span>
+                    </button>
+                    <a href="#emergency" class="btn-profile-action" id="btn-profile-safety-circle">
+                        <span>🛡️ Emergency Circle & Contacts</span>
+                        <span class="action-arrow">&rarr;</span>
+                    </a>
+                    <button type="button" class="btn-profile-logout" id="btn-logout">
+                        <span>🚪 Sign Out of Traveliser</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer (MakeMyTrip / Goibibo Style) -->
+    <footer class="site-footer" style="display: none !important;">
+        <div class="footer-container">
+            <div class="footer-top">
+                <div class="footer-col brand-col">
+                    <div class="footer-brand">
+                        <div class="footer-logo-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                <polyline points="2 17 12 22 22 17"></polyline>
+                                <polyline points="2 12 12 17 22 12"></polyline>
+                            </svg>
+                        </div>
+                        <span class="logo-name">TRAVELISER</span>
+                    </div>
+                    <p class="footer-text">
+                        India's premier adventure travel and safety platform. Powered by SAHAYAKMITR.ai generative intelligence and integrated 24x7 Women Safety responder networks across iconic Himalayan and pan-India corridors.
+                    </p>
+                    <div class="helpline-badge">
+                        <span>📞 24x7 Emergency Line: <strong>112 / +91-1800-TRAVELISER-SAFE</strong></span>
+                    </div>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-heading">Top Scenic Routes</h4>
+                    <ul class="footer-links">
+                        <li><a href="#packages">Delhi to Manali Expedition</a></li>
+                        <li><a href="#packages">Chandigarh to Spiti Valley</a></li>
+                        <li><a href="#packages">Manali to Leh Highway</a></li>
+                        <li><a href="#packages">Mumbai to Goa Coastal Drive</a></li>
+                        <li><a href="#packages">Bangalore to Ooty Highlands</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-heading">Safety & Intelligence</h4>
+                    <ul class="footer-links">
+                        <li><a href="#ai-assistance">SAHAYAKMITR.ai Copilot</a></li>
+                        <li><a href="#emergency">Women Protection Grid</a></li>
+                        <li><a href="#emergency">Police Dispatch SOS</a></li>
+                        <li><a href="#emergency">Lost & Found Recovery</a></li>
+                        <li><a href="#ai-planner-weather">Live Alpine Weather Radar</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4 class="footer-heading">Company & Policies</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Traveliser</a></li>
+                        <li><a href="#">High-Altitude Safety Standards</a></li>
+                        <li><a href="#">Emergency Protocols</a></li>
+                        <li><a href="#">Privacy & Data Encryption</a></li>
+                        <li><a href="#">Terms of Expedition</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2026 Traveliser Technologies India Pvt. Ltd. All rights reserved. Traveliser (formerly Margify) and SAHAYAKMITR.ai are registered trademarks.</p>
+                <div class="payment-badges">
+                    <span>🛡️ AES-256 Encrypted</span>
+                    <span>💳 UPI Instant</span>
+                    <span>Visa</span>
+                    <span>Mastercard</span>
+                    <span>Google Pay</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ========================================================
+         MODAL 1: QUICK DESTINATION MATERIAL CATALOG WINDOW
+         ======================================================== -->
+    <div class="materials-modal-backdrop" id="modal-quick-destination" style="display:none;">
+        <div class="materials-modal-card">
+            <div class="materials-modal-header">
+                <div class="materials-modal-title-box">
+                    <div class="materials-kicker-pill">
+                        <span class="materials-kicker-dot">📍</span>
+                        <span>EXPEDITION MATERIAL CATALOG</span>
+                    </div>
+                    <h3 class="materials-modal-heading">Quick Destination Materials</h3>
+                    <p class="materials-modal-sub">Click any destination material below to immediately formulate a customized itinerary in SAHAYAKMITR.ai</p>
+                </div>
+                <button type="button" class="btn-close-materials-modal" id="btn-close-quick-dest-modal" title="Close Library">&times;</button>
+            </div>
+            <div class="materials-filter-toolbar">
+                <div class="materials-search-wrap">
+                    <span class="search-lens-icon">🔍</span>
+                    <input type="text" id="search-quick-dest-input" class="materials-search-input" placeholder="Search by city, pass, region, or temple (e.g. Manali, Kedarnath, Mumbai, Banaras...)" />
+                </div>
+                <div class="materials-category-pills" id="dest-category-filter-pills">
+                    <button type="button" class="dest-filter-pill active" data-cat="all">All (31+)</button>
+                    <button type="button" class="dest-filter-pill" data-cat="himalayan">🏔️ Himalayan & Passes</button>
+                    <button type="button" class="dest-filter-pill" data-cat="spiritual">🛕 Spiritual & Jyotirlinga</button>
+                    <button type="button" class="dest-filter-pill" data-cat="heritage">🏰 Heritage & Citadel</button>
+                    <button type="button" class="dest-filter-pill" data-cat="coastal">🌊 Coastal & Konkan</button>
+                    <button type="button" class="dest-filter-pill" data-cat="metro">🌆 Metro & Modern</button>
+                </div>
+            </div>
+            <div class="materials-modal-body">
+                <div class="quick-dest-materials-grid" id="quick-dest-materials-grid">
+                    <!-- Populated dynamically from DESTINATION_DATABASE in app.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL 2: TRIP DURATION MATERIAL CATALOG WINDOW
+         ======================================================== -->
+    <div class="materials-modal-backdrop" id="modal-trip-duration" style="display:none;">
+        <div class="materials-modal-card materials-modal-compact">
+            <div class="materials-modal-header">
+                <div class="materials-modal-title-box">
+                    <div class="materials-kicker-pill">
+                        <span class="materials-kicker-dot">⏱️</span>
+                        <span>TIMELINE PACING MATERIALS</span>
+                    </div>
+                    <h3 class="materials-modal-heading">Trip Duration Options</h3>
+                    <p class="materials-modal-sub">Select your desired expedition length. SAHAYAKMITR.ai will automatically recalibrate your itinerary</p>
+                </div>
+                <button type="button" class="btn-close-materials-modal" id="btn-close-trip-dur-modal" title="Close Library">&times;</button>
+            </div>
+            <div class="materials-modal-body">
+                <div class="trip-dur-materials-grid" id="trip-dur-materials-grid">
+                    <!-- Populated dynamically or statically via app.js -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL 3: E-TICKET & OFFICIAL TRAVELISER BOOKING PASS
+         ======================================================== -->
+    <div class="materials-modal-backdrop" id="modal-view-eticket" style="display:none;">
+        <div class="eticket-modal-card">
+            <div class="eticket-modal-header">
+                <div class="eticket-header-badge">
+                    <span class="eticket-shield">🛡️</span>
+                    <span>TRAVELISER SECURE EXPEDITION PASS</span>
+                </div>
+                <button type="button" class="btn-close-materials-modal" id="btn-close-eticket-modal" title="Close Pass">&times;</button>
+            </div>
+            <div class="eticket-modal-body">
+                <h3 class="eticket-modal-title" id="eticket-title">Expedition Pass</h3>
+                <div id="eticket-body-content" class="eticket-body-content">
+                    <!-- Dynamically populated in app.js -->
+                </div>
+            </div>
+            <div class="eticket-modal-footer">
+                <button type="button" class="btn-print-eticket" id="btn-print-eticket">
+                    <span>🖨️ Print / Save PDF Voucher</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLOATING CORNER LAUNCHER FOR YOUR BOOKINGS (JUST ABOVE YOUR PLANS) -->
+    <button class="floating-bookings-corner-btn" id="floating-bookings-corner-btn" title="Open Your Bookings Drawer">
+        <span class="floating-bookings-icon">🎫</span>
+        <span class="floating-bookings-label">YOUR BOOKING</span>
+        <span class="floating-bookings-badge" id="floating-bookings-count">0</span>
+    </button>
+
+    <!-- FLOATING CORNER LAUNCHER FOR YOUR PLANS (ECOMMERCE STYLE) -->
+    <button class="floating-plans-corner-btn" id="floating-plans-corner-btn" title="Open Your Plans Drawer">
+        <span class="floating-plans-icon">📋</span>
+        <span class="floating-plans-label">YOUR PLANS</span>
+        <span class="floating-plans-badge" id="floating-plans-count">0</span>
+    </button>
+
+    <!-- Toast Notification Container -->
+    <div id="margify-toast" style="display:none;"></div>
+
+    <!-- Firebase SDK v10 (Compat for seamless global client access) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="audio.js"></script>
+    <script src="app.js"></script>
+
+    <script>
+    function setOriginHub(code, name, hub) {
+        var fromInput = document.getElementById('from-city');
+        var fromHelper = document.getElementById('from-helper');
+        if (fromInput) fromInput.value = code;
+        if (fromHelper) fromHelper.textContent = hub;
+        document.querySelectorAll('#block-from .proto-pill-btn').forEach(function(btn) {
+            btn.classList.toggle('active', btn.textContent.indexOf(code) !== -1);
+        });
+    }
+
+    function setDestSector(name, circuit) {
+        var toInput = document.getElementById('to-city');
+        var toHelper = document.getElementById('to-helper');
+        if (toInput) toInput.value = name;
+        if (toHelper) toHelper.textContent = circuit;
+        document.querySelectorAll('#block-to .proto-pill-btn').forEach(function(btn) {
+            btn.classList.toggle('active', btn.textContent.indexOf(name.split(' ')[0]) !== -1);
+        });
+    }
+
+    function openInteractiveCopilotModal() {
+        var modal = document.getElementById('modal-interactive-copilot');
+        if (modal) {
+            modal.style.display = 'flex';
+            modal.classList.add('visible');
+        }
+    }
+
+    function closeInteractiveCopilotModal() {
+        var modal = document.getElementById('modal-interactive-copilot');
+        if (modal) {
+            modal.style.display = 'none';
+            modal.classList.remove('visible');
+        }
+    }
+
+    function askSahayakPrompt(queryText) {
+        openInteractiveCopilotModal();
+        var chatInput = document.getElementById('chat-user-input');
+        if (chatInput) chatInput.value = queryText;
+        if (typeof window.triggerSahayakItinerary === 'function') {
+            window.triggerSahayakItinerary(queryText);
+        } else {
+            var form = document.getElementById('chat-form');
+            if (form) form.dispatchEvent(new Event('submit', { cancelable: true }));
+        }
+    }
+
+    function copyPromoCode(code) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(code).then(function() {
+                alert('Promo Code ' + code + ' successfully copied to clipboard!');
+            }).catch(function() {
+                alert('Promo Code: ' + code);
+            });
+        } else {
+            alert('Promo Code: ' + code);
+        }
+    }
+    
+    // WEATHER EXPLORER SCRIPT LOGIC
+    function filterWeatherCards(region, btn) {
+        document.querySelectorAll('#weather-region-filter-pills .weather-region-pill').forEach(function(p) {
+            p.classList.remove('active');
+        });
+        if (btn) btn.classList.add('active');
+
+        var cards = document.querySelectorAll('#weather-cards-grid .weather-card');
+        cards.forEach(function(card) {
+            if (region === 'all' || card.getAttribute('data-region') === region) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function searchWeatherCards(query) {
+        var q = (query || '').toLowerCase().trim();
+        var cards = document.querySelectorAll('#weather-cards-grid .weather-card');
+        cards.forEach(function(card) {
+            var city = (card.getAttribute('data-city') || '').toLowerCase();
+            if (!q || city.indexOf(q) !== -1) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function toggleTempUnit(unit) {
+        var btnC = document.getElementById('btn-unit-c');
+        var btnF = document.getElementById('btn-unit-f');
+        if (unit === 'C') {
+            if (btnC) btnC.classList.add('active');
+            if (btnF) btnF.classList.remove('active');
+        } else {
+            if (btnF) btnF.classList.add('active');
+            if (btnC) btnC.classList.remove('active');
+        }
+
+        var tempEls = document.querySelectorAll('.weather-card-temp-main');
+        tempEls.forEach(function(el) {
+            var valC = el.getAttribute('data-c');
+            var valF = el.getAttribute('data-f');
+            if (unit === 'C' && valC) {
+                el.textContent = valC + '°C';
+            } else if (unit === 'F' && valF) {
+                el.textContent = valF + '°F';
+            }
+        });
+    }
+
+    function filterFoodTable(val) {
+        var q = (val || '').toLowerCase().trim();
+        var rows = document.querySelectorAll('#food-audits-table-main tbody tr');
+        rows.forEach(function(row) {
+            var txt = row.textContent.toLowerCase();
+            row.style.display = (!q || txt.indexOf(q) !== -1) ? '' : 'none';
+        });
+    }
+
+    var isRiskSortedAsc = false;
+    function sortFoodTableByRisk() {
+        var tbody = document.querySelector('#food-audits-table-main tbody');
+        if (!tbody) return;
+        var rows = Array.from(tbody.querySelectorAll('tr'));
+        isRiskSortedAsc = !isRiskSortedAsc;
+        rows.sort(function(a, b) {
+            var scoreA = parseInt(a.querySelector('.risk-pill').textContent) || 0;
+            var scoreB = parseInt(b.querySelector('.risk-pill').textContent) || 0;
+            return isRiskSortedAsc ? (scoreA - scoreB) : (scoreB - scoreA);
+        });
+        rows.forEach(function(r) { tbody.appendChild(r); });
+    }
+
+    </script>
+</body>
+</html>

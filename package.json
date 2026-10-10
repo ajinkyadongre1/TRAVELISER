@@ -1,21 +1,21 @@
 {
-  "name": "traveliser",
+  "name": "margify",
   "version": "1.0.0",
-  "description": "TRAVELISER — Mountain Expedition Booking, AI Trip Planner & 24x7 Women Safety Command Platform",
+  "description": "MARGIFY — High-Altitude Mountain Expeditions, AI Trip Planner & 24x7 Safety Command Platform",
   "main": "index.html",
   "scripts": {
-    "build": "echo 'Static build ready'",
+    "build": "node build.js",
     "start": "python -m http.server 8080",
-    "serve": "npx serve ."
+    "serve": "npx serve public"
   },
   "keywords": [
-    "travel",
-    "makemytrip",
-    "women-safety",
-    "gemini-ai",
-    "firebase-auth",
+    "margify",
+    "traveliser",
+    "adventure",
     "himalayas",
-    "emergency-command"
+    "safety",
+    "weather",
+    "food-inspection"
   ],
   "author": "Ajinkya Dongre",
   "license": "MIT"
