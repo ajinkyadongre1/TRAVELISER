@@ -24,7 +24,7 @@
       ]
     },
     {
-      "source": "/(images|car_frames|logo_frames)/(.*)",
+      "source": "/(images|car_frames|logo_frames|journey_frames)/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

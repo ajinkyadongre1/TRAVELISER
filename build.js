@@ -27,7 +27,9 @@ const itemsToCopy = [
   'audio.js',
   'images',
   'logo_frames',
-  'car_frames'
+  'journey-animation.js',
+  'car_frames',
+  'journey_frames'
 ];
 
 for (const item of itemsToCopy) {

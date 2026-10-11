@@ -1307,7 +1307,7 @@
 
     function matchDestinationKey(query) {
         const q = (query || '').toLowerCase();
-        
+
         // Exact and substring match against aliases
         const sortedAliases = Object.keys(DESTINATION_ALIASES).sort((a, b) => b.length - a.length);
         for (const alias of sortedAliases) {
@@ -1324,7 +1324,7 @@
     function buildUniversalCustomItinerary(promptText, durationDays, vibe) {
         const raw = (promptText || '').trim();
         const dur = Math.max(1, Math.min(10, parseInt(durationDays) || 3));
-        
+
         // Extract clean destination name
         let cleanDest = raw
             .replace(/plan\s*(?:a|an)?\s*(?:\d+[- ]?day)?\s*(?:trip|tour|itinerary|journey|expedition)?\s*(?:to|for|in|around)?/gi, '')
@@ -2081,7 +2081,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         if (!err) return 'An unexpected authentication error occurred.';
         const code = err.code || '';
         const msg = err.message || '';
-        
+
         switch (code) {
             case 'auth/invalid-email':
                 return 'Please enter a valid email address format.';
@@ -2423,7 +2423,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
     const btnClosePlansDrawer = document.getElementById('btn-close-plans-drawer');
     const btnDrawerAskAi = document.getElementById('btn-drawer-ask-ai');
 
-    window.openPlansDrawer = function() {
+    window.openPlansDrawer = function () {
         const drawer = document.getElementById('your-plans');
         const backdrop = document.getElementById('plans-drawer-backdrop');
         if (drawer) drawer.classList.add('active');
@@ -2431,7 +2431,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         renderSavedPlans();
     };
 
-    window.closePlansDrawer = function() {
+    window.closePlansDrawer = function () {
         const drawer = document.getElementById('your-plans');
         const backdrop = document.getElementById('plans-drawer-backdrop');
         if (drawer) drawer.classList.remove('active');
@@ -2668,12 +2668,12 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         showNotificationToast('Plan removed from Your Plans.');
     }
 
-    window.triggerBuyNow = function(planId) {
+    window.triggerBuyNow = function (planId) {
         const plan = savedPlans.find(p => p.id === planId) || savedPlans[0];
         if (plan) openBuyNowModal(plan);
     };
 
-    window.triggerDeletePlan = function(planId) {
+    window.triggerDeletePlan = function (planId) {
         if (confirm('Are you sure you want to remove this plan from Your Plans?')) {
             deletePlan(planId);
         }
@@ -2860,7 +2860,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         return newBooking;
     }
 
-    window.openBookingsDrawer = function() {
+    window.openBookingsDrawer = function () {
         const drawer = document.getElementById('your-bookings');
         const plansDrawer = document.getElementById('your-plans');
         const backdrop = document.getElementById('plans-drawer-backdrop');
@@ -2873,7 +2873,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         updatePlansCounters();
     };
 
-    window.closeBookingsDrawer = function() {
+    window.closeBookingsDrawer = function () {
         const drawer = document.getElementById('your-bookings');
         const backdrop = document.getElementById('plans-drawer-backdrop');
         if (drawer) drawer.classList.remove('active');
@@ -2921,7 +2921,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
     }
 
     // Official E-Ticket Pass Modal View
-    window.viewBookingEticket = function(bookingId) {
+    window.viewBookingEticket = function (bookingId) {
         const booking = savedBookings.find(b => b.id === bookingId) || savedBookings[0];
         if (!booking) return;
 
@@ -3003,7 +3003,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         });
     }
 
-    window.triggerCancelBooking = function(bookingId) {
+    window.triggerCancelBooking = function (bookingId) {
         if (confirm('Are you sure you want to cancel this booking? This will revoke the expedition pass and SafeTag tracking.')) {
             savedBookings = savedBookings.filter(b => b.id !== bookingId);
             saveBookingsToStorage(savedBookings);
@@ -3054,7 +3054,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         currentCheckoutPlan = plan;
         if (buyModalTitle) buyModalTitle.textContent = plan.title || 'Mountain Expedition';
         if (buyModalRoute) buyModalRoute.textContent = `${plan.destination || 'Alpine Route'} • ${plan.duration || '3 Days'}`;
-        
+
         // Reset or populate lead traveller name: leave blank so traveller decides their own name, with example placeholder Ayush
         const inputBuyName = document.getElementById('buy-modal-name');
         if (inputBuyName) {
@@ -3063,7 +3063,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
                 if (typeof firebaseAuth !== 'undefined' && firebaseAuth && firebaseAuth.currentUser && firebaseAuth.currentUser.displayName) {
                     loggedInName = firebaseAuth.currentUser.displayName;
                 }
-            } catch (e) {}
+            } catch (e) { }
             inputBuyName.value = loggedInName;
             inputBuyName.placeholder = 'e.g. Ayush';
         }
@@ -3086,7 +3086,7 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
                 if (typeof firebaseAuth !== 'undefined' && firebaseAuth && firebaseAuth.currentUser) {
                     name = firebaseAuth.currentUser.displayName || (firebaseAuth.currentUser.email ? firebaseAuth.currentUser.email.split('@')[0] : '');
                 }
-            } catch (e) {}
+            } catch (e) { }
         }
         if (!name || name.trim() === '') {
             const inputBuyName = document.getElementById('buy-modal-name');
@@ -3255,6 +3255,9 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
         const chatForm = document.getElementById('chat-form');
         const chatInput = document.getElementById('chat-user-input');
         const btnClear = document.getElementById('btn-clear-chat');
+        const rightAnswerWindow = document.getElementById('sahayak-right-answer-window');
+        const blueprintTitle = document.getElementById('sahayak-blueprint-title');
+        const blueprintStatus = document.getElementById('sahayak-blueprint-status');
         const promptChips = document.querySelectorAll('.prompt-chip');
         const durationChips = document.querySelectorAll('#duration-chips .filter-chip');
         const vibeChips = document.querySelectorAll('#vibe-chips .filter-chip');
@@ -3308,17 +3311,46 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
                         <div class="message-avatar">🤖</div>
                         <div class="message-bubble">
                             <p class="message-text">
-                                Namaste & Greetings adventurer! 🙏 I am <strong>SAHAYAKMITR.ai</strong>, powered by <strong>Google Gemini</strong>.
+                                Namaste! 🙏 Conversation reset. Ask me any travel, route, or food safety query!
                             </p>
-                            <p class="message-text">
-                                Tell me what place you are planning and any details (duration, travel group, preferred vibe). I will construct a structured day-by-day plan with an instant <strong>BUY NOW</strong> option and automatically save it to <strong>YOUR PLANS</strong> below!
-                            </p>
-                            <div class="bot-quick-action-strip">
-                                <span class="hint-tag">✨ Tap any parameter in the Compiled Trip Architect above or type your destination below!</span>
-                            </div>
                         </div>
                     </div>
                 `;
+                if (rightAnswerWindow) {
+                    if (blueprintTitle) blueprintTitle.textContent = 'Expedition Blueprint & Multimodal Intelligence';
+                    if (blueprintStatus) blueprintStatus.textContent = 'LIVE AI ANSWER & ITINERARY WINDOW';
+                    rightAnswerWindow.innerHTML = `
+                        <div class="sahayak-welcome-blueprint">
+                            <div class="blueprint-hero-banner">
+                                <div class="blueprint-hero-icon">✨</div>
+                                <div>
+                                    <h3 class="blueprint-hero-heading">Ready to Architect Your Expedition</h3>
+                                    <p class="blueprint-hero-sub">Type any prompt or click a destination on the left. Your full generated answer, detailed day-by-day morning/afternoon/evening schedule, verified FSSAI dining halts, and altitude acclimation directives will generate right here in complete, unhindered view.</p>
+                                </div>
+                            </div>
+                            <div class="blueprint-sample-grid">
+                                <div class="blueprint-sample-card" onclick="askSahayakPrompt('Plan 3-day spiritual itinerary in Banaras & Sarnath with Ganga aarti and local silk weavers')">
+                                    <div class="sample-card-tag">SPIRITUAL & CULTURAL</div>
+                                    <h4 class="sample-card-title">Banaras & Sarnath (3 Days)</h4>
+                                    <p class="sample-card-desc">Kashi Vishwanath Corridor, Sarnath Deer Park & Ashoka Pillar, morning Subah-e-Banaras boat ride, authentic silk-weaving master guilds.</p>
+                                    <span class="sample-card-action">⚡ Synthesize Full Blueprint &rarr;</span>
+                                </div>
+                                <div class="blueprint-sample-card" onclick="askSahayakPrompt('Plan 3 days in Manali, Solang Valley and Rohtang Pass')">
+                                    <div class="sample-card-tag">HIMALAYAN ALPINE</div>
+                                    <h4 class="sample-card-title">Manali & Rohtang Pass (3 Days)</h4>
+                                    <p class="sample-card-desc">Solang adventure staging, Rohtang Pass 3,978m crossing, Old Manali trout & siddu cuisine halts, Atal Tunnel transit.</p>
+                                    <span class="sample-card-action">⚡ Synthesize Full Blueprint &rarr;</span>
+                                </div>
+                                <div class="blueprint-sample-card" onclick="askSahayakPrompt('Plan 4-day high altitude expedition in Spiti Valley with acclimatization and monasteries')">
+                                    <div class="sample-card-tag">EXPEDITION CORRIDOR</div>
+                                    <h4 class="sample-card-title">Spiti Valley Circuit (4 Days)</h4>
+                                    <p class="sample-card-desc">Key Monastery, Hikkim highest post office, Chicham Bridge 4,145m, Chandra Taal alpine glacial camping with She-Team security.</p>
+                                    <span class="sample-card-action">⚡ Synthesize Full Blueprint &rarr;</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
             });
         }
 
@@ -3381,10 +3413,10 @@ Format your entire response strictly as a JSON object (pure JSON only, no markdo
             // Triggers whenever a destination is mentioned OR itinerary keywords exist,
             // as long as it's not a food-only or cost-only question without trip planning intent.
             // -------------------------------------------------------------
-            const isPureItineraryRequest = (matchedKey !== null || hasItineraryKeywords) && 
-                                           !isGeneralQnA && 
-                                           !(isFoodIntent && !hasItineraryKeywords) && 
-                                           !(isCostIntent && !hasItineraryKeywords);
+            const isPureItineraryRequest = (matchedKey !== null || hasItineraryKeywords) &&
+                !isGeneralQnA &&
+                !(isFoodIntent && !hasItineraryKeywords) &&
+                !(isCostIntent && !hasItineraryKeywords);
 
             if (isPureItineraryRequest) {
                 try {
@@ -3631,7 +3663,7 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
             }
             formatted = formatted.replace(/\n\n/g, '</p><p class="message-text">').replace(/\n/g, '<br>');
 
-            const badgeLabel = model 
+            const badgeLabel = model
                 ? (model.toUpperCase().endsWith('INTELLIGENCE') ? model.toUpperCase() : `${model.toUpperCase()} INTELLIGENCE`)
                 : 'GEMINI 3.5 INTELLIGENCE';
 
@@ -3641,12 +3673,41 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
                     <span class="sahayak-reply-badge">✨ ${badgeLabel}</span>
                     <p class="message-text">${formatted}</p>
                     <div class="chat-followup-suggestion">
-                        <span>💡 Have more questions about food safety or mountain passes? Type: <em>"Which restaurant has 5-star rating in Manali?"</em></span>
+                        <span>💡 Full details rendered in the Right Window &rarr;</span>
                     </div>
                 </div>
             `;
             chatFeed.appendChild(aiMsg);
             chatFeed.scrollTop = chatFeed.scrollHeight;
+
+            // Render Full Comprehensive Text / Food Safety Response in the Dedicated Right Window
+            if (rightAnswerWindow) {
+                if (blueprintTitle) blueprintTitle.textContent = `AI Intelligence Directive: ${badgeLabel}`;
+                if (blueprintStatus) blueprintStatus.textContent = '● LIVE ADVISORY SYNTHESIZED';
+                rightAnswerWindow.innerHTML = `
+                    <div class="sahayak-full-answer-card">
+                        <div class="sahayak-answer-banner">
+                            <div class="answer-banner-left">
+                                <span class="sahayak-badge-ai">✨ ${badgeLabel}</span>
+                                <h3 class="answer-banner-title">Authoritative Field Directive & Intelligence</h3>
+                            </div>
+                            <span class="answer-banner-time">⚡ Just Synthesized</span>
+                        </div>
+                        <div class="sahayak-answer-body">
+                            <div class="answer-content-text">${formatted}</div>
+                        </div>
+                        <div class="sahayak-answer-footer">
+                            <div class="answer-guarantee-pill">
+                                <span>🛡️ Backed by Traveliser 24x7 Emergency Grid & FSSAI Department Audits</span>
+                            </div>
+                            <button type="button" class="btn-answer-ask-more" onclick="document.getElementById('chat-user-input').focus()">
+                                <span>💬 Ask Follow-up Question</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                rightAnswerWindow.scrollTop = 0;
+            }
         }
 
         function appendUserMessage(text) {
@@ -3704,38 +3765,8 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
                     <p class="message-text">
                         ${plan.summary || `I have architected a custom expedition to <strong>${plan.destination}</strong> for you!`}
                     </p>
-
-                    <!-- Embedded Interactive Itinerary Card -->
-                    <div class="itinerary-card">
-                        <div class="itinerary-header">
-                            <div>
-                                <h4 class="itinerary-title">${plan.title}</h4>
-                                <span class="itinerary-route-tag">📍 ${plan.destination} • ⏱️ ${plan.duration}</span>
-                            </div>
-                            <span class="itinerary-tag">${plan.vibe || 'EXPEDITION'}</span>
-                        </div>
-
-                        <div class="itinerary-altitude-strip">
-                            <span class="alt-badge">🏔️ ${plan.altitudeTag || 'High Altitude'}</span>
-                            <span class="alt-advisory">${plan.acclimationAdvisory || 'Acclimatization included in route.'}</span>
-                        </div>
-
-                        <div class="itinerary-day-list">
-                            ${daysHtml}
-                        </div>
-
-                        <div class="itinerary-perks-strip">
-                            ${perksHtml}
-                        </div>
-
-                        <div class="itinerary-action-row">
-                            <button class="btn-book-plan" id="btn-buy-chat-${Date.now()}">
-                                <span>⚡ BUY NOW • ₹${(plan.pricePerPerson || 5499).toLocaleString('en-IN')}</span>
-                            </button>
-                            <button class="btn-save-plan" style="border:none; cursor:pointer;">
-                                <span>📋 View In Your Plans &rarr;</span>
-                            </button>
-                        </div>
+                    <div class="chat-followup-suggestion">
+                        <span>✨ Complete Day-by-Day Master Itinerary rendered in the <strong>Right Window &rarr;</strong> with Instant Buy Now checkout!</span>
                     </div>
                 </div>
             `;
@@ -3743,29 +3774,117 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
             chatFeed.appendChild(aiMsg);
             chatFeed.scrollTop = chatFeed.scrollHeight;
 
-            // Wire up buy now button inside chat message
-            const chatBuyBtn = aiMsg.querySelector('.btn-book-plan');
-            if (chatBuyBtn) {
-                chatBuyBtn.addEventListener('click', () => {
-                    openBuyNowModal(plan);
-                });
-            }
+            // Render Master Full-Screen Itinerary Canvas in the Dedicated Right Window
+            if (rightAnswerWindow) {
+                if (blueprintTitle) blueprintTitle.textContent = `${plan.title} • ${plan.duration}`;
+                if (blueprintStatus) blueprintStatus.textContent = '● MASTER EXPEDITION BLUEPRINT GENERATED';
 
-            // Wire up view in your plans button
-            const chatSaveBtn = aiMsg.querySelector('.btn-save-plan');
-            if (chatSaveBtn) {
-                chatSaveBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    if (window.openPlansDrawer) {
-                        window.openPlansDrawer();
-                    }
-                });
+                const rightDaysHtml = (plan.days || []).map(d => `
+                    <div class="master-blueprint-day-card">
+                        <div class="master-day-header">
+                            <span class="master-day-pill">${d.day}</span>
+                            <h4 class="master-day-title">${d.title}</h4>
+                        </div>
+                        <div class="master-day-desc">${(d.desc || '').replace(/\n/g, '<br>')}</div>
+                    </div>
+                `).join('');
+
+                const rightPerksHtml = (plan.perks || plan.inclusions || []).map(p => `
+                    <div class="master-perk-badge">
+                        <span class="perk-check">✓</span>
+                        <span>${p}</span>
+                    </div>
+                `).join('');
+
+                rightAnswerWindow.innerHTML = `
+                    <div class="master-itinerary-full-canvas">
+                        <!-- Master Hero Banner -->
+                        <div class="master-itinerary-hero">
+                            <div class="master-hero-main">
+                                <div class="master-hero-tags">
+                                    <span class="master-hero-vibe">${plan.vibe || 'PREMIER EXPEDITION'}</span>
+                                    <span class="master-hero-dur">⏱️ ${plan.duration}</span>
+                                    <span class="master-hero-alt">🏔️ ${plan.altitudeTag || 'High Altitude Verified'}</span>
+                                </div>
+                                <h2 class="master-hero-title">${plan.title}</h2>
+                                <p class="master-hero-summary">${plan.summary || `Personalized custom expedition route covering key heritage circuits, dining halts, and mountain terrain.`}</p>
+                            </div>
+                            <div class="master-hero-price-box">
+                                <span class="master-price-label">EXPEDITION PASS</span>
+                                <div class="master-price-val">₹${(plan.pricePerPerson || 5499).toLocaleString('en-IN')}</div>
+                                <span class="master-price-sub">per explorer • all inclusive</span>
+                            </div>
+                        </div>
+
+                        <!-- Altitude & Food Safety Advisory Strip -->
+                        <div class="master-advisory-strip">
+                            <div class="master-adv-col">
+                                <span class="adv-icon">🏔️</span>
+                                <div>
+                                    <strong>Altitude & Route Acclimatization:</strong>
+                                    <p>${plan.acclimationAdvisory || 'Acclimatization staging halts included to prevent acute mountain sickness.'}</p>
+                                </div>
+                            </div>
+                            <div class="master-adv-col">
+                                <span class="adv-icon">🛡️</span>
+                                <div>
+                                    <strong>Culinary & Food Safety Guarantee:</strong>
+                                    <p>Official dining halts pre-certified at FSSAI Grade A+ kitchens with verified RO/UV drinking water.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Day by Day Expanded Schedule -->
+                        <div class="master-days-container">
+                            <h3 class="master-section-heading">📅 DAY-BY-DAY EXPEDITION ITINERARY & SCHEDULE</h3>
+                            <div class="master-days-list">
+                                ${rightDaysHtml}
+                            </div>
+                        </div>
+
+                        <!-- Inclusions & Perks Grid -->
+                        <div class="master-inclusions-card">
+                            <h3 class="master-section-heading">✨ EXPEDITION INCLUSIONS & AMENITIES</h3>
+                            <div class="master-perks-grid">
+                                ${rightPerksHtml}
+                            </div>
+                        </div>
+
+                        <!-- Sticky/Prominent Master Action Bar -->
+                        <div class="master-action-bar">
+                            <button type="button" class="btn-master-buy-now" id="btn-master-buy-now">
+                                <span>⚡ INSTANT BUY NOW • ₹${(plan.pricePerPerson || 5499).toLocaleString('en-IN')}</span>
+                            </button>
+                            <button type="button" class="btn-master-view-plans" id="btn-master-save-plans">
+                                <span>📋 View in Your Plans &rarr;</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                // Wire up Buy Now button
+                const buyBtn = rightAnswerWindow.querySelector('#btn-master-buy-now');
+                if (buyBtn) {
+                    buyBtn.addEventListener('click', () => {
+                        openBuyNowModal(plan);
+                    });
+                }
+
+                // Wire up View Plans button
+                const plansBtn = rightAnswerWindow.querySelector('#btn-master-save-plans');
+                if (plansBtn) {
+                    plansBtn.addEventListener('click', () => {
+                        if (window.openPlansDrawer) window.openPlansDrawer();
+                    });
+                }
+
+                rightAnswerWindow.scrollTop = 0;
             }
         }
 
         // Global triggers for compiled hub and external components
         window.triggerSahayakItinerary = handleUserSubmit;
-        window.setSahayakParameters = function(dur, vibe) {
+        window.setSahayakParameters = function (dur, vibe) {
             if (dur) selectedDuration = dur.toString();
             if (vibe) selectedVibe = vibe.toString();
         };
@@ -4171,7 +4290,7 @@ Feel free to ask any specific question about food ratings, safe restaurants, wea
         function formatWhatsAppLiveMessage(coords, contactName) {
             const googleMapsUrl = `https://www.google.com/maps?q=${coords.lat},${coords.lon}`;
             const liveTrackerUrl = `${window.location.origin}${window.location.pathname}?live_sos=true&lat=${coords.lat}&lng=${coords.lon}&alt=${encodeURIComponent(coords.alt)}&acc=${coords.acc}&t=${Date.now()}&id=MRG-FORCE-8849-HP`;
-            
+
             const msg = `🚨 *LIVE GPS LOCATION & EMERGENCY BROADCAST — TRAVELISER* 🚨
 
 ${contactName ? `Dear ${contactName},\n` : ''}I am sharing my real-time live GPS coordinates with you for live journey tracking and safety:
@@ -4199,10 +4318,10 @@ ${liveTrackerUrl}
                 const { text, liveTrackerUrl } = formatWhatsAppLiveMessage(coords, contactName);
                 const encodedText = encodeURIComponent(text);
                 const cleanPhone = phone ? phone.replace(/[^\d]/g, '') : '';
-                const waUrl = cleanPhone 
+                const waUrl = cleanPhone
                     ? `https://api.whatsapp.com/send?phone=${cleanPhone.length === 10 ? '91' + cleanPhone : cleanPhone}&text=${encodedText}`
                     : `https://api.whatsapp.com/send?text=${encodedText}`;
-                
+
                 window.open(waUrl, '_blank');
                 showNotificationToast(`🟢 Opening WhatsApp with Live Location pin (${coords.lat}° N, ${coords.lon}° E)!`);
             });
@@ -4714,7 +4833,7 @@ ${liveTrackerUrl}
     }
     window.getRoadTripPlan = getRoadTripPlan;
 
-    window.bookRoute = function(from, to) {
+    window.bookRoute = function (from, to) {
         if (fromCity) fromCity.value = from;
         if (toCity) toCity.value = to;
 
@@ -6042,11 +6161,11 @@ Return a valid JSON object in this format (no markdown fences):
             const q = (searchInput ? searchInput.value : '').toLowerCase().trim();
 
             if (q) {
-                result = result.filter(r => 
-                    r.name.toLowerCase().includes(q) || 
-                    r.address.toLowerCase().includes(q) || 
-                    r.region.toLowerCase().includes(q) || 
-                    r.bestFood.toLowerCase().includes(q) || 
+                result = result.filter(r =>
+                    r.name.toLowerCase().includes(q) ||
+                    r.address.toLowerCase().includes(q) ||
+                    r.region.toLowerCase().includes(q) ||
+                    r.bestFood.toLowerCase().includes(q) ||
                     r.bestFoodCategory.toLowerCase().includes(q)
                 );
             }
@@ -6165,7 +6284,7 @@ Return a valid JSON object in this format (no markdown fences):
                     </div>
                 </div>
 
-                <h4 style="font-size: 14px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Microbiological & Physicochemical Lab Findings:</h4>
+                <h4 style="font-size: 14px; font-weight: 800; color: #F8FAFC; margin-bottom: 8px;">Microbiological & Physicochemical Lab Findings:</h4>
                 <table class="lab-results-table">
                     <thead>
                         <tr>

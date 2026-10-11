@@ -4,35 +4,35 @@
    ========================================================================== */
 
 :root {
-    /* Eye-Pleasing Light Color Palette (Alpine Snow & Himalayan Azure) */
-    --bg-page: #f8fafc;
-    --bg-header: #ffffff;
-    --bg-card: #ffffff;
-    --bg-card-elevated: #ffffff;
-    --bg-input: #ffffff;
-    --bg-surface-tint: #f0f7ff;
-    --bg-slate-light: #f8fafc;
+    /* Cyber-Alpine Dark Color Palette (Reflecting Margify Journey Animation) */
+    --bg-page: #080c14;
+    --bg-header: rgba(8, 12, 20, 0.88);
+    --bg-card: rgba(13, 20, 36, 0.82);
+    --bg-card-elevated: rgba(18, 28, 50, 0.9);
+    --bg-input: rgba(10, 16, 28, 0.85);
+    --bg-surface-tint: rgba(6, 182, 212, 0.08);
+    --bg-slate-light: rgba(15, 23, 42, 0.8);
 
     /* Brand Accents */
     --brand-blue: #0284c7;
     --brand-blue-hover: #0369a1;
-    --brand-cyan: #0284c7;
-    --brand-cyan-glow: rgba(2, 132, 199, 0.25);
-    --brand-orange: #ea580c;
-    --brand-red: #dc2626;
-    --brand-green: #059669;
+    --brand-cyan: #00f2fe;
+    --brand-cyan-glow: rgba(0, 242, 254, 0.35);
+    --brand-orange: #f59e0b;
+    --brand-red: #ef4444;
+    --brand-green: #10b981;
 
-    /* Text - Soft obsidian and Slate for maximum readability without eye strain */
-    --text-primary: #1e293b;
-    --text-secondary: #475569;
-    --text-muted: #64748b;
-    --text-dim: #94a3b8;
+    /* Text - Crisp Luminescent Slate and White for Perfect Contrast */
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --text-dim: #64748b;
 
     /* Borders */
-    --border-subtle: #e2e8f0;
-    --border-medium: #cbd5e1;
-    --border-active: #0284c7;
-    --border-cyan: #bae6fd;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-medium: rgba(255, 255, 255, 0.15);
+    --border-active: #06b6d4;
+    --border-cyan: rgba(6, 182, 212, 0.35);
 
     /* Shadows (Soft, layered, modern, diffuse) */
     --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
@@ -64,7 +64,6 @@ html {
     scroll-behavior: smooth;
     font-size: 16px;
     background-color: var(--bg-page);
-    overflow-x: hidden;
 }
 
 body {
@@ -73,7 +72,6 @@ body {
     font-family: var(--font-body);
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
 }
 
 a {
