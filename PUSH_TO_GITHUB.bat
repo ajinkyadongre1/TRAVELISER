@@ -29,7 +29,7 @@ set /p GITHUB_PAT="Enter GitHub Token (or press Enter to exit): "
 if "%GITHUB_PAT%"=="" goto done
 echo.
 echo Pushing with Token...
-git push -u "https://%GITHUB_PAT%@github.com/ajinkyadongre1/TRAVELISER.git" main
+git push -u "https://x-access-token:%GITHUB_PAT%@github.com/ajinkyadongre1/TRAVELISER.git" main
 if errorlevel 1 goto token_failed
 goto success
 
